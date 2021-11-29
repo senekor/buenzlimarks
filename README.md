@@ -1,2 +1,3 @@
-# buenzli-web
-Web app experiment
+# Buenzlimarks
+
+WIP bookmark manager
