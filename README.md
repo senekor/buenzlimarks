@@ -1,4 +1,4 @@
-# Buenzlimarks
+# BuenzliMarks
 
 WIP bookmark manager
 
