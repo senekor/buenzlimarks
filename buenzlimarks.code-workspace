@@ -10,13 +10,15 @@
     },
     "editor.quickSuggestions": {
       "strings": true
-    }
+    },
+    "[markdown]": {
+      "editor.formatOnSave": true,
+    },
   },
   "extensions": {
     "recommendations": [
       "ecmel.vscode-html-css",
-      "bradlc.vscode-tailwindcss",
-      "asciidoctor.asciidoctor-vscode"
+      "bradlc.vscode-tailwindcss"
     ]
   }
 }

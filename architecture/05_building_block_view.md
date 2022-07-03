@@ -1,8 +1,6 @@
 # Building Block View {#section-building-block-view}
 
-::: formalpara-title
-**Content**
-:::
+#### Content
 
 The building block view shows the static decomposition of the system
 into building blocks (modules, components, subsystems, classes,
@@ -11,11 +9,9 @@ functions, macros, operations, datas structures, ...) as well as their
 dependencies (relationships, associations, ...)
 
 This view is mandatory for every architecture documentation. In analogy
-to a house this is the *floor plan*.
+to a house this is the _floor plan_.
 
-::: formalpara-title
-**Motivation**
-:::
+#### Motivation
 
 Maintain an overview of your source code by making its structure
 understandable through abstraction.
@@ -23,9 +19,7 @@ understandable through abstraction.
 This allows you to communicate with your stakeholder on an abstract
 level without disclosing implementation details.
 
-::: formalpara-title
-**Form**
-:::
+#### Form
 
 The building block view is a hierarchical collection of black boxes and
 white boxes (see figure below) and their descriptions.
@@ -44,49 +38,49 @@ together with black box descriptions of their internal building blocks.
 See [Building Block View](https://docs.arc42.org/section-5/) in the
 arc42 documentation.
 
-## Whitebox Overall System {#_whitebox_overall_system}
+## Whitebox Overall System {#\_whitebox_overall_system}
 
 Here you describe the decomposition of the overall system using the
 following white box template. It contains
 
--   an overview diagram
+- an overview diagram
 
--   a motivation for the decomposition
+- a motivation for the decomposition
 
--   black box descriptions of the contained building blocks. For these
-    we offer you alternatives:
+- black box descriptions of the contained building blocks. For these
+  we offer you alternatives:
 
-    -   use *one* table for a short and pragmatic overview of all
-        contained building blocks and their interfaces
+  - use _one_ table for a short and pragmatic overview of all
+    contained building blocks and their interfaces
 
-    -   use a list of black box descriptions of the building blocks
-        according to the black box template (see below). Depending on
-        your choice of tool this list could be sub-chapters (in text
-        files), sub-pages (in a Wiki) or nested elements (in a modeling
-        tool).
+  - use a list of black box descriptions of the building blocks
+    according to the black box template (see below). Depending on
+    your choice of tool this list could be sub-chapters (in text
+    files), sub-pages (in a Wiki) or nested elements (in a modeling
+    tool).
 
--   (optional:) important interfaces, that are not explained in the
-    black box templates of a building block, but are very important for
-    understanding the white box. Since there are so many ways to specify
-    interfaces why do not provide a specific template for them. In the
-    worst case you have to specify and describe syntax, semantics,
-    protocols, error handling, restrictions, versions, qualities,
-    necessary compatibilities and many things more. In the best case you
-    will get away with examples or simple signatures.
+- (optional:) important interfaces, that are not explained in the
+  black box templates of a building block, but are very important for
+  understanding the white box. Since there are so many ways to specify
+  interfaces why do not provide a specific template for them. In the
+  worst case you have to specify and describe syntax, semantics,
+  protocols, error handling, restrictions, versions, qualities,
+  necessary compatibilities and many things more. In the best case you
+  will get away with examples or simple signatures.
 
-***\<Overview Diagram>***
+**_\<Overview Diagram>_**
 
 Motivation
 
-:   *\<text explanation>*
+: _\<text explanation>_
 
 Contained Building Blocks
 
-:   *\<Description of contained building block (black boxes)>*
+: _\<Description of contained building block (black boxes)>_
 
 Important Interfaces
 
-:   *\<Description of important interfaces>*
+: _\<Description of important interfaces>_
 
 Insert your explanations of black boxes from level 1:
 
@@ -94,65 +88,65 @@ If you use tabular form you will only describe your black boxes with
 name and responsibility according to the following schema:
 
 +-----------------------+-----------------------------------------------+
-| **Name**              | **Responsibility**                            |
+| **Name** | **Responsibility** |
 +=======================+===============================================+
-| *\<black box 1>*      |  *\<Text>*                                    |
+| _\<black box 1>_ |  *\<Text>* |
 +-----------------------+-----------------------------------------------+
-| *\<black box 2>*      |  *\<Text>*                                    |
+| _\<black box 2>_ |  *\<Text>* |
 +-----------------------+-----------------------------------------------+
 
 If you use a list of black box descriptions then you fill in a separate
 black box template for every important building block . Its headline is
 the name of the black box.
 
-### \<Name black box 1> {#__name_black_box_1}
+### \<Name black box 1> {#\_\_name_black_box_1}
 
 Here you describe \<black box 1> according the the following black box
 template:
 
--   Purpose/Responsibility
+- Purpose/Responsibility
 
--   Interface(s), when they are not extracted as separate paragraphs.
-    This interfaces may include qualities and performance
-    characteristics.
+- Interface(s), when they are not extracted as separate paragraphs.
+  This interfaces may include qualities and performance
+  characteristics.
 
--   (Optional) Quality-/Performance characteristics of the black box,
-    e.g.availability, run time behavior, ....
+- (Optional) Quality-/Performance characteristics of the black box,
+  e.g.availability, run time behavior, ....
 
--   (Optional) directory/file location
+- (Optional) directory/file location
 
--   (Optional) Fulfilled requirements (if you need traceability to
-    requirements).
+- (Optional) Fulfilled requirements (if you need traceability to
+  requirements).
 
--   (Optional) Open issues/problems/risks
+- (Optional) Open issues/problems/risks
 
-*\<Purpose/Responsibility>*
+_\<Purpose/Responsibility>_
 
-*\<Interface(s)>*
+_\<Interface(s)>_
 
-*\<(Optional) Quality/Performance Characteristics>*
+_\<(Optional) Quality/Performance Characteristics>_
 
-*\<(Optional) Directory/File Location>*
+_\<(Optional) Directory/File Location>_
 
-*\<(Optional) Fulfilled Requirements>*
+_\<(Optional) Fulfilled Requirements>_
 
-*\<(optional) Open Issues/Problems/Risks>*
+_\<(optional) Open Issues/Problems/Risks>_
 
-### \<Name black box 2> {#__name_black_box_2}
+### \<Name black box 2> {#\_\_name_black_box_2}
 
-*\<black box template>*
+_\<black box template>_
 
-### \<Name black box n> {#__name_black_box_n}
+### \<Name black box n> {#\_\_name_black_box_n}
 
-*\<black box template>*
+_\<black box template>_
 
-### \<Name interface 1> {#__name_interface_1}
+### \<Name interface 1> {#\_\_name_interface_1}
 
 ...
 
-### \<Name interface m> {#__name_interface_m}
+### \<Name interface m> {#\_\_name_interface_m}
 
-## Level 2 {#_level_2}
+## Level 2 {#\_level_2}
 
 Here you can specify the inner structure of (some) building blocks from
 level 1 as white boxes.
@@ -163,23 +157,23 @@ over completeness. Specify important, surprising, risky, complex or
 volatile building blocks. Leave out normal, simple, boring or
 standardized parts of your system
 
-### White Box *\<building block 1>* {#_white_box_emphasis_building_block_1_emphasis}
+### White Box _\<building block 1>_ {#\_white_box_emphasis_building_block_1_emphasis}
 
-...describes the internal structure of *building block 1*.
+...describes the internal structure of _building block 1_.
 
-*\<white box template>*
+_\<white box template>_
 
-### White Box *\<building block 2>* {#_white_box_emphasis_building_block_2_emphasis}
+### White Box _\<building block 2>_ {#\_white_box_emphasis_building_block_2_emphasis}
 
-*\<white box template>*
+_\<white box template>_
 
 ...
 
-### White Box *\<building block m>* {#_white_box_emphasis_building_block_m_emphasis}
+### White Box _\<building block m>_ {#\_white_box_emphasis_building_block_m_emphasis}
 
-*\<white box template>*
+_\<white box template>_
 
-## Level 3 {#_level_3}
+## Level 3 {#\_level_3}
 
 Here you can specify the inner structure of (some) building blocks from
 level 2 as white boxes.
@@ -187,16 +181,16 @@ level 2 as white boxes.
 When you need more detailed levels of your architecture please copy this
 part of arc42 for additional levels.
 
-### White Box \<\_building block x.1\_\> {#_white_box_building_block_x_1}
+### White Box \<\_building block x.1\_\> {#\_white_box_building_block_x_1}
 
-Specifies the internal structure of *building block x.1*.
+Specifies the internal structure of _building block x.1_.
 
-*\<white box template>*
+_\<white box template>_
 
-### White Box \<\_building block x.2\_\> {#_white_box_building_block_x_2}
+### White Box \<\_building block x.2\_\> {#\_white_box_building_block_x_2}
 
-*\<white box template>*
+_\<white box template>_
 
-### White Box \<\_building block y.1\_\> {#_white_box_building_block_y_1}
+### White Box \<\_building block y.1\_\> {#\_white_box_building_block_y_1}
 
-*\<white box template>*
+_\<white box template>_

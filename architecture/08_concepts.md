@@ -1,71 +1,63 @@
 # Cross-cutting Concepts {#section-concepts}
 
-::: formalpara-title
-**Content**
-:::
+### Content
 
 This section describes overall, principal regulations and solution ideas
 that are relevant in multiple parts (= cross-cutting) of your system.
 Such concepts are often related to multiple building blocks. They can
 include many different topics, such as
 
--   models, especially domain models
+- models, especially domain models
 
--   architecture or design patterns
+- architecture or design patterns
 
--   rules for using specific technology
+- rules for using specific technology
 
--   principal, often technical decisions of an overarching (=
-    cross-cutting) nature
+- principal, often technical decisions of an overarching (=
+  cross-cutting) nature
 
--   implementation rules
+- implementation rules
 
-::: formalpara-title
-**Motivation**
-:::
+### Motivation
 
-Concepts form the basis for *conceptual integrity* (consistency,
+Concepts form the basis for _conceptual integrity_ (consistency,
 homogeneity) of the architecture. Thus, they are an important
 contribution to achieve inner qualities of your system.
 
 Some of these concepts cannot be assigned to individual building blocks,
 e.g. security or safety.
 
-::: formalpara-title
-**Form**
-:::
+### Form
 
 The form can be varied:
 
--   concept papers with any kind of structure
+- concept papers with any kind of structure
 
--   cross-cutting model excerpts or scenarios using notations of the
-    architecture views
+- cross-cutting model excerpts or scenarios using notations of the
+  architecture views
 
--   sample implementations, especially for technical concepts
+- sample implementations, especially for technical concepts
 
--   reference to typical usage of standard frameworks (e.g. using
-    Hibernate for object/relational mapping)
+- reference to typical usage of standard frameworks (e.g. using
+  Hibernate for object/relational mapping)
 
-::: formalpara-title
-**Structure**
-:::
+### Structure
 
 A potential (but not mandatory) structure for this section could be:
 
--   Domain concepts
+- Domain concepts
 
--   User Experience concepts (UX)
+- User Experience concepts (UX)
 
--   Safety and security concepts
+- Safety and security concepts
 
--   Architecture and design patterns
+- Architecture and design patterns
 
--   \"Under-the-hood\"
+- \"Under-the-hood\"
 
--   development concepts
+- development concepts
 
--   operational concepts
+- operational concepts
 
 Note: it might be difficult to assign individual concepts to one
 specific topic on this list.
@@ -76,16 +68,16 @@ concepts](images/08-Crosscutting-Concepts-Structure-EN.png)
 See [Concepts](https://docs.arc42.org/section-8/) in the arc42
 documentation.
 
-## *\<Concept 1>* {#__emphasis_concept_1_emphasis}
+## _\<Concept 1>_ {#\_\_emphasis_concept_1_emphasis}
 
-*\<explanation>*
+_\<explanation>_
 
-## *\<Concept 2>* {#__emphasis_concept_2_emphasis}
+## _\<Concept 2>_ {#\_\_emphasis_concept_2_emphasis}
 
-*\<explanation>*
+_\<explanation>_
 
 ...
 
-## *\<Concept n>* {#__emphasis_concept_n_emphasis}
+## _\<Concept n>_ {#\_\_emphasis_concept_n_emphasis}
 
-*\<explanation>*
+_\<explanation>_
