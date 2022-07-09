@@ -5,7 +5,7 @@ type Props = {
   link: string;
 };
 
-const Bookmark: Component<Props> = (props) => {
+export default function Bookmark(props: Props) {
   return (
     <a
       class="text-2xl dark:text-orange-200 dark:hover:text-orange-400 text-center underline my-1"
@@ -15,5 +15,3 @@ const Bookmark: Component<Props> = (props) => {
     </a>
   );
 };
-
-export default Bookmark;
