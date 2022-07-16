@@ -1,0 +1,12 @@
+{
+    "files.associations": {
+      "*.css": "tailwindcss"
+    },
+    "editor.quickSuggestions": {
+      "strings": true
+    },
+    "[markdown]": {
+      "editor.formatOnSave": true,
+    },
+    "prettier.proseWrap": "always",
+}
