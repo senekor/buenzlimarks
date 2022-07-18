@@ -12,6 +12,6 @@ TODO
 
 ## Architecture
 
-You can find the architecture documentation, following the [arc42 standard](https://docs.arc42.org/home/), in the [architecture](architecture/00_table_of_contents.md) directory.
+You can find the architecture documentation, following the [arc42 standard](https://docs.arc42.org/home/), in the [docs/arc42](docs/arc42/00_table_of_contents.md) directory.
 
-Diagrams are created using gaphor (`pip install gaphor`). The gaphor source file is in `architecture/images`.
+Diagrams are created using gaphor (`pip install gaphor`). The gaphor source file is in `docs/arc42/images`.
