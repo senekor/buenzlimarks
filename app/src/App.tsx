@@ -16,11 +16,11 @@ export default function App() {
         link="https://github.com/users/remlse/projects/1/views/7"
       />
       <Bookmark
-        title="Tasks"
+        title="Tasks remlse"
         link="https://github.com/users/remlse/projects/1/views/2"
       />
       <Bookmark
-        title="Server Tasks"
+        title="Tasks Robrisi"
         link="https://github.com/users/remlse/projects/1/views/4"
       />
     </div>

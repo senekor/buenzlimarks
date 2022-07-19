@@ -26,7 +26,7 @@ worker for offline use upon first visit. Based on HTML, CSS, TypeScript, Solid,
 Tailwind. Accesses user data locally via indexedDB, remotely via the REST api
 and may listen to remotely updated data via websocket.
 
-### Server
+### Sync Service
 
 Stores user data for synchronization across multiple devices. Based on Rust,
 Axum. Exposes a REST api.
@@ -41,9 +41,9 @@ indexedDB, remotely via the REST api.
 
 The web app and browser extension have a somewhat implicit interface insofar as
 the need to agree on the structure of the data saved locally in indexedDB. The
-server is mainly interacted with over its REST api which is _NOT_ explicitly
+sync service is mainly interacted with over its REST api which is _NOT_ explicitly
 documented, e.g. with openAPI. In addition, the web app may open a websocket
-connection with the server which will then notify the web app about changed
+connection with the sync service which will then notify the web app about changed
 data, e.g. by another device of the same user.
 
 ## Level 2 - Components
@@ -60,7 +60,7 @@ out normal, simple, boring or standardized parts of your system
 
 ### Web App
 
-### Server
+### Sync Service
 
 ### Browser Extension
 
