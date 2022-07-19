@@ -1,5 +1,17 @@
 # Cross-cutting Concepts {#section-concepts}
 
+## Domain model
+
+In our domain, there are users which may have a variable number of bookmarks, widgets and pages. Pages are collections of widgets, which in turn are collections of bookmarks.
+
+<div>
+    <img src="./images/domain_model.svg" style="filter: invert(88%)"></img>
+</div>
+
+---
+
+TODO
+
 ### Content
 
 This section describes overall, principal regulations and solution ideas
