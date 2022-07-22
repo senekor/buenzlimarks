@@ -4,8 +4,9 @@ use axum::{
     response::Html,
     response::IntoResponse,
     routing::{get, get_service},
-    Router,
+    Json, Router,
 };
+use serde_json::json;
 use std::{io, net::SocketAddr, path::PathBuf};
 use tower_http::services::ServeDir;
 
@@ -36,8 +37,20 @@ async fn general_greeting() -> Html<&'static str> {
     Html("<h1>Hello, Bünzli!</h1>")
 }
 
-async fn personal_greeting(Path(name): Path<String>) -> Html<String> {
-    Html(format!("<h1>Hello, {name}!</h1>"))
+async fn personal_greeting(Path(name): Path<String>) -> impl IntoResponse {
+    match name.to_lowercase().as_str() {
+        "remo" => Json(json!([
+            { "name": "Tasks", "url": "https://github.com/users/remlse/projects/1/views/2" },
+        ])),
+        "silvia" => Json(json!([
+            { "name": "Tasks", "url": "https://github.com/users/remlse/projects/1/views/4" },
+        ])),
+        "harald" => Json(json!([
+            { "name": "Requirements", "url": "https://github.com/users/remlse/projects/1/views/6" },
+            { "name": "Prioritization", "url": "https://github.com/users/remlse/projects/1/views/7" },
+        ])),
+        _ => Json(json!({})),
+    }
 }
 
 async fn handle_error(_err: io::Error) -> impl IntoResponse {
