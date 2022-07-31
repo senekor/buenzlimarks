@@ -8,6 +8,7 @@
 - [indexedDB](#indexeddb)
 - [rust](#rust)
 - [axum](#axum)
+- [implicit api specification](#implicit-api-specification)
 - [TODO persistence](#persistence)
 
 #### web app
@@ -56,11 +57,23 @@
 - more modular & extensible than rocket
 - likely to be embraced by the community and well-maintained into the future
 
-#### Persistence
+#### implicit API specification
+
+OpenAPI is a great tool to achieve strongly typed interactions with a
+well-defined API. However, the code generators needed to make an openAPI based
+workflow productive are usually lagging behind for cutting edge languages and
+frameworks. Because we want to use these, openAPI is much less appealing.
+Moreover, the developer team is small and informal communication about API
+changes are sufficient.
+
+#### persistence
 
 TODO
 
 - ORM: [Diesel](https://diesel.rs/) or [SeaORM](https://www.sea-ql.org/SeaORM/)
+  - Diesel: non-async, stronger compile-time checks
+  - SeaORM: async, more dynamic - less compile-time checks
+  - (SQLite can't use async anyway, diesel looks like better fit)
 - DB: PostgreSQL or SQLite
 
 ## Top-level / architectural design patterns
