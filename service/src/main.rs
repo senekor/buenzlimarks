@@ -25,6 +25,7 @@ fn frontend_router() -> Router {
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 struct Bookmark {
+    id: u64,
     name: String,
     url: String,
 }
@@ -32,8 +33,19 @@ struct Bookmark {
 impl Bookmark {
     fn new(name: &str, url: &str) -> Self {
         Self {
+            id: rand::random(),
             name: name.to_string(),
             url: url.to_string(),
+        }
+    }
+
+    fn randomize_id(&mut self) {
+        self.id = rand::random()
+    }
+
+    fn ensure_protocol_prefix(&mut self) {
+        if !self.url.starts_with("http") {
+            self.url = format!("https://{}", self.url);
         }
     }
 }
@@ -60,13 +72,16 @@ async fn insert_default_data(db: Arc<Mutex<InMemDB>>) {
     );
     acq_db.insert(
         "harald".to_string(),
-        vec![Bookmark::new(
-            "Requirements",
-            "https://github.com/users/remlse/projects/1/views/6",
-        ),Bookmark::new(
-            "Prioritization",
-            "https://github.com/users/remlse/projects/1/views/7",
-        )],
+        vec![
+            Bookmark::new(
+                "Requirements",
+                "https://github.com/users/remlse/projects/1/views/6",
+            ),
+            Bookmark::new(
+                "Prioritization",
+                "https://github.com/users/remlse/projects/1/views/7",
+            ),
+        ],
     );
 }
 
@@ -77,7 +92,7 @@ async fn main() {
     insert_default_data(db.clone()).await;
 
     let http_service = Router::new()
-        .route("/api/:name", get(get_bookmarks))
+        .route("/api/:name", get(get_bookmarks).post(add_bookmark))
         .layer(Extension(db))
         .merge(frontend_router());
 
@@ -101,4 +116,17 @@ async fn get_bookmarks(
         .map(Clone::clone)
         .unwrap_or_default();
     Json(bookmarks)
+}
+
+async fn add_bookmark(
+    Extension(db): Extension<Arc<Mutex<InMemDB>>>,
+    Path(name): Path<String>,
+    Json(mut bookmark): Json<Bookmark>,
+) -> impl IntoResponse {
+    let mut db = db.lock().await;
+    let bookmarks = db.entry(name.to_lowercase()).or_default();
+    bookmark.randomize_id();
+    bookmark.ensure_protocol_prefix();
+    bookmarks.push(bookmark);
+    StatusCode::CREATED
 }
