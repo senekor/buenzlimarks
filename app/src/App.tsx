@@ -12,7 +12,7 @@ const fetchBookmarks = async (userId: string): Promise<BookmarkType[]> =>
   (await fetch(`http://localhost:${PORT}/api/${userId || "z"}`)).json();
 
 export default function App() {
-  const [userId, setUserId] = createSignal("harald");
+  const [userId, setUserId] = createSignal("");
   const [bookmarks] = createResource(userId, fetchBookmarks);
 
   return (
