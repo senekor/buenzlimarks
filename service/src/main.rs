@@ -1,21 +1,20 @@
-use axum::{
-    extract::Path,
-    http::StatusCode,
-    response::IntoResponse,
-    routing::{get, get_service},
-    Extension, Json, Router,
-};
+use axum::{http::StatusCode, response::IntoResponse, routing::get_service, Extension, Router};
 use derive_deref::{Deref, DerefMut};
-use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, io, net::SocketAddr, path::PathBuf, sync::Arc};
 use tokio::sync::Mutex;
 use tower_http::services::ServeDir;
+
+mod models;
+use models::Bookmark;
+
+mod handlers;
+use handlers::api_routes;
 
 async fn internal_err(_err: io::Error) -> impl IntoResponse {
     (StatusCode::INTERNAL_SERVER_ERROR, "Something went wrong...")
 }
 
-fn frontend_router() -> Router {
+fn frontend_routes() -> Router {
     let app_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .parent()
         .unwrap()
@@ -24,35 +23,8 @@ fn frontend_router() -> Router {
     Router::new().fallback(get_service(ServeDir::new(app_dir)).handle_error(internal_err))
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-struct Bookmark {
-    id: String,
-    name: String,
-    url: String,
-}
-
-impl Bookmark {
-    fn new(name: &str, url: &str) -> Self {
-        Self {
-            id: rand::random::<u64>().to_string(),
-            name: name.to_string(),
-            url: url.to_string(),
-        }
-    }
-
-    fn randomize_id(&mut self) {
-        self.id = rand::random::<u64>().to_string()
-    }
-
-    fn ensure_protocol_prefix(&mut self) {
-        if !self.url.starts_with("http") {
-            self.url = format!("https://{}", self.url);
-        }
-    }
-}
-
 #[derive(Debug, Default, Deref, DerefMut)]
-struct InMemDB(HashMap<String, Vec<Bookmark>>);
+pub struct InMemDB(HashMap<String, Vec<Bookmark>>);
 
 async fn insert_default_data(db: Arc<Mutex<InMemDB>>) {
     let mut acq_db = db.lock().await;
@@ -93,15 +65,9 @@ async fn main() {
     insert_default_data(db.clone()).await;
 
     let http_service = Router::new()
-        .route(
-            "/api/:name",
-            get(get_bookmarks)
-                .post(add_bookmark)
-                .put(update_bookmark)
-                .delete(delete_bookmark),
-        )
+        .nest("/api", api_routes())
         .layer(Extension(db))
-        .merge(frontend_router());
+        .merge(frontend_routes());
 
     // run it
     let addr = SocketAddr::from(([127, 0, 0, 1], 4000));
@@ -110,67 +76,4 @@ async fn main() {
         .serve(http_service.into_make_service())
         .await
         .unwrap();
-}
-
-async fn get_bookmarks(
-    Extension(db): Extension<Arc<Mutex<InMemDB>>>,
-    Path(name): Path<String>,
-) -> impl IntoResponse {
-    let bookmarks = db
-        .lock()
-        .await
-        .get(&name.to_lowercase())
-        .map(Clone::clone)
-        .unwrap_or_default();
-    Json(bookmarks)
-}
-
-async fn add_bookmark(
-    Extension(db): Extension<Arc<Mutex<InMemDB>>>,
-    Path(name): Path<String>,
-    Json(mut bookmark): Json<Bookmark>,
-) -> impl IntoResponse {
-    let mut db = db.lock().await;
-    let bookmarks = db.entry(name.to_lowercase()).or_default();
-    bookmark.randomize_id();
-    bookmark.ensure_protocol_prefix();
-    bookmarks.push(bookmark);
-    StatusCode::OK
-}
-
-async fn update_bookmark(
-    Extension(db): Extension<Arc<Mutex<InMemDB>>>,
-    Path(name): Path<String>,
-    Json(mut bookmark): Json<Bookmark>,
-) -> impl IntoResponse {
-    let mut db = db.lock().await;
-    let bookmarks = db.entry(name.to_lowercase()).or_default();
-    bookmark.ensure_protocol_prefix();
-    if let Some((idx, _)) = bookmarks
-        .iter()
-        .enumerate()
-        .find(|(_, bm)| bm.id == bookmark.id)
-    {
-        bookmarks[idx] = bookmark;
-        return StatusCode::OK;
-    }
-    StatusCode::NOT_FOUND
-}
-
-async fn delete_bookmark(
-    Extension(db): Extension<Arc<Mutex<InMemDB>>>,
-    Path(name): Path<String>,
-    Json(bookmark): Json<Bookmark>,
-) -> impl IntoResponse {
-    let mut db = db.lock().await;
-    let bookmarks = db.entry(name.to_lowercase()).or_default();
-    if let Some((idx, _)) = bookmarks
-        .iter()
-        .enumerate()
-        .find(|(_, bm)| bm.id == bookmark.id)
-    {
-        bookmarks.remove(idx);
-        return StatusCode::OK;
-    }
-    StatusCode::NOT_FOUND
 }

@@ -19,18 +19,21 @@ const HOST = import.meta.env.DEV
   ? "http://localhost:3000"
   : "https://buenzlimarks.remlse.dev";
 
+const getURL = (userId: string) =>
+  `${HOST}/api/bookmarks/${userId || "nobody"}`;
+
 const fetchBookmarks = async (userId: string): Promise<BookmarkType[]> =>
-  (await fetch(`${HOST}/api/${userId || "nobody"}`)).json();
+  (await fetch(getURL(userId))).json();
 
 const submitBookmark = async (userId: string, payload: BookmarkType) =>
-  await fetch(`${HOST}/api/${userId || "nobody"}`, {
+  await fetch(getURL(userId), {
     method: !payload.id ? "POST" : "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
 
 const deleteBookmark = async (userId: string, payload: BookmarkType) =>
-  await fetch(`${HOST}/api/${userId || "nobody"}`, {
+  await fetch(getURL(userId), {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
