@@ -7,13 +7,15 @@ type BookmarkType = {
   url: string;
 };
 
-const PORT = import.meta.env.DEV ? "3000" : "4000";
+const HOST = import.meta.env.DEV
+  ? "http://localhost:3000"
+  : "https://buenzlimarks.remlse.dev";
 
 const fetchBookmarks = async (userId: string): Promise<BookmarkType[]> =>
-  (await fetch(`http://localhost:${PORT}/api/${userId || "nobody"}`)).json();
+  (await fetch(`${HOST}/api/${userId || "nobody"}`)).json();
 
 const postBookmarks = async (userId: string, payload: BookmarkType) =>
-  await fetch(`http://localhost:${PORT}/api/${userId || "nobody"}`, {
+  await fetch(`${HOST}/api/${userId || "nobody"}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
