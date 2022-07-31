@@ -1,8 +1,16 @@
-import { Component, createResource, createSignal, For } from "solid-js";
+import {
+  Component,
+  createEffect,
+  createResource,
+  createSignal,
+  For,
+} from "solid-js";
 import Bookmark from "./components/bookmark";
+import { Icon } from "solid-heroicons";
+import { pencilAlt, trash } from "solid-heroicons/outline";
 
 type BookmarkType = {
-  id: number;
+  id: string;
   name: string;
   url: string;
 };
@@ -14,26 +22,36 @@ const HOST = import.meta.env.DEV
 const fetchBookmarks = async (userId: string): Promise<BookmarkType[]> =>
   (await fetch(`${HOST}/api/${userId || "nobody"}`)).json();
 
-const postBookmarks = async (userId: string, payload: BookmarkType) =>
+const submitBookmark = async (userId: string, payload: BookmarkType) =>
   await fetch(`${HOST}/api/${userId || "nobody"}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    method: !payload.id ? "POST" : "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+const deleteBookmark = async (userId: string, payload: BookmarkType) =>
+  await fetch(`${HOST}/api/${userId || "nobody"}`, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
 
 const bookmarkTmpl: BookmarkType = {
-  id: 0,
+  id: "",
   name: "",
   url: "",
 };
 
 export default function App() {
-  const [userId, setUserId] = createSignal("");
+  const [userId, setUserId] = createSignal("remo");
   const [bookmarks, { refetch }] = createResource(userId, fetchBookmarks);
 
   const [form, setForm] = createSignal<BookmarkType>(bookmarkTmpl);
+
+  createEffect(() => {
+    userId();
+    setForm(bookmarkTmpl);
+  });
 
   return (
     <div class="flex flex-col bg-slate-800 h-screen">
@@ -41,20 +59,37 @@ export default function App() {
         BuenzliMarks
       </p>
       <input
-        class="self-center w-fit bg-slate-600 p-1 rounded text-white"
+        class="self-center w-3/4 bg-slate-600 p-1 rounded text-white"
         placeholder="Enter a user name"
         value={userId()}
         onInput={(e) => setUserId((e.target as HTMLInputElement).value)}
       />
       <div class="flex flex-col gap-1 my-4">
         <For each={bookmarks()}>
-          {(bookmark, i) => (
-            <Bookmark title={bookmark.name} link={bookmark.url} />
+          {(bm, i) => (
+            <div style={{ color: "white" }} class="flex self-center gap-1">
+              <Bookmark title={bm.name} link={bm.url} />
+              <Icon
+                path={pencilAlt}
+                class="w-6 ml-2"
+                onClick={() =>
+                  form().id === bm.id ? setForm(bookmarkTmpl) : setForm(bm)
+                }
+              />
+              <Icon
+                path={trash}
+                class="w-6"
+                onClick={() => {
+                  deleteBookmark(userId(), bm);
+                  refetch();
+                }}
+              />
+            </div>
           )}
         </For>
       </div>
       <input
-        class="self-center w-fit bg-slate-600 p-1 rounded text-white mb-1"
+        class="self-center w-3/4 bg-slate-600 p-1 rounded text-white mb-1"
         placeholder="Name"
         value={form().name}
         onInput={(e) =>
@@ -62,7 +97,7 @@ export default function App() {
         }
       />
       <input
-        class="self-center w-fit bg-slate-600 p-1 rounded text-white mb-1"
+        class="self-center w-3/4 bg-slate-600 p-1 rounded text-white mb-1"
         placeholder="URL"
         value={form().url}
         onInput={(e) =>
@@ -73,11 +108,11 @@ export default function App() {
         class="text-white bg-slate-600 w-fit self-center rounded px-1"
         disabled={!(form().name || form().url)}
         onClick={() => {
-          postBookmarks(userId(), form());
+          submitBookmark(userId(), form());
           refetch();
         }}
       >
-        Add
+        {!form().id ? "Add" : "Save"}
       </button>
     </div>
   );

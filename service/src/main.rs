@@ -6,6 +6,7 @@ use axum::{
     Extension, Json, Router,
 };
 use derive_deref::{Deref, DerefMut};
+use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, io, net::SocketAddr, path::PathBuf, sync::Arc};
 use tokio::sync::Mutex;
 use tower_http::services::ServeDir;
@@ -23,9 +24,9 @@ fn frontend_router() -> Router {
     Router::new().fallback(get_service(ServeDir::new(app_dir)).handle_error(internal_err))
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 struct Bookmark {
-    id: u64,
+    id: String,
     name: String,
     url: String,
 }
@@ -33,14 +34,14 @@ struct Bookmark {
 impl Bookmark {
     fn new(name: &str, url: &str) -> Self {
         Self {
-            id: rand::random(),
+            id: rand::random::<u64>().to_string(),
             name: name.to_string(),
             url: url.to_string(),
         }
     }
 
     fn randomize_id(&mut self) {
-        self.id = rand::random()
+        self.id = rand::random::<u64>().to_string()
     }
 
     fn ensure_protocol_prefix(&mut self) {
@@ -92,7 +93,13 @@ async fn main() {
     insert_default_data(db.clone()).await;
 
     let http_service = Router::new()
-        .route("/api/:name", get(get_bookmarks).post(add_bookmark))
+        .route(
+            "/api/:name",
+            get(get_bookmarks)
+                .post(add_bookmark)
+                .put(update_bookmark)
+                .delete(delete_bookmark),
+        )
         .layer(Extension(db))
         .merge(frontend_router());
 
@@ -128,5 +135,42 @@ async fn add_bookmark(
     bookmark.randomize_id();
     bookmark.ensure_protocol_prefix();
     bookmarks.push(bookmark);
-    StatusCode::CREATED
+    StatusCode::OK
+}
+
+async fn update_bookmark(
+    Extension(db): Extension<Arc<Mutex<InMemDB>>>,
+    Path(name): Path<String>,
+    Json(mut bookmark): Json<Bookmark>,
+) -> impl IntoResponse {
+    let mut db = db.lock().await;
+    let bookmarks = db.entry(name.to_lowercase()).or_default();
+    bookmark.ensure_protocol_prefix();
+    if let Some((idx, _)) = bookmarks
+        .iter()
+        .enumerate()
+        .find(|(_, bm)| bm.id == bookmark.id)
+    {
+        bookmarks[idx] = bookmark;
+        return StatusCode::OK;
+    }
+    StatusCode::NOT_FOUND
+}
+
+async fn delete_bookmark(
+    Extension(db): Extension<Arc<Mutex<InMemDB>>>,
+    Path(name): Path<String>,
+    Json(bookmark): Json<Bookmark>,
+) -> impl IntoResponse {
+    let mut db = db.lock().await;
+    let bookmarks = db.entry(name.to_lowercase()).or_default();
+    if let Some((idx, _)) = bookmarks
+        .iter()
+        .enumerate()
+        .find(|(_, bm)| bm.id == bookmark.id)
+    {
+        bookmarks.remove(idx);
+        return StatusCode::OK;
+    }
+    StatusCode::NOT_FOUND
 }
