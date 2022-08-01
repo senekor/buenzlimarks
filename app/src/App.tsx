@@ -15,12 +15,8 @@ type BookmarkType = {
   url: string;
 };
 
-const HOST = import.meta.env.DEV
-  ? "http://localhost:3000"
-  : "https://buenzlimarks.remlse.dev";
-
 const getURL = (userId: string) =>
-  `${HOST}/api/bookmarks/${userId || "nobody"}`;
+  `/api/bookmarks/${userId || "nobody"}`;
 
 const fetchBookmarks = async (userId: string): Promise<BookmarkType[]> =>
   (await fetch(getURL(userId))).json();
@@ -46,7 +42,7 @@ const bookmarkTmpl: BookmarkType = {
 };
 
 export default function App() {
-  const [userId, setUserId] = createSignal("remo");
+  const [userId, setUserId] = createSignal("");
   const [bookmarks, { refetch }] = createResource(userId, fetchBookmarks);
 
   const [form, setForm] = createSignal<BookmarkType>(bookmarkTmpl);
