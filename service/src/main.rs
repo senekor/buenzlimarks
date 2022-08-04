@@ -1,72 +1,36 @@
 use axum::{http::StatusCode, response::IntoResponse, routing::get_service, Extension, Router};
-use derive_deref::{Deref, DerefMut};
-use std::{collections::HashMap, io, net::SocketAddr, path::PathBuf, sync::Arc};
-use tokio::sync::Mutex;
+use sea_orm::*;
+use std::{io, net::SocketAddr, path::PathBuf};
 use tower_http::services::ServeDir;
 
-mod models;
-use models::Bookmark;
-
-mod handlers;
-use handlers::api_routes;
+use lib::{
+    handlers::api_routes,
+    migrations::{Migrator, MigratorTrait},
+};
 
 async fn internal_err(_err: io::Error) -> impl IntoResponse {
     (StatusCode::INTERNAL_SERVER_ERROR, "Something went wrong...")
 }
 
 fn frontend_routes() -> Router {
-    let app_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .parent()
-        .unwrap()
-        .join("app/dist");
-
-    Router::new().fallback(get_service(ServeDir::new(app_dir)).handle_error(internal_err))
-}
-
-#[derive(Debug, Default, Deref, DerefMut)]
-pub struct InMemDB(HashMap<String, Vec<Bookmark>>);
-
-async fn insert_default_data(db: Arc<Mutex<InMemDB>>) {
-    let mut acq_db = db.lock().await;
-
-    acq_db.insert(
-        "remo".to_string(),
-        vec![Bookmark::new(
-            "Tasks",
-            "https://github.com/users/remlse/projects/1/views/2",
-        )],
-    );
-    acq_db.insert(
-        "silvia".to_string(),
-        vec![Bookmark::new(
-            "Tasks",
-            "https://github.com/users/remlse/projects/1/views/4",
-        )],
-    );
-    acq_db.insert(
-        "harald".to_string(),
-        vec![
-            Bookmark::new(
-                "Requirements",
-                "https://github.com/users/remlse/projects/1/views/6",
-            ),
-            Bookmark::new(
-                "Prioritization",
-                "https://github.com/users/remlse/projects/1/views/7",
-            ),
-        ],
-    );
+    let dist = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../app/dist");
+    Router::new().fallback(get_service(ServeDir::new(dist)).handle_error(internal_err))
 }
 
 #[tokio::main]
 async fn main() {
-    let db = Arc::new(Mutex::new(InMemDB::default()));
+    let env_path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../dev/env.sh");
+    dotenv::from_path(env_path).ok();
+    let db_ulr = std::env::var("DATABASE_URL").expect("DATABASE_URL not found");
 
-    insert_default_data(db.clone()).await;
+    let conn = Database::connect(db_ulr)
+        .await
+        .expect("Database connection failed");
+    Migrator::up(&conn, None).await.unwrap();
 
     let http_service = Router::new()
         .nest("/api", api_routes())
-        .layer(Extension(db))
+        .layer(Extension(conn))
         .merge(frontend_routes());
 
     // run it

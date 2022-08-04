@@ -10,6 +10,11 @@ if [ "$distro" = "fedora" ]; then
 
     pip install -q gaphor
 
+    crates=(
+        sea-orm-cli
+    )
+    cargo install -q ${crates}
+
 else
     echo "This OS is not supported, feel free to fix that."
     exit

@@ -68,13 +68,23 @@ changes are sufficient.
 
 #### persistence
 
-TODO
+An ORM is used to avoid the tedium of manually writing SQL queries.
+[Diesel](https://diesel.rs/) seems to be the "default" choice in the Rust
+community and version 2.0 is about to be released.
+[SeaORM](https://www.sea-ql.org/SeaORM/) is another, younger alternative worthy
+of consideration. It hasn't yet reached 1.0, though. Both ORMs support
+PostgreSQL, MySQL and SQLite. SQLite will probably suffice for our purposes and
+a later migration to Postgres should be easy enough.
 
-- ORM: [Diesel](https://diesel.rs/) or [SeaORM](https://www.sea-ql.org/SeaORM/)
-  - Diesel: non-async, stronger compile-time checks
-  - SeaORM: async, more dynamic - less compile-time checks
-  - (SQLite can't use async anyway, diesel looks like better fit)
-- DB: PostgreSQL or SQLite
+Diesel isn't well suited for async!
+
+Diesel seems appealing, being the more "mature" option as well as having
+stronger compile time checks. However, SeaORM has quite lovely documentation,
+especially for newcomers to the concept of an ORM, while Diesel is lacking in
+that area.
+
+As our developer team has little to no experience with ORMs, SeaORM is chosen
+for its superior documentation.
 
 ## Top-level / architectural design patterns
 
@@ -89,7 +99,8 @@ TODO
 
 The team organization is lean and informal, as there are only two developers and
 a product owner. Scheduled meetings in the spirit of sprint review,
-retrospective and planning are held every four weeks. Additional communication /
-meetings may always be initiated by any team member. The junior backend
-developer is responsible themselves to seek guidance by the lead developer when
-needed.
+retrospective and planning are held every four weeks. Requirements are developed
+in a GitHub project, where individual developers may organize their tasks as
+well. Additional communication / meetings may always be initiated by any team
+member. The junior backend developer is responsible themselves to seek guidance
+by the lead developer when needed.

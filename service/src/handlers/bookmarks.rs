@@ -1,101 +1,63 @@
-use std::sync::Arc;
-
 use axum::{
-    extract::Path, http::StatusCode, response::IntoResponse, routing::get, Extension, Json, Router,
+    extract::Path,
+    http::StatusCode,
+    response::IntoResponse,
+    routing::{get, put},
+    Extension, Json, Router,
 };
-use tokio::sync::Mutex;
+use sea_orm::*;
 
-use crate::{models::Bookmark, InMemDB};
+use crate::entities::bookmarks;
 
-impl Bookmark {
-    pub fn new(name: &str, url: &str) -> Self {
-        Self {
-            id: rand::random::<u64>().to_string(),
-            name: name.to_string(),
-            url: url.to_string(),
-        }
-    }
+use super::{handle_err, HandlerResult};
 
-    fn randomize_id(&mut self) {
-        self.id = rand::random::<u64>().to_string()
-    }
-
-    fn ensure_protocol_prefix(&mut self) {
-        if !self.url.starts_with("http") {
-            self.url = format!("https://{}", self.url);
-        }
-    }
-}
-
-async fn get_bookmarks(
-    Extension(db): Extension<Arc<Mutex<InMemDB>>>,
-    Path(name): Path<String>,
-) -> impl IntoResponse {
-    let bookmarks = db
-        .lock()
+async fn get_bookmarks(Extension(db): Extension<DatabaseConnection>) -> impl IntoResponse {
+    bookmarks::Entity::find()
+        .into_json()
+        .all(&db)
         .await
-        .get(&name.to_lowercase())
-        .map(Clone::clone)
-        .unwrap_or_default();
-    Json(bookmarks)
+        .map(|m| (StatusCode::OK, Json(m)))
+        .map_err(handle_err)
 }
 
 async fn add_bookmark(
-    Extension(db): Extension<Arc<Mutex<InMemDB>>>,
-    Path(name): Path<String>,
-    Json(mut bookmark): Json<Bookmark>,
-) -> impl IntoResponse {
-    let mut db = db.lock().await;
-    let bookmarks = db.entry(name.to_lowercase()).or_default();
-    bookmark.randomize_id();
-    bookmark.ensure_protocol_prefix();
-    bookmarks.push(bookmark);
-    StatusCode::OK
+    Extension(db): Extension<DatabaseConnection>,
+    Json(json): Json<JsonValue>,
+) -> HandlerResult<Json<bookmarks::Model>> {
+    bookmarks::ActiveModel::new_from_json(json)
+        .map_err(handle_err)?
+        .insert(&db)
+        .await
+        .map(|m| (StatusCode::OK, Json(m)))
+        .map_err(handle_err)
 }
 
 async fn update_bookmark(
-    Extension(db): Extension<Arc<Mutex<InMemDB>>>,
-    Path(name): Path<String>,
-    Json(mut bookmark): Json<Bookmark>,
+    Extension(db): Extension<DatabaseConnection>,
+    Path(id): Path<i64>,
+    Json(json): Json<JsonValue>,
 ) -> impl IntoResponse {
-    let mut db = db.lock().await;
-    let bookmarks = db.entry(name.to_lowercase()).or_default();
-    bookmark.ensure_protocol_prefix();
-    if let Some((idx, _)) = bookmarks
-        .iter()
-        .enumerate()
-        .find(|(_, bm)| bm.id == bookmark.id)
-    {
-        bookmarks[idx] = bookmark;
-        return StatusCode::OK;
-    }
-    StatusCode::NOT_FOUND
+    bookmarks::ActiveModel::from_id_and_json(id, json)
+        .map_err(handle_err)?
+        .update(&db)
+        .await
+        .map(|m| (StatusCode::OK, Json(m)))
+        .map_err(handle_err)
 }
 
 async fn delete_bookmark(
-    Extension(db): Extension<Arc<Mutex<InMemDB>>>,
-    Path(name): Path<String>,
-    Json(bookmark): Json<Bookmark>,
+    Extension(db): Extension<DatabaseConnection>,
+    Path(id): Path<i64>,
 ) -> impl IntoResponse {
-    let mut db = db.lock().await;
-    let bookmarks = db.entry(name.to_lowercase()).or_default();
-    if let Some((idx, _)) = bookmarks
-        .iter()
-        .enumerate()
-        .find(|(_, bm)| bm.id == bookmark.id)
-    {
-        bookmarks.remove(idx);
-        return StatusCode::OK;
-    }
-    StatusCode::NOT_FOUND
+    bookmarks::Entity::delete_by_id(id)
+        .exec(&db)
+        .await
+        .map(|_| StatusCode::OK)
+        .map_err(handle_err)
 }
 
 pub fn routes() -> Router {
-    Router::new().route(
-        "/:name",
-        get(get_bookmarks)
-            .post(add_bookmark)
-            .put(update_bookmark)
-            .delete(delete_bookmark),
-    )
+    Router::new()
+        .route("/", get(get_bookmarks).post(add_bookmark))
+        .route("/:id", put(update_bookmark).delete(delete_bookmark))
 }
