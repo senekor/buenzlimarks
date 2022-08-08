@@ -66,20 +66,28 @@ export default function App() {
         value={userId()}
         onInput={(e) => setUserId((e.target as HTMLInputElement).value)}
       /> */}
-      <div class="flex flex-col gap-1 my-4">
+      <div class="self-center flex flex-col gap-1 my-4">
         <For each={bookmarks()}>
           {(bm, i) => (
-            <div style={{ color: "white" }} class="flex self-center gap-1">
+            <div class="flex w-full gap-1">
+              <div class="flex-grow"/>
               <Bookmark title={bm.name} link={bm.url} />
+              <div class="flex-grow"/>
               <Icon
                 path={pencilAlt}
                 class="w-6 ml-2"
+                style={{ color: "white" }}
                 onClick={() => setForm(bm)}
               />
               <Icon
                 path={trash}
                 class="w-6"
-                onClick={() => deleteBookmark(bm.id).then(refetch)}
+                style={{ color: "white" }}
+                onClick={() => 
+                  deleteBookmark(bm.id)
+                  .then(() => bm.id === form().id ? resetForm() : null)
+                  .then(refetch)
+                }
               />
             </div>
           )}
@@ -115,8 +123,8 @@ export default function App() {
           disabled={!(form().name && form().url)}
           onClick={() =>
             (form().id ? ubdateBookmark(form()) : createBookmark(form()))
-              .then(refetch)
               .then(resetForm)
+              .then(refetch)
           }
         >
           {!form().id ? "Add" : "Save"}
