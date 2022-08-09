@@ -34,7 +34,7 @@ async fn add_bookmark(
 
 async fn update_bookmark(
     Extension(db): Extension<DatabaseConnection>,
-    Path(id): Path<i64>,
+    Path(id): Path<String>,
     Json(json): Json<JsonValue>,
 ) -> impl IntoResponse {
     bookmarks::ActiveModel::from_id_and_json(id, json)
@@ -47,7 +47,7 @@ async fn update_bookmark(
 
 async fn delete_bookmark(
     Extension(db): Extension<DatabaseConnection>,
-    Path(id): Path<i64>,
+    Path(id): Path<String>,
 ) -> impl IntoResponse {
     bookmarks::Entity::delete_by_id(id)
         .exec(&db)

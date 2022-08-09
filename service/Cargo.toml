@@ -2,7 +2,7 @@
 name = "buenzlimarks"
 version = "0.1.0"
 edition = "2021"
-default-run = "main"
+default-run = "buenzlimarks"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -11,7 +11,7 @@ name = "lib"
 path = "src/lib.rs"
 
 [[bin]]
-name = "main"
+name = "buenzlimarks"
 path = "src/main.rs"
 
 [[bin]]
@@ -29,6 +29,7 @@ tower-http = { version = "0.3.0", features = ["fs", "trace"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1"
 dotenv = "0.15.0"
+uuid = "1.1.2"
 
 [dependencies.sea-orm]
 version = "^0.9.0"

@@ -13,9 +13,8 @@ impl MigrationTrait for Migration {
                     .if_not_exists()
                     .col(
                         ColumnDef::new(Bookmarks::Id)
-                            .big_integer()
+                            .string()
                             .not_null()
-                            .auto_increment()
                             .primary_key(),
                     )
                     .col(ColumnDef::new(Bookmarks::Name).string().not_null())
