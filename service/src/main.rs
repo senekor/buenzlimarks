@@ -19,8 +19,7 @@ fn frontend_routes() -> Router {
 
 #[tokio::main]
 async fn main() {
-    let env_path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../dev/env.sh");
-    dotenv::from_path(env_path).ok();
+    dotenv::dotenv().ok();
     let db_ulr = std::env::var("DATABASE_URL").expect("DATABASE_URL not found");
 
     let conn = Database::connect(db_ulr)

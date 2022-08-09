@@ -1,5 +1,4 @@
 use sea_orm::*;
-use std::path::PathBuf;
 
 use lib::{
     entities::bookmarks,
@@ -51,8 +50,7 @@ async fn insert_seeds(conn: &DatabaseConnection) -> Result<(), DbErr> {
 
 #[tokio::main]
 async fn main() -> Result<(), DbErr> {
-    let env_path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../dev/env.sh");
-    dotenv::from_path(env_path).ok();
+    dotenv::dotenv().ok();
     let db_ulr = std::env::var("DATABASE_URL").expect("DATABASE_URL not found");
 
     let conn = Database::connect(db_ulr)
