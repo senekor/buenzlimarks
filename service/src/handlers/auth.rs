@@ -83,7 +83,7 @@ pub async fn dev(
     user.insert_if_new(&db).await;
 
     let jwt = user.sign_with_key(&jwt_key).expect("failed to sign jwt");
-    let cookie = format!("{COOKIE_NAME}={jwt}; Path=/");
+    let cookie = format!("{COOKIE_NAME}={jwt}; SameSite=Lax; Path=/");
     let mut headers = HeaderMap::new();
     headers.insert(
         header::ACCESS_CONTROL_EXPOSE_HEADERS,

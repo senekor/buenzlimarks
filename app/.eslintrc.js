@@ -77,6 +77,7 @@ module.exports = {
     "import/prefer-default-export": "off",
     "import/no-default-export": "error",
     "prefer-arrow/prefer-arrow-functions": "error",
+    "no-console": "warn",
   },
   overrides: [
     {
