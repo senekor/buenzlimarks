@@ -1,12 +1,8 @@
-use axum::{http::StatusCode, response::IntoResponse, routing::get_service, Extension, Router};
-use sea_orm::*;
-use std::{io, net::SocketAddr, path::PathBuf};
+use axum::{http::StatusCode, response::IntoResponse, routing::get_service, Router};
+use std::{env, io, net::SocketAddr, path::PathBuf};
 use tower_http::services::ServeDir;
 
-use lib::{
-    handlers::api_routes,
-    migrations::{Migrator, MigratorTrait},
-};
+use lib::handlers::api_routes;
 
 async fn internal_err(_err: io::Error) -> impl IntoResponse {
     (StatusCode::INTERNAL_SERVER_ERROR, "Something went wrong...")
@@ -19,17 +15,8 @@ fn frontend_routes() -> Router {
 
 #[tokio::main]
 async fn main() {
-    dotenv::dotenv().ok();
-    let db_ulr = std::env::var("DATABASE_URL").expect("DATABASE_URL not found");
-
-    let conn = Database::connect(db_ulr)
-        .await
-        .expect("Database connection failed");
-    Migrator::up(&conn, None).await.unwrap();
-
     let http_service = Router::new()
-        .nest("/api", api_routes())
-        .layer(Extension(conn))
+        .nest("/api", api_routes().await)
         .merge(frontend_routes());
 
     // run it

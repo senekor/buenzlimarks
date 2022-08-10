@@ -1,13 +1,17 @@
 use axum::{
     http::StatusCode,
     response::{self, ErrorResponse},
-    Router,
+    Extension, Json, Router,
 };
-use sea_orm::DbErr;
+use sea_orm::*;
 
+use crate::migrations::{Migrator, MigratorTrait};
+
+mod auth;
 mod bookmarks;
 
-type HandlerResult<T> = response::Result<(StatusCode, T)>;
+type Payload<T> = response::Result<(StatusCode, Json<T>)>;
+type NoPayload = response::Result<StatusCode>;
 
 fn handle_err(e: DbErr) -> ErrorResponse {
     ErrorResponse::from(match e {
@@ -22,6 +26,18 @@ fn handle_err(e: DbErr) -> ErrorResponse {
     })
 }
 
-pub fn api_routes() -> Router {
-    Router::new().nest("/bookmarks", bookmarks::routes())
+pub async fn api_routes() -> Router {
+    dotenv::dotenv().ok();
+    let db_ulr = std::env::var("DATABASE_URL").expect("DATABASE_URL not found");
+
+    let conn = Database::connect(db_ulr)
+        .await
+        .expect("Database connection failed");
+    Migrator::up(&conn, None).await.unwrap();
+
+    Router::new()
+        .nest("/auth", auth::routes())
+        .nest("/bookmarks", bookmarks::routes())
+        .layer(Extension(conn))
+        .layer(Extension(auth::jwt_key()))
 }

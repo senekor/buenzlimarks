@@ -11,7 +11,7 @@ import { Icon } from "solid-heroicons";
 import { pencilAlt, trash } from "solid-heroicons/outline";
 
 type BookmarkType = {
-  id: number;
+  id: string;
   name: string;
   url: string;
 };
@@ -36,11 +36,11 @@ const ubdateBookmark = async (payload: BookmarkType): Promise<BookmarkType> =>
     body: JSON.stringify(payload),
   }).then((resp) => resp.json());
 
-const deleteBookmark = async (id: number): Promise<Response> =>
+const deleteBookmark = async (id: string): Promise<Response> =>
   fetch(`/api/bookmarks/${id}`, { method: "DELETE" });
 
 const bookmarkTmpl: BookmarkType = {
-  id: 0,
+  id: "",
   name: "",
   url: "",
 };

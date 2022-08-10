@@ -9,6 +9,17 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
+                    .table(Users::Table)
+                    .if_not_exists()
+                    .col(ColumnDef::new(Users::Id).string().not_null().primary_key())
+                    .col(ColumnDef::new(Users::Name).string())
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_table(
+                Table::create()
                     .table(Bookmarks::Table)
                     .if_not_exists()
                     .col(
@@ -16,6 +27,13 @@ impl MigrationTrait for Migration {
                             .string()
                             .not_null()
                             .primary_key(),
+                    )
+                    .col(ColumnDef::new(Bookmarks::UserId).string().not_null())
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk-bookmark-user_id")
+                            .from(Bookmarks::Table, Bookmarks::UserId)
+                            .to(Users::Table, Users::Id),
                     )
                     .col(ColumnDef::new(Bookmarks::Name).string().not_null())
                     .col(ColumnDef::new(Bookmarks::Url).string().not_null())
@@ -32,9 +50,17 @@ impl MigrationTrait for Migration {
 }
 
 #[derive(Iden)]
+enum Users {
+    Table,
+    Id,
+    Name,
+}
+
+#[derive(Iden)]
 enum Bookmarks {
     Table,
     Id,
+    UserId,
     Name,
     Url,
 }
