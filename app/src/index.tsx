@@ -1,7 +1,9 @@
 /* @refresh reload */
-import './index.css';
-import { render } from 'solid-js/web';
+// eslint-disable-next-line import/order
+import "./index.css";
 
-import App from './App';
+import { render } from "solid-js/web";
 
-render(() => <App />, document.getElementById('root') as HTMLElement);
+import { App } from "./App";
+
+render(() => <App />, document.getElementById("root") as HTMLElement);

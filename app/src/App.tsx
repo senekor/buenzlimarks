@@ -1,14 +1,9 @@
-import {
-  Component,
-  createEffect,
-  createResource,
-  createSignal,
-  For,
-  Show,
-} from "solid-js";
-import Bookmark from "./components/bookmark";
+import { createResource, createSignal, For, JSX, Show } from "solid-js";
+
 import { Icon } from "solid-heroicons";
 import { pencilAlt, trash } from "solid-heroicons/outline";
+
+import Bookmark from "./components/bookmark";
 
 type BookmarkType = {
   id: string;
@@ -20,21 +15,23 @@ type BookmarkType = {
 //   `/api/bookmarks/${userId || "nobody"}`;
 
 const fetchBookmarks = async (): Promise<BookmarkType[]> =>
-  fetch("/api/bookmarks").then((resp) => resp.json());
+  fetch("/api/bookmarks").then((resp) => resp.json()) as Promise<
+    BookmarkType[]
+  >;
 
 const createBookmark = async (payload: BookmarkType): Promise<BookmarkType> =>
   fetch("/api/bookmarks", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
-  }).then((resp) => resp.json());
+  }).then((resp) => resp.json()) as Promise<BookmarkType>;
 
 const ubdateBookmark = async (payload: BookmarkType): Promise<BookmarkType> =>
   fetch(`/api/bookmarks/${payload.id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
-  }).then((resp) => resp.json());
+  }).then((resp) => resp.json()) as Promise<BookmarkType>;
 
 const deleteBookmark = async (id: string): Promise<Response> =>
   fetch(`/api/bookmarks/${id}`, { method: "DELETE" });
@@ -45,7 +42,7 @@ const bookmarkTmpl: BookmarkType = {
   url: "",
 };
 
-export default function App() {
+export const App = (): JSX.Element => {
   // const [userId, setUserId] = createSignal("");
   const [bookmarks, { refetch }] = createResource(
     createSignal(true)[0],
@@ -68,11 +65,11 @@ export default function App() {
       /> */}
       <div class="self-center flex flex-col gap-1 my-4">
         <For each={bookmarks()}>
-          {(bm, i) => (
+          {(bm) => (
             <div class="flex w-full gap-1">
-              <div class="flex-grow"/>
+              <div class="flex-grow" />
               <Bookmark title={bm.name} link={bm.url} />
-              <div class="flex-grow"/>
+              <div class="flex-grow" />
               <Icon
                 path={pencilAlt}
                 class="w-6 ml-2"
@@ -83,10 +80,10 @@ export default function App() {
                 path={trash}
                 class="w-6"
                 style={{ color: "white" }}
-                onClick={() => 
-                  deleteBookmark(bm.id)
-                  .then(() => bm.id === form().id ? resetForm() : null)
-                  .then(refetch)
+                onClick={() =>
+                  void deleteBookmark(bm.id)
+                    .then(() => (bm.id === form().id ? resetForm() : null))
+                    .then(refetch)
                 }
               />
             </div>
@@ -122,7 +119,7 @@ export default function App() {
           class="text-white bg-slate-600 w-fit rounded px-1 disabled:text-gray-400"
           disabled={!(form().name && form().url)}
           onClick={() =>
-            (form().id ? ubdateBookmark(form()) : createBookmark(form()))
+            void (form().id ? ubdateBookmark(form()) : createBookmark(form()))
               .then(resetForm)
               .then(refetch)
           }
@@ -132,4 +129,4 @@ export default function App() {
       </div>
     </div>
   );
-}
+};

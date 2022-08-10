@@ -5,6 +5,13 @@
     "editor.quickSuggestions": {
       "strings": true
     },
+		"eslint.workingDirectories": [
+			"./app",
+		],
+		"eslint.packageManager": "pnpm",
+		"editor.codeActionsOnSave": {
+			"source.fixAll.eslint": true
+		},
     "[markdown]": {
       "editor.formatOnSave": true,
     },
