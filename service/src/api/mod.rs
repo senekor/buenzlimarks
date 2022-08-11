@@ -7,7 +7,7 @@ mod auth;
 mod bookmarks;
 mod utils;
 
-pub async fn api_routes() -> Router {
+pub async fn routes() -> Router {
     dotenv::dotenv().ok();
     let db_ulr = std::env::var("DATABASE_URL").expect("DATABASE_URL not found");
 

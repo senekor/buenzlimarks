@@ -16,11 +16,11 @@ path = "src/main.rs"
 
 [[bin]]
 name = "migrate"
-path = "src/bin/migrate.rs"
+path = "cmd/migrate.rs"
 
 [[bin]]
 name = "insert_seeds"
-path = "src/bin/insert_seeds.rs"
+path = "cmd/insert_seeds.rs"
 
 [dependencies]
 tokio = { version = "1.0", features = ["full"] }
