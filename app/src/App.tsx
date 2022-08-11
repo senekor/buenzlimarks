@@ -21,9 +21,11 @@ type BookmarkType = {
 //   `/api/bookmarks/${userId || "nobody"}`;
 
 const fetchBookmarks = async (): Promise<BookmarkType[]> =>
-  fetch("/api/bookmarks")
-    .then((resp) => resp.json())
-    .catch(() => []) as Promise<BookmarkType[]>;
+  user()
+    ? (fetch("/api/bookmarks")
+        .then((resp) => resp.json())
+        .catch(() => []) as Promise<BookmarkType[]>)
+    : [];
 
 const createBookmark = async (payload: BookmarkType): Promise<BookmarkType> =>
   fetch("/api/bookmarks", {

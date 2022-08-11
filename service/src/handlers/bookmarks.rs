@@ -9,7 +9,7 @@ use sea_orm::*;
 
 use crate::entities::{bookmarks, Bookmark, User};
 
-use super::{handle_err, NoPayload, Payload};
+use super::utils::{handle_err, NoPayload, Payload};
 
 async fn get_bookmarks(
     user: User,

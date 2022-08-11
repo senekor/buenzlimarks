@@ -7,13 +7,14 @@ cd $dev_dir/..
 git checkout main
 git pull
 
+cd ./service
+source .env
+cargo build --release --bin buenzlimarks
+cd ..
+
 cd ./app
 pnpm build
 cd ..
 
-cd ./service
-source .env
-cargo build --release --bin buenzlimarks
-
 killall buenzlimarks || true
-./target/release/buenzlimarks &
+./service/target/release/buenzlimarks &

@@ -155,9 +155,14 @@ fn prod_routes() -> Router {
 }
 
 pub fn routes() -> Router {
-    match env::var("MODE").expect("missing MODE var").as_str() {
+
+    let jwt_secret = env::var("JWT_SECRET").expect("missing JWT_SECRET var");
+    let mode = env::var("MODE").expect("missing MODE var");
+
+    match mode.as_str() {
         "DEV" => dev_routes(),
-        "PROD" => prod_routes(),
+        "PROD" if jwt_secret != "REPLACE_ME" => prod_routes(),
+        "PROD" => panic!("DON'T run in PROD mode with an unchanged JWT_SECRET !!!"),
         mode => panic!("unknown mode: {mode}"),
     }
 }

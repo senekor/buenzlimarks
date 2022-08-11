@@ -39,7 +39,8 @@ impl ActiveModelBehavior for ActiveModel {
     }
 
     fn before_save(mut self, _: bool) -> Result<Self, DbErr> {
-        if !self.url.as_ref().starts_with("http") {
+        if !self.url.as_ref().contains("://") {
+            // ensure url has a schema
             self.url = Set(format!("https://{}", self.url.as_ref()));
         }
         Ok(self)
