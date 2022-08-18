@@ -5,11 +5,13 @@ cd $(dirname $0)/../..
 distro="$(cat /etc/os-release | grep ^ID= | cut -c 4-)"
 
 if [ "$distro" = "fedora" ]; then
-    packages=()
-    sudo dnf install -yq ${packages}
+    # packages=()
+    # sudo dnf install -yq ${packages}
 
+    echo "Installing gaphor..."
     pip install -q gaphor
 
+    echo "Installing sea-orm-cli..."
     crates=(
         sea-orm-cli
     )
