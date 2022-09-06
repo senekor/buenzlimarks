@@ -1,6 +1,6 @@
 dev_dir="$(dirname $0)"
 
-cd $dev_dir/../service
+cd $dev_dir/../server
 # cargo run --bin migrate -- --migration-dir ./src/db/migration generate $1
 
 # note that this only works based on my fork remlse/sea-orm.

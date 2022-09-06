@@ -7,7 +7,7 @@ cd $dev_dir/..
 git checkout main
 git pull
 
-cd ./service
+cd ./server
 source .env
 cargo build --release --bin buenzlimarks
 cd ..
@@ -17,4 +17,4 @@ pnpm build
 cd ..
 
 killall buenzlimarks || true
-./service/target/release/buenzlimarks &
+./server/target/release/buenzlimarks &
