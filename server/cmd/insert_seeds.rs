@@ -49,7 +49,6 @@ async fn insert_seeds(conn: &DatabaseConnection) -> Result<(), DbErr> {
 
 #[tokio::main]
 async fn main() -> Result<(), DbErr> {
-    dotenv::dotenv().ok();
     let db_ulr = std::env::var("DATABASE_URL").expect("DATABASE_URL not found");
 
     let conn = Database::connect(db_ulr)

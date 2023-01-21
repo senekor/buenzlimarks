@@ -8,7 +8,6 @@ mod bookmarks;
 mod utils;
 
 pub async fn routes() -> Router {
-    dotenv::dotenv().ok();
     let db_ulr = std::env::var("DATABASE_URL").expect("DATABASE_URL not found");
 
     let conn = Database::connect(db_ulr)

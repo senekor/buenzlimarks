@@ -4,7 +4,5 @@ use lib::migrations;
 
 #[tokio::main]
 async fn main() {
-    dotenv::dotenv().ok();
-
     cli::run_cli(migrations::Migrator).await;
 }

@@ -2,7 +2,7 @@ import { createResource, createSignal, For, JSX, Show } from "solid-js";
 
 import jwt_decode from "jwt-decode";
 import { Icon } from "solid-heroicons";
-import { pencilAlt, trash } from "solid-heroicons/outline";
+import { pencil, trash } from "solid-heroicons/outline";
 
 import Bookmark from "./components/bookmark";
 
@@ -138,7 +138,7 @@ export const App = (): JSX.Element => {
               <Bookmark title={bm.name} link={bm.url} />
               <div class="flex-grow" />
               <Icon
-                path={pencilAlt}
+                path={pencil}
                 class="w-6 ml-2"
                 style={{ color: "white" }}
                 onClick={() => setForm(bm)}

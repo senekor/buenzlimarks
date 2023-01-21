@@ -8,7 +8,6 @@ export default defineConfig({
     target: "esnext",
   },
   server: {
-    open: true,
     port: 3000,
     proxy: {
       "/api": {
