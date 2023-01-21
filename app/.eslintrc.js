@@ -57,16 +57,6 @@ module.exports = {
             group: "external",
             position: "before",
           },
-          // {
-          //   pattern: "@mui/**",
-          //   group: "external",
-          //   position: "after",
-          // },
-          // {
-          //   pattern: "@paton/**",
-          //   group: "internal",
-          //   position: "before",
-          // },
         ],
         pathGroupsExcludedImportTypes: [],
         "newlines-between": "always",
