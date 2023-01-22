@@ -10,13 +10,13 @@ async fn internal_err(_err: io::Error) -> impl IntoResponse {
 
 fn frontend_routes() -> Router {
     let dist = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../app/dist");
-    Router::new().fallback(get_service(ServeDir::new(dist)).handle_error(internal_err))
+    Router::new().fallback_service(get_service(ServeDir::new(dist)).handle_error(internal_err))
 }
 
 #[tokio::main]
 async fn main() {
     let http_service = Router::new()
-        .nest("/api", api::routes().await)
+        .nest("/api", api::routes())
         .merge(frontend_routes());
 
     // run it

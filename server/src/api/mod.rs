@@ -1,23 +1,16 @@
-use axum::{Extension, Router};
-use sea_orm::*;
+use axum::Router;
 
-use crate::migrations::{Migrator, MigratorTrait};
+use crate::db::{new_db, DB};
 
-mod auth;
+// mod auth;
 mod bookmarks;
-mod utils;
 
-pub async fn routes() -> Router {
-    let db_ulr = std::env::var("DATABASE_URL").expect("DATABASE_URL not found");
+pub fn routes() -> Router {
+    let db = new_db();
 
-    let conn = Database::connect(db_ulr)
-        .await
-        .expect("Database connection failed");
-    Migrator::up(&conn, None).await.unwrap();
-
-    Router::new()
-        .nest("/auth", auth::routes())
+    Router::<DB>::new()
+        // .nest("/auth", auth::routes())
         .nest("/bookmarks", bookmarks::routes())
-        .layer(Extension(conn))
-        .layer(Extension(auth::jwt_key()))
+        .with_state(db)
+    // .layer(Extension(auth::jwt_key()))
 }

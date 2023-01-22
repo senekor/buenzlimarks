@@ -12,8 +12,7 @@ fr:
     cd app && pnpm dev
 
 # initialize a new development database
-db-init:
-    [ -d dev/db      ] || mkdir dev/db
-    [ -f dev/db/data ] || touch dev/db/data
-    cd server && cargo run --bin migrate -- fresh
-    cd server && cargo run --bin insert_seeds
+db-reset:
+    rm -fr dev/db
+    mkdir -p dev/db
+    cargo run -p cmd --bin insert_seeds

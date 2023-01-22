@@ -18,7 +18,7 @@ use oauth2::{
 use sea_orm::*;
 use sha2::Sha256;
 
-use crate::entities::{users, User};
+use crate::entities::user::User;
 
 const COOKIE_NAME: &str = "buenzlimarks-auth";
 

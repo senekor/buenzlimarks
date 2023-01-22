@@ -3,6 +3,8 @@
         "ecmel.vscode-html-css",
         "bradlc.vscode-tailwindcss",
         "esbenp.prettier-vscode",
-        "dbaeumer.vscode-eslint"
+        "dbaeumer.vscode-eslint",
+        "rust-lang.rust-analyzer",
+        "vadimcn.vscode-lldb"
     ]
 }
