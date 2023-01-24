@@ -10,8 +10,19 @@ pub struct FileSystemDatabase {
 }
 
 impl FileSystemDatabase {
-    pub fn new(root_dir: PathBuf) -> Self {
-        Self { root_dir }
+    pub fn new<T: Into<PathBuf>>(root_dir: T) -> Self {
+        Self {
+            root_dir: root_dir.into(),
+        }
+    }
+}
+
+#[cfg(debug_assertions)]
+impl Default for FileSystemDatabase {
+    fn default() -> Self {
+        Self {
+            root_dir: PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../dev/db"),
+        }
     }
 }
 
@@ -38,12 +49,10 @@ mod tests {
 
     fn new_db() -> FileSystemDatabase {
         // Bad practice !!
-        // Do not rely on en env var and or a pre seeded dev db for tests.
+        // Do not rely on a pre seeded dev db for tests.
         // Instead, generate a temporary directory and fill it with test
         // specific seed data.
-        FileSystemDatabase::new(PathBuf::from(
-            std::env::var("FS_DB_ROOT_DIR").expect("DB dir not found"),
-        ))
+        FileSystemDatabase::default()
     }
 
     #[test]
