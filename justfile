@@ -14,5 +14,4 @@ fr:
 # initialize a new development database
 db-reset:
     rm -fr dev/db
-    mkdir -p dev/db
-    cargo run -p cmd --bin insert_seeds
+    cd server && cargo run --bin insert_seeds
