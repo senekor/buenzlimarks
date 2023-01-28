@@ -1,6 +1,6 @@
 # Arc42 Table of Contents
 
-1. [Introduction and Goald](01_introduction_and_goals.md)
+1. [Introduction and Goals](01_introduction_and_goals.md)
 1. [Architecture Constraints](./02_architecture_constraints.md)
 1. [System Scope and Context](./03_system_scope_and_context.md)
 1. [Solution Strategy](./04_solution_strategy.md)
