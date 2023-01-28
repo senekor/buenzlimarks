@@ -1,27 +1,37 @@
-use crate::entities::bookmark::Bookmark;
+use crate::models::bookmark::Bookmark;
 
-mod fs_db;
-use fs_db::FileSystemDatabase;
+pub mod error;
+use error::DbResult;
 
-pub trait BuenzlimarksDatabase: Clone {
-    fn get_bookmarks(&self, user_id: &str) -> Vec<Bookmark>;
+mod filesystem_db;
+use filesystem_db::FileSystemDb;
+
+mod seed_data;
+pub use seed_data::insert_seeds;
+
+#[cfg_attr(test, mockall::automock)]
+pub trait BuenzlimarksDb {
+    fn get_bookmarks(&self, user: &str) -> DbResult<Vec<Bookmark>>;
+    fn insert_bookmark(&self, user: &str, page: &str, widget: &str, bookmark: &Bookmark)
+        -> DbResult;
 }
 
-pub type DB = FileSystemDatabase;
+pub type DB = Arc<dyn BuenzlimarksDb + Send + Sync>;
 
-use std::env::VarError;
+use std::{env::VarError, sync::Arc};
 
-pub fn new_db() -> DB {
+pub fn new() -> DB {
     match std::env::var("FS_DB_ROOT_DIR") {
-        Ok(db_dir) => FileSystemDatabase::new(db_dir),
+        Ok(db_dir) => Arc::new(FileSystemDb::new(db_dir)),
         Err(VarError::NotPresent) => {
             cfg_if::cfg_if!(
                 if #[cfg(debug_assertions)] {
-                    FileSystemDatabase::default()
+                    #[allow(clippy::needless_return)] // false positive
+                    return Arc::new(FileSystemDb::new_dev());
                 } else {
-                    panic!("env var FS_DB_ROOT_DIR must be provided")
+                    panic!("env var FS_DB_ROOT_DIR must be provided");
                 }
-            )
+            );
         }
         Err(VarError::NotUnicode(_)) => panic!("env var FS_DB_ROOT_DIR must be valid unicode"),
     }

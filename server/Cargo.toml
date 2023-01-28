@@ -15,8 +15,8 @@ name = "buenzlimarks"
 path = "src/main.rs"
 
 [[bin]]
-name = "insert_seeds"
-path = "cmd/insert_seeds.rs"
+name = "db_reset"
+path = "cmd/db_reset.rs"
 
 [dependencies]
 tokio = { version = "1.0", features = ["full"] }
@@ -24,9 +24,13 @@ axum = { version = "0.6", features = ["macros", "headers"] }
 tower-http = { version = "0.3.0", features = ["fs", "trace"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1"
-uuid = "1.1.2"
+uuid = { version = "1.1.2", features = ["v4"] }
 oauth2 = "4.2.3"
 jwt = "0.16.0"
 hmac = { version = "0.12.1", features = ["std"] }
 sha2 = "0.10.2"
 cfg-if = "1.0.0"
+
+[dev-dependencies]
+mockall = "0.11.3"
+tempfile = "3.3.0"
