@@ -97,6 +97,7 @@ mod tests {
             id: "0".into(),
             name: "name".into(),
             link: "link".into(),
+            widget_id: "0".into(),
         };
 
         db.insert_bookmark("dev", "0", "0", &bookmark).unwrap();

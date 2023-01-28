@@ -43,6 +43,7 @@ pub fn insert_seeds(db: &(dyn BuenzlimarksDb + Send + Sync)) {
                         id: bm_id,
                         name: name.into(),
                         link: link.into(),
+                        widget_id: w_id.clone(),
                     };
                     db.insert_bookmark(user_id, &p_id, &w_id, &bookmark)
                         .unwrap();

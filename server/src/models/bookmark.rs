@@ -5,4 +5,5 @@ pub struct Bookmark {
     pub id: String,
     pub name: String,
     pub link: String,
+    pub widget_id: String,
 }

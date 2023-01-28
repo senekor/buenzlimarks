@@ -38,6 +38,7 @@ mod tests {
             id: "0".into(),
             name: "name".into(),
             link: "link".into(),
+            widget_id: "0".into(),
         };
         let expected = vec![bookmark.clone()];
 
