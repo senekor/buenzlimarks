@@ -1,0 +1,16 @@
+[
+  {
+    "_id": "27532e1b-24ca-4e80-a847-c5a5e6d8afac",
+    "colId": "6771bdef-36bc-49e3-a53c-1ae789e62c17",
+    "containerId": "",
+    "name": "get bookmarks",
+    "url": "http://localhost:4000/api/bookmarks",
+    "method": "GET",
+    "sortNum": 10000,
+    "created": "2023-01-28T19:28:42.201Z",
+    "modified": "2023-01-28T19:30:19.748Z",
+    "headers": [],
+    "params": [],
+    "tests": []
+  }
+]

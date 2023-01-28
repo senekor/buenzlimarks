@@ -16,7 +16,7 @@ db-reset:
     cd server && cargo run --bin db_reset
 
 # render the given diagram
-diagram-render diagram:
+render-diagram diagram:
     d2 --watch --layout=elk --pad=0 --theme=1 \
         docs/arc42/d2/{{diagram}}.d2 \
         docs/arc42/diagrams/{{diagram}}.svg

@@ -16,4 +16,7 @@
       "editor.formatOnSave": true,
     },
     "prettier.proseWrap": "always",
+    "thunder-client.saveToWorkspace": true,
+    "thunder-client.workspaceRelativePath": "dev",
+    "thunder-client.defaultUrl": "http://localhost:4000/api/",
 }

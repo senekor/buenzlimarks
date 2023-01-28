@@ -6,6 +6,7 @@
         "dbaeumer.vscode-eslint",
         "rust-lang.rust-analyzer",
         "vadimcn.vscode-lldb",
-        "terrastruct.d2"
+        "terrastruct.d2",
+        "rangav.vscode-thunder-client"
     ]
 }

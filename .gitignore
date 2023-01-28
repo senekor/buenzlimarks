@@ -1,5 +1,9 @@
+# Mac OS shenanigans
+.DS_Store
+
 # development database
 dev/db
 
-# Mac OS shenanigans
-.DS_Store
+# thunder client vscode extension
+dev/thunder-tests/thunderActivity.json
+dev/thunder-tests/thunderEnvironment.json
