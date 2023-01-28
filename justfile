@@ -17,6 +17,6 @@ db-reset:
 
 # render the given diagram
 render-diagram diagram:
-    d2 --watch --layout=elk --pad=0 --theme=1 \
+    d2 --watch --layout=elk --pad=32 \
         docs/arc42/d2/{{diagram}}.d2 \
         docs/arc42/diagrams/{{diagram}}.svg

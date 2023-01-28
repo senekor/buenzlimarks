@@ -1,36 +1,34 @@
 direction: right
 
-Domain Model: {
-  User: {
-    shape: class
-    Name: String
-  }
-  Page: {
-    shape: class
-    Name: String
-  }
-  Widget: {
-    shape: class
-    Name: String
-  }
-  Bookmark: {
-    shape: class
-    Name: String
-    Url: String
-  }
+User: {
+  shape: class
+  Name: String
+}
+Page: {
+  shape: class
+  Name: String
+}
+Widget: {
+  shape: class
+  Name: String
+}
+Bookmark: {
+  shape: class
+  Name: String
+  Url: String
+}
 
-  User -- Page: {
-    source-arrowhead: 1
-    target-arrowhead: 0..*
-  }
+User -- Page: {
+  source-arrowhead: 1
+  target-arrowhead: 0..*
+}
 
-  Page -- Widget: {
-    source-arrowhead: 1
-    target-arrowhead: 0..*
-  }
+Page -- Widget: {
+  source-arrowhead: 1
+  target-arrowhead: 0..*
+}
 
-  Widget -- Bookmark: {
-    source-arrowhead: 1
-    target-arrowhead: 0..*
-  }
+Widget -- Bookmark: {
+  source-arrowhead: 1
+  target-arrowhead: 0..*
 }

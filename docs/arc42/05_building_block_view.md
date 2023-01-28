@@ -15,8 +15,9 @@ software system into its main containers. These containers are individually
 deployable and interact with each other only through protocols like HTTP &
 websocket.
 
-<div>
-    <img src="./diagrams/container.svg"></img>
+<div style="border: solid; display: flex; flex-direction: column">
+  <h2 style="align-self: center">C4 Container Diagram</h2>
+  <img src="./diagrams/container.svg" />
 </div>
 
 ### Web App
@@ -41,10 +42,10 @@ indexedDB, remotely via the REST api.
 
 The web app and browser extension have a somewhat implicit interface insofar as
 the need to agree on the structure of the data saved locally in indexedDB. The
-sync service is mainly interacted with over its REST api which is _NOT_ explicitly
-documented, e.g. with openAPI. In addition, the web app may open a websocket
-connection with the sync service which will then notify the web app about changed
-data, e.g. by another device of the same user.
+sync service is mainly interacted with over its REST api which is _NOT_
+explicitly documented, e.g. with openAPI. In addition, the web app may open a
+websocket connection with the sync service which will then notify the web app
+about changed data, e.g. by another device of the same user.
 
 ## Level 2 - Components
 
@@ -66,5 +67,5 @@ out normal, simple, boring or standardized parts of your system
 
 ## Level 3 - Code
 
-Particularly complicated and or architecturally important code elements may
-be documented here.
+Particularly complicated and or architecturally important code elements may be
+documented here.

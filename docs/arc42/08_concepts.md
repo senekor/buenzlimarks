@@ -2,10 +2,12 @@
 
 ## Domain model
 
-In our domain, there are users which may have a variable number of bookmarks, widgets and pages. Pages are collections of widgets, which in turn are collections of bookmarks.
+In our domain, there are users which may have a variable number of bookmarks,
+widgets and pages. Pages are collections of widgets, which in turn are
+collections of bookmarks.
 
-<div>
-    <img src="./diagrams/domain.svg"></img>
+<div style="border: solid; display: flex; flex-direction: column">
+  <img src="./diagrams/domain.svg" />
 </div>
 
 ---
@@ -14,10 +16,10 @@ TODO
 
 ### Content
 
-This section describes overall, principal regulations and solution ideas
-that are relevant in multiple parts (= cross-cutting) of your system.
-Such concepts are often related to multiple building blocks. They can
-include many different topics, such as
+This section describes overall, principal regulations and solution ideas that
+are relevant in multiple parts (= cross-cutting) of your system. Such concepts
+are often related to multiple building blocks. They can include many different
+topics, such as
 
 - models, especially domain models
 
@@ -25,19 +27,19 @@ include many different topics, such as
 
 - rules for using specific technology
 
-- principal, often technical decisions of an overarching (=
-  cross-cutting) nature
+- principal, often technical decisions of an overarching (= cross-cutting)
+  nature
 
 - implementation rules
 
 ### Motivation
 
-Concepts form the basis for _conceptual integrity_ (consistency,
-homogeneity) of the architecture. Thus, they are an important
-contribution to achieve inner qualities of your system.
+Concepts form the basis for _conceptual integrity_ (consistency, homogeneity) of
+the architecture. Thus, they are an important contribution to achieve inner
+qualities of your system.
 
-Some of these concepts cannot be assigned to individual building blocks,
-e.g. security or safety.
+Some of these concepts cannot be assigned to individual building blocks, e.g.
+security or safety.
 
 ### Form
 
@@ -45,13 +47,13 @@ The form can be varied:
 
 - concept papers with any kind of structure
 
-- cross-cutting model excerpts or scenarios using notations of the
-  architecture views
+- cross-cutting model excerpts or scenarios using notations of the architecture
+  views
 
 - sample implementations, especially for technical concepts
 
-- reference to typical usage of standard frameworks (e.g. using
-  Hibernate for object/relational mapping)
+- reference to typical usage of standard frameworks (e.g. using Hibernate for
+  object/relational mapping)
 
 ### Structure
 
@@ -71,14 +73,13 @@ A potential (but not mandatory) structure for this section could be:
 
 - operational concepts
 
-Note: it might be difficult to assign individual concepts to one
-specific topic on this list.
+Note: it might be difficult to assign individual concepts to one specific topic
+on this list.
 
 ![Possible topics for crosscutting
 concepts](images/08-Crosscutting-Concepts-Structure-EN.png)
 
-See [Concepts](https://docs.arc42.org/section-8/) in the arc42
-documentation.
+See [Concepts](https://docs.arc42.org/section-8/) in the arc42 documentation.
 
 ## _\<Concept 1>_ {#\_\_emphasis_concept_1_emphasis}
 
