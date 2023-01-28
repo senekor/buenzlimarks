@@ -8,9 +8,6 @@ if [ "$distro" = "fedora" ]; then
     # packages=()
     # sudo dnf install -yq ${packages}
 
-    echo "Installing gaphor..."
-    pip install -q gaphor
-
     # echo "Installing sea-orm-cli..."
     # crates=(
     #     sea-orm-cli
@@ -21,3 +18,6 @@ else
     echo "This OS is not supported, feel free to fix that."
     exit
 fi
+
+# d2 diagram renderer
+go install oss.terrastruct.com/d2@latest

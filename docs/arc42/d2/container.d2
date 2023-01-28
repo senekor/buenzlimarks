@@ -1,0 +1,56 @@
+C4 Container Diagram: {
+  user: User
+  user.shape: person
+
+  user -> buenzlimarks.web app
+  user -> buenzlimarks.browser extension
+
+  buenzlimarks: {
+    label: "buenzlimarks [Software System]"
+
+    web app: {
+      label: |md
+        web app
+        [SolidJS SPA]
+      |
+      description: {
+        shape: text
+        label: |md
+          displays and manages
+          stored bookmarks,
+          fully features GUI app
+        |
+      }
+    }
+    browser extension.description: {
+      shape: text
+      label: |md
+        provides often used features
+        anywhere in the browser,
+        e.g. adding a new bookmark
+      |
+    }
+
+    web app -> api server: |md
+      fetches and stores data
+      [REST API]
+
+      receives live updates
+      [websocket]
+    |
+    browser extension -> api server: |md
+    fetches and stores data
+    [REST API]
+  |
+
+    api server: {
+      label: |md
+        web app
+      |
+      description: {
+        shape: text
+        label: "[Rust Axum webserver]"
+      }
+    }
+  }
+}

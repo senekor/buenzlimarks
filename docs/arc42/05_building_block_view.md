@@ -16,7 +16,7 @@ deployable and interact with each other only through protocols like HTTP &
 websocket.
 
 <div>
-    <img src="./images/2_container.svg" style="filter: invert(88%)"></img>
+    <img src="./diagrams/container.svg"></img>
 </div>
 
 ### Web App

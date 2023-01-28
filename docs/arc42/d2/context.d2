@@ -1,0 +1,42 @@
+C4 Context Diagram: {
+  User: {
+    shape: person
+  }
+
+  User -> buenzlimarks
+
+  buenzlimarks: {
+    label: "buenzlimarks\n[Software System]"
+    style: {
+      fill: "#bbf"
+      font-size: 20
+    }
+  }
+
+  buenzlimarks -> OAuth Provider: provides authentication with
+
+  User -> OAuth Provider: authenticates themselves with
+
+  OAuth Provider: {
+    github: {
+      shape: image
+      icon: ./docs/arc42/images/github-mark.svg
+      label: ""
+    }
+    google: {
+      shape: image
+      icon: ./docs/arc42/images/google-logo.svg
+      label: ""
+    }
+  }
+
+  buenzlimarks -> browser.IdexedDB: caches user data locally with
+
+  browser.logo: {
+    shape: image
+    icon: ./docs/arc42/images/firefox-logo.svg
+    label: ""
+  }
+
+  browser.IdexedDB.shape: cylinder
+}

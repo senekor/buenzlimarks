@@ -5,6 +5,7 @@
         "esbenp.prettier-vscode",
         "dbaeumer.vscode-eslint",
         "rust-lang.rust-analyzer",
-        "vadimcn.vscode-lldb"
+        "vadimcn.vscode-lldb",
+        "terrastruct.d2"
     ]
 }
