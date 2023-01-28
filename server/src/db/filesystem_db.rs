@@ -30,27 +30,32 @@ impl FileSystemDb {
 impl BuenzlimarksDb for FileSystemDb {
     fn get_bookmarks(&self, user_id: &str) -> DbResult<Vec<Bookmark>> {
         let pages_dir = std::fs::read_dir(self.root_dir.join(format!("users/{user_id}/pages")));
-        match pages_dir {
+        let page_directories = match pages_dir {
             Ok(dir) => dir,
             Err(e) => match e.kind() {
                 std::io::ErrorKind::NotFound => return Ok(Vec::new()),
                 _ => return Err(DbError::WhoopsieDoopsie),
             },
-        }
-        .flat_map(|dir_entry| {
-            std::fs::read_dir(dir_entry.whoopsie()?.path().join("widgets")).whoopsie()
-        })
-        .flatten()
-        .flat_map(|dir_entry| {
-            std::fs::read_dir(dir_entry.whoopsie()?.path().join("bookmarks")).whoopsie()
-        })
-        .flatten()
-        .map(|dir_entry| -> DbResult<Bookmark> {
-            std::fs::read_to_string(dir_entry.whoopsie()?.path())
-                .whoopsie()
-                .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
-        })
-        .collect()
+        };
+        let widget_directories = page_directories
+            .flat_map(|page_dir| {
+                std::fs::read_dir(page_dir.whoopsie()?.path().join("widgets")).whoopsie()
+            })
+            .flatten();
+
+        let bookmark_directories = widget_directories
+            .flat_map(|widget_dir| {
+                std::fs::read_dir(widget_dir.whoopsie()?.path().join("bookmarks")).whoopsie()
+            })
+            .flatten();
+
+        bookmark_directories
+            .map(|bookmark_file| -> DbResult<Bookmark> {
+                std::fs::read_to_string(bookmark_file.whoopsie()?.path())
+                    .whoopsie()
+                    .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
+            })
+            .collect()
     }
 
     fn insert_bookmark(
