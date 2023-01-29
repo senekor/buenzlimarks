@@ -1,8 +1,8 @@
-# BuenzliMarks
+# buenzlimarks
 
 This is a work in progress!
 
-BuenzliMarks is a web application for bookmark management and more.
+buenzlimarks is a web application for bookmark management and more.
 
 Check it out: https://buenzlimarks.remlse.dev
 

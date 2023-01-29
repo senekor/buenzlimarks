@@ -111,7 +111,7 @@ export const App = (): JSX.Element => {
   return (
     <div class="flex flex-col bg-slate-800 h-screen">
       <p class="text-4xl text-orange-500 text-center mt-12 mb-8">
-        BuenzliMarks
+        buenzlimarks
       </p>
       <Show
         when={user()}

@@ -1,36 +1,93 @@
-# Glossary {#section-glossary}
+# Glossary
 
-### Contents
+- [Domain specific terms](#domain-specific-terms)
+- [Technical terms](#technical-terms)
 
-The most important domain and technical terms that your stakeholders use
-when discussing the system.
+## Domain specific terms
 
-You can also see the glossary as source for translations if you work in
-multi-language teams.
+<table>
+  <tr>
+    <th>Term</th>
+    <th>Definition</th>
+  </tr>
+  <tr>
+    <td>bookmark</td>
+    <td>
+      Usually a link to a website a user wants to save for later.
+      Can be some other small piece of stored information.
+    </td>
+  </tr>
+  <tr>
+    <td>widget</td>
+    <td>
+      Fine-grained hierarchical organization tool for bookmarks.
+      Several bookmarks are grouped within one widget, e.g. by topic.
+    </td>
+  </tr>
+  <tr>
+    <td>page</td>
+    <td>
+      Course-grained hierarchical organization tool bookmarks.
+      Several widget are grouped within one page, e.g. for visual layout.
+    </td>
+  </tr>
+</table>
 
-### Motivation
+## Technical terms
 
-You should clearly define your terms, so that all stakeholders
-
-- have an identical understanding of these terms
-
-- do not use synonyms and homonyms
-
-```{=html}
-<!-- -->
-```
-
-- A table with columns \<Term> and \<Definition>.
-
-- Potentially more columns in case you need translations.
-
-See [Glossary](https://docs.arc42.org/section-12/) in the arc42
-documentation.
-
-+-----------------------+-----------------------------------------------+
-| Term | Definition |
-+=======================+===============================================+
-| _\<Term-1>_ | _\<definition-1>_ |
-+-----------------------+-----------------------------------------------+
-| _\<Term-2>_ | _\<definition-2>_ |
-+-----------------------+-----------------------------------------------+
+<table>
+  <tr>
+    <th>Term</th>
+    <th>Definition</th>
+  </tr>
+  <tr>
+    <td>UI</td>
+    <td>
+      Acronym for user interface, that part of the application the user directly interacts with.
+    </td>
+  </tr>
+  <tr>
+    <td>UX</td>
+    <td>
+      Acronym for user experience.
+      It refers to qualities of the user interface: intuitive, efficient, pleasant etc.
+    </td>
+  </tr>
+  <tr>
+    <td>Websocket</td>
+    <td>
+      <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API">
+        A network technology for two-way communication.
+        It is better suited to send messages from the backend to the frontend than HTTP.
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td>HTTP</td>
+    <td>
+      <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP">
+        Acronym for Hypertext Transfer Protocol.
+        The network protocol that is the backbone of the modern web.
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td>REST API</td>
+    <td>
+      A now mostly meaningless term in my opinion.
+      The current industry standard for HTTP-based web app APIs is described as RESTful.
+      Some properties of REST APIs are well-defined.
+      For example, every request must be stateless, i.e. not depend on other requests.
+    </td>
+  </tr>
+  <tr>
+    <td>Frontend & backend</td>
+    <td>
+      Terms used in web development, used to refer to the physically separated parts of a web app.
+      "Frontend" refers to everything that's happening on the user's device.
+      The classic technologies in this space are HTML, CSS and JavaScript/TypeScript.
+      "Backend" refers to everything that's happening on the server.
+      This usually includes a database and an api providing relevant business logic, written in basically any language.
+    </td>
+  </tr>
+</table>

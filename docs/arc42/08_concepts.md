@@ -1,4 +1,4 @@
-# Cross-cutting Concepts {#section-concepts}
+# TODO Cross-cutting Concepts
 
 ## Domain model
 

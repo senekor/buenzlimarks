@@ -27,25 +27,22 @@ buenzlimarks: {
     |
   }
 
-  web app -> api server: |md
+  web app -> backend: |md
     fetches and stores data
     [REST API]
 
     receives live updates
     [websocket]
   |
-  browser extension -> api server: |md
+  browser extension -> backend: |md
     fetches and stores data
     [REST API]
   |
 
-  api server: {
-    label: |md
-      web app
-    |
+  backend: {
     description: {
       shape: text
-      label: "[Rust Axum webserver]"
+      label: "[Rust Axum API server]"
     }
   }
 }
