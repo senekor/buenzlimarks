@@ -5,7 +5,7 @@
 1. [System Scope and Context](./03_system_scope_and_context.md)
 1. [Solution Strategy](./04_solution_strategy.md)
 1. [Building Block View](./05_building_block_view.md)
-1. [TODO Runtime View](./06_runtime_view.md)
+1. [Runtime View](./06_runtime_view.md)
 1. [Deployment View](./07_deployment_view.md)
 1. [TODO Cross-cutting Concepts](./08_concepts.md)
 1. [Architecture Decisions](./09_architecture_decsisions/index.md)

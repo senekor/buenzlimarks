@@ -1,0 +1,34 @@
+shape: sequence_diagram
+
+user.shape: person
+router: handlers (router)
+handler: handlers (handler function)
+db
+models
+
+HTTP request: {
+  user -> router: sends request
+
+  router.routing: "determines which handler to call,\nbased on route (e.g. '/bookmarks/bookmark_id')\nand HTTP method (GET, POST, ...)"
+
+  router -> handler: calls responsible handler function
+
+  database transaction: {
+    handler -> db: |md
+      fetches data from
+      (e.g. GET request)
+    |
+
+    handler -> models: |md
+      calls business logic of
+      (e.g. url schema validation)
+    |
+
+    handler -> db: |md
+      stores changed data in
+      (e.g. POST request)
+    |
+  }
+
+  handler -> user: sends response
+}

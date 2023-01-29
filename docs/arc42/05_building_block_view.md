@@ -29,8 +29,7 @@ Accesses user data locally via indexedDB, remotely via the REST API and may list
 ### Backend server
 
 Stores user data for synchronization across multiple devices.
-Written in Rust with the Axum framework.
-Exposes a REST API.
+It's written in Rust with the Axum framework and exposes a REST API.
 
 ### Browser extension
 
@@ -46,17 +45,37 @@ In addition, the web app may open a websocket connection with the backend server
 
 ## Level 2 - Components
 
-### Web App
+### Web app components
 
 TODO document interal architecture of system components as it emerges.
 Prefer relevance over completeness.
 Specify important, surprising, risky, complex or volatile building blocks.
 
-### Backend server
+### Backend server components
 
-TODO document interal architecture of system components as it emerges.
-Prefer relevance over completeness.
-Specify important, surprising, risky, complex or volatile building blocks.
+The server is divided in three _layers_ or modules:
+- `db`: The persistence layer or database, everything related to storing data to and fetching data from disk.
+- `handlers`: A collection of functions, each responsible for "handling" a different kind of API request.
+- `models`: The domain layer, including the data model and, if applicable, any associated business logic.
+
+It deviates from a traditional layered architecture in that the handlers call the persistence layer directly.
+The domain layer is only called in specific cases where business logic is actually involved.
+This simplifies the majority of cases and avoids a lot of boilerplate, but may turn out to be more error prone if more business logic than expected is needed.
+
+#### db (persistence layer)
+
+Responsible for fetching and storing data in the database, be that a filesystem or a relational database.
+Moreover, the persistence layer is responsible for ensuring relational validity of the data.
+For example, if the database contains a bookmark referencing a widget with a given ID, a widget with such an ID must actually exist.
+Lastly, the persistence layer may expose an API for simple data pre-processing including sorting and filtering.
+This is good practice as relational databases are able to perform these operations very efficiently.
+
+#### handlers
+
+The handlers are bundled in hierarchical _routers_.
+The routers determine which handler is responsible for a request with a given _route_ and _method_.
+For example, the top-level router may contain one nested router for each domain entity (bookmark, widget, etc.) respectively.
+These nested routers in turn may specify one handler for each of the four CRUD operations (create, read, update, delete).
 
 ### Browser Extension
 

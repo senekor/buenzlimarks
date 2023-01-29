@@ -14,6 +14,8 @@ if [ "$distro" = "fedora" ]; then
     # )
     # cargo install -q ${crates}
 
+    echo "No distro specific packages to install."
+
 else
     echo "This OS is not supported, feel free to fix that."
     exit
