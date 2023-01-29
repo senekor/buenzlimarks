@@ -5,7 +5,6 @@ use crate::{
     models::{bookmark::Bookmark, user::User},
 };
 
-#[axum::debug_handler]
 async fn get_bookmarks(user: User, State(db): State<DB>) -> (StatusCode, Json<Vec<Bookmark>>) {
     match db.get_bookmarks(&user.id) {
         Ok(bookmarks) => (StatusCode::OK, Json(bookmarks)),
