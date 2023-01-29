@@ -24,7 +24,7 @@ mod tests {
     use mockall::predicate;
 
     use crate::{
-        db::MockBuenzlimarksDb,
+        db::MockDbTrait,
         models::{bookmark::Bookmark, user::DEV_USER},
     };
 
@@ -32,7 +32,7 @@ mod tests {
 
     #[tokio::test]
     async fn should_get_single_bookmark() {
-        let mut db = MockBuenzlimarksDb::new();
+        let mut db = MockDbTrait::new();
 
         let bookmark = Bookmark {
             id: "0".into(),

@@ -2,7 +2,7 @@ use uuid::Uuid;
 
 use crate::models::bookmark::Bookmark;
 
-use super::BuenzlimarksDb;
+use super::DbTrait;
 
 // user(id), pages, widgets, bookmarks(name, link)
 #[allow(clippy::type_complexity)]
@@ -30,7 +30,7 @@ static DATA: &[(&str, &[&[&[(&str, &str)]]])] = &[(
     ]],
 )];
 
-pub fn insert_seeds(db: &(dyn BuenzlimarksDb + Send + Sync)) {
+pub fn insert_seeds(db: &(dyn DbTrait + Send + Sync)) {
     for user in DATA {
         let user_id = user.0;
         for page in user.1 {

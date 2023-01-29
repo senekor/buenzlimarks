@@ -4,7 +4,7 @@ use crate::models::bookmark::Bookmark;
 
 use super::{
     error::{DbError, DbResult, Whoopsie},
-    BuenzlimarksDb,
+    DbTrait,
 };
 
 #[derive(Debug, Clone)]
@@ -27,7 +27,7 @@ impl FileSystemDb {
     }
 }
 
-impl BuenzlimarksDb for FileSystemDb {
+impl DbTrait for FileSystemDb {
     fn get_bookmarks(&self, user_id: &str) -> DbResult<Vec<Bookmark>> {
         let pages_dir = std::fs::read_dir(self.root_dir.join(format!("users/{user_id}/pages")));
         let page_directories = match pages_dir {
@@ -82,7 +82,7 @@ impl BuenzlimarksDb for FileSystemDb {
 
 #[cfg(test)]
 mod tests {
-    use super::super::BuenzlimarksDb;
+    use super::super::DbTrait;
     use super::*;
 
     #[test]

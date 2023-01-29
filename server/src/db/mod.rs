@@ -10,13 +10,18 @@ mod seed_data;
 pub use seed_data::insert_seeds;
 
 #[cfg_attr(test, mockall::automock)]
-pub trait BuenzlimarksDb {
+pub trait DbTrait {
     fn get_bookmarks(&self, user: &str) -> DbResult<Vec<Bookmark>>;
-    fn insert_bookmark(&self, user: &str, page: &str, widget: &str, bookmark: &Bookmark)
-        -> DbResult;
+    fn insert_bookmark(
+        &self,
+        user: &str,
+        page: &str,
+        widget: &str,
+        bookmark: &Bookmark,
+    ) -> DbResult;
 }
 
-pub type DB = Arc<dyn BuenzlimarksDb + Send + Sync>;
+pub type DB = Arc<dyn DbTrait + Send + Sync>;
 
 use std::{env::VarError, sync::Arc};
 
