@@ -21,7 +21,7 @@ The architecture of the system is designed to fulfill the following goals:
 
 - Availability: The UX during offline use is of the highest possible quality.
 - Efficiency: The self-hostable backend server is resource efficient to enable deployment on cheap hardware like a raspberry pi.
-- Extensiblilty: The system is easily extensible to store information beyond simple website links as well as provide more UI customization capabilities.
+- Extensibility: The system is easily extensible to store information beyond simple website links as well as provide more UI customization capabilities.
 
 ## Stakeholders
 
