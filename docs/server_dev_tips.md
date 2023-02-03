@@ -20,7 +20,7 @@ Both are documented well in the architecture documentation, find links to the sp
 
 The first is the _static building block view_.
 It is concerned with how the code is structured into modules (folders), the purpose of those modules and how they relate to each other.
-The building block view view is documented [here](./arc42/05_building_block_view.md#backend-server-components).
+The building block view is documented [here](./arc42/05_building_block_view.md#backend-server-components).
 
 The second important view is the _dynamic runtime view_.
 It is concerned with the sequence of events and lines of communication while the server is running.
