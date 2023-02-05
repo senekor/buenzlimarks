@@ -21,7 +21,7 @@ pub type DB = Arc<dyn DbTrait + Send + Sync>;
 
 use std::{env::VarError, sync::Arc};
 
-pub fn new() -> DB {
+pub fn get() -> DB {
     match std::env::var("FS_DB_ROOT_DIR") {
         Ok(db_dir) => Arc::new(FileSystemDb::new(db_dir)),
         Err(VarError::NotPresent) => {

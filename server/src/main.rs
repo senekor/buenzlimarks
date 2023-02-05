@@ -2,7 +2,7 @@ use axum::{http::StatusCode, response::IntoResponse, routing::get_service, Route
 use std::{env, io, net::SocketAddr, path::PathBuf};
 use tower_http::services::ServeDir;
 
-use lib::{handlers, db};
+use lib::{db, handlers};
 
 async fn internal_err(_err: io::Error) -> impl IntoResponse {
     (StatusCode::INTERNAL_SERVER_ERROR, "Something went wrong...")
@@ -15,7 +15,7 @@ fn frontend_routes() -> Router {
 
 #[tokio::main]
 async fn main() {
-    let db = db::new();
+    let db = db::get();
 
     let http_service = Router::new()
         .nest("/api", handlers::routes(db))
