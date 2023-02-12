@@ -4,7 +4,7 @@ use crate::models::bookmark::Bookmark;
 
 use super::DbTrait;
 
-// user(id), pages, widgets, bookmarks(name, link)
+// user(id), pages, widgets, bookmarks(name, url)
 #[allow(clippy::type_complexity)]
 static DATA: &[(&str, &[&[&[(&str, &str)]]])] = &[(
     crate::models::user::DEV_USER,
@@ -37,12 +37,12 @@ pub fn insert_seeds(db: &(dyn DbTrait + Send + Sync)) {
             let p_id = Uuid::new_v4().to_string();
             for widget in page.iter() {
                 let w_id = Uuid::new_v4().to_string();
-                for (name, link) in widget.iter().copied() {
+                for (name, url) in widget.iter().copied() {
                     let bm_id = Uuid::new_v4().to_string();
                     let bookmark = Bookmark {
                         id: bm_id,
                         name: name.into(),
-                        link: link.into(),
+                        url: url.into(),
                         widget_id: w_id.clone(),
                     };
                     db.insert_bookmark(user_id, &p_id, &w_id, &bookmark)
