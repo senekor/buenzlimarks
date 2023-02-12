@@ -1,6 +1,6 @@
 use uuid::Uuid;
 
-use crate::models::bookmark::Bookmark;
+use crate::models::{bookmark::Bookmark, page::Page, widget::Widget};
 
 use super::DbTrait;
 
@@ -35,8 +35,17 @@ pub fn insert_seeds(db: &(dyn DbTrait + Send + Sync)) {
         let user_id = user.0;
         for page in user.1 {
             let p_id = Uuid::new_v4().to_string();
+            db.insert_page(user_id, &Page { id: p_id.clone() }).unwrap();
             for widget in page.iter() {
                 let w_id = Uuid::new_v4().to_string();
+                db.insert_widget(
+                    user_id,
+                    &Widget {
+                        id: w_id.clone(),
+                        page_id: p_id.clone(),
+                    },
+                )
+                .unwrap();
                 for (name, url) in widget.iter().copied() {
                     let bm_id = Uuid::new_v4().to_string();
                     let bookmark = Bookmark {
@@ -45,8 +54,7 @@ pub fn insert_seeds(db: &(dyn DbTrait + Send + Sync)) {
                         url: url.into(),
                         widget_id: w_id.clone(),
                     };
-                    db.insert_bookmark(user_id, &p_id, &w_id, &bookmark)
-                        .unwrap();
+                    db.insert_bookmark(user_id, &bookmark).unwrap();
                 }
             }
         }

@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use crate::models::bookmark::Bookmark;
+use crate::models::{bookmark::Bookmark, page::Page, widget::Widget};
 
 use super::{
     error::{DbError, DbResult, Whoopsie},
@@ -29,25 +29,15 @@ impl FileSystemDb {
 
 impl DbTrait for FileSystemDb {
     fn get_bookmarks(&self, user_id: &str) -> DbResult<Vec<Bookmark>> {
-        let pages_dir = std::fs::read_dir(self.root_dir.join(format!("users/{user_id}/pages")));
-        let page_directories = match pages_dir {
+        let bookmark_directories =
+            std::fs::read_dir(self.root_dir.join(format!("users/{user_id}/bookmarks")));
+        let bookmark_directories = match bookmark_directories {
             Ok(dir) => dir,
             Err(e) => match e.kind() {
                 std::io::ErrorKind::NotFound => return Ok(Vec::new()),
                 _ => return Err(DbError::WhoopsieDoopsie),
             },
         };
-        let widget_directories = page_directories
-            .flat_map(|page_dir| {
-                std::fs::read_dir(page_dir.whoopsie()?.path().join("widgets")).whoopsie()
-            })
-            .flatten();
-
-        let bookmark_directories = widget_directories
-            .flat_map(|widget_dir| {
-                std::fs::read_dir(widget_dir.whoopsie()?.path().join("bookmarks")).whoopsie()
-            })
-            .flatten();
 
         bookmark_directories
             .map(|bookmark_file| -> DbResult<Bookmark> {
@@ -58,20 +48,67 @@ impl DbTrait for FileSystemDb {
             .collect()
     }
 
-    fn insert_bookmark(
-        &self,
-        user: &str,
-        page: &str,
-        widget: &str,
-        bookmark: &Bookmark,
-    ) -> DbResult {
-        let dir = self.root_dir.join(format!(
-            "users/{user}/pages/{page}/widgets/{widget}/bookmarks"
-        ));
-        std::fs::create_dir_all(&dir).whoopsie()?;
+    fn insert_page(&self, user_id: &str, page: &Page) -> DbResult {
+        let pages_dir = self.root_dir.join(format!("users/{user_id}/pages"));
+        std::fs::create_dir_all(&pages_dir).whoopsie()?;
+        let page_id = &page.id;
+        let page_path = pages_dir.join(format!("{page_id}.json"));
+
+        if std::fs::metadata(&page_path).is_ok() {
+            eprintln!("page already exists");
+            return Err(DbError::WhoopsieDoopsie);
+        }
+
+        std::fs::write(page_path, serde_json::to_string_pretty(page).whoopsie()?).whoopsie()?;
+
+        Ok(())
+    }
+
+    fn insert_widget(&self, user_id: &str, widget: &Widget) -> DbResult {
+        let page_id = &widget.page_id;
+        let page_path = self
+            .root_dir
+            .join(format!("users/{user_id}/pages/{page_id}.json"));
+        std::fs::metadata(page_path).whoopsie()?;
+
+        let widgets_dir = self.root_dir.join(format!("users/{user_id}/widgets"));
+        std::fs::create_dir_all(&widgets_dir).whoopsie()?;
+        let widget_id = &widget.id;
+        let widget_path = widgets_dir.join(format!("{widget_id}.json"));
+
+        if std::fs::metadata(&widget_path).is_ok() {
+            eprintln!("widget already exists");
+            return Err(DbError::WhoopsieDoopsie);
+        }
 
         std::fs::write(
-            dir.join(format!("{}.json", bookmark.id)),
+            widget_path,
+            serde_json::to_string_pretty(widget).whoopsie()?,
+        )
+        .whoopsie()?;
+
+        Ok(())
+    }
+
+    fn insert_bookmark(&self, user_id: &str, bookmark: &Bookmark) -> DbResult {
+        let widget_id = &bookmark.widget_id;
+        let widget_path = self
+            .root_dir
+            .join(format!("users/{user_id}/widgets/{widget_id}.json"));
+        std::fs::metadata(widget_path).whoopsie()?;
+
+        let bookmarks_dir = self.root_dir.join(format!("users/{user_id}/bookmarks"));
+        std::fs::create_dir_all(&bookmarks_dir).whoopsie()?;
+        let bookmark_id = &bookmark.id;
+        let bookmark_path = bookmarks_dir.join(format!("{bookmark_id}.json"));
+
+        if std::fs::metadata(&bookmark_path).is_ok() {
+            eprintln!("bookmark already exists");
+            return Err(DbError::WhoopsieDoopsie);
+        }
+
+        std::fs::write(
+            bookmark_path,
             serde_json::to_string_pretty(bookmark).whoopsie()?,
         )
         .whoopsie()?;
@@ -98,6 +135,11 @@ mod tests {
         let tmp_dir = tempfile::tempdir().unwrap();
         let db = FileSystemDb::new(tmp_dir.path());
 
+        let page = Page { id: "0".into() };
+        let widget = Widget {
+            id: "0".into(),
+            page_id: "0".into(),
+        };
         let bookmark = Bookmark {
             id: "0".into(),
             name: "name".into(),
@@ -105,8 +147,10 @@ mod tests {
             widget_id: "0".into(),
         };
 
-        db.insert_bookmark("dev", "0", "0", &bookmark).unwrap();
+        db.insert_page("dev", &page).unwrap();
+        db.insert_widget("dev", &widget).unwrap();
+        db.insert_bookmark("dev", &bookmark).unwrap();
 
-        assert_eq!(db.get_bookmarks("dev").unwrap(), vec![bookmark,])
+        assert_eq!(db.get_bookmarks("dev").unwrap(), vec![bookmark])
     }
 }
