@@ -53,7 +53,7 @@ pub fn insert_seeds(db: &(dyn DbTrait + Send + Sync)) {
                         url: url.into(),
                         widget_id: w_id.clone(),
                     };
-                    db.insert_bookmark(&user_id, &bookmark).unwrap();
+                    db.insert_bookmark(&user_id, bookmark).unwrap();
                 }
             }
         }

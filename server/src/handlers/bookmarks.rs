@@ -1,8 +1,13 @@
-use axum::{extract::State, http::StatusCode, routing::get, Json, Router};
+use axum::{
+    extract::State,
+    http::StatusCode,
+    routing::{get, post},
+    Json, Router,
+};
 
 use crate::{
     db::DB,
-    models::{bookmark::Bookmark, user::User},
+    models::{bookmark::Bookmark, id::Id, user::User},
 };
 
 async fn get_bookmarks(user: User, State(db): State<DB>) -> (StatusCode, Json<Vec<Bookmark>>) {
@@ -12,8 +17,21 @@ async fn get_bookmarks(user: User, State(db): State<DB>) -> (StatusCode, Json<Ve
     }
 }
 
+async fn create_bookmark(
+    user: User,
+    State(db): State<DB>,
+    Json(mut bookmark): Json<Bookmark>,
+) -> Result<Json<Bookmark>, StatusCode> {
+    bookmark.id = Id::random();
+    db.insert_bookmark(&user.id, bookmark)
+        .map(Json)
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
+}
+
 pub fn routes() -> Router<DB> {
-    Router::<DB>::new().route("/", get(get_bookmarks))
+    Router::<DB>::new()
+        .route("/", get(get_bookmarks))
+        .route("/", post(create_bookmark))
 }
 
 #[cfg(test)]

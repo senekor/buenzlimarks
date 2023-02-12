@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use crate::models::{bookmark::Bookmark, page::Page, widget::Widget, id::Id, user::User};
+use crate::models::{bookmark::Bookmark, id::Id, page::Page, user::User, widget::Widget};
 
 use super::{
     error::{DbError, DbResult, Whoopsie},
@@ -90,7 +90,7 @@ impl DbTrait for FileSystemDb {
         Ok(())
     }
 
-    fn insert_bookmark(&self, user_id: &Id<User>, bookmark: &Bookmark) -> DbResult {
+    fn insert_bookmark(&self, user_id: &Id<User>, bookmark: Bookmark) -> DbResult<Bookmark> {
         let widget_id = &bookmark.widget_id;
         let widget_path = self
             .root_dir
@@ -109,11 +109,11 @@ impl DbTrait for FileSystemDb {
 
         std::fs::write(
             bookmark_path,
-            serde_json::to_string_pretty(bookmark).whoopsie()?,
+            serde_json::to_string_pretty(&bookmark).whoopsie()?,
         )
         .whoopsie()?;
 
-        Ok(())
+        Ok(bookmark)
     }
 }
 
@@ -151,7 +151,8 @@ mod tests {
 
         db.insert_page(&dev_user_id(), &page).unwrap();
         db.insert_widget(&dev_user_id(), &widget).unwrap();
-        db.insert_bookmark(&dev_user_id(), &bookmark).unwrap();
+        db.insert_bookmark(&dev_user_id(), bookmark.clone())
+            .unwrap();
 
         assert_eq!(db.get_bookmarks(&dev_user_id()).unwrap(), vec![bookmark])
     }
