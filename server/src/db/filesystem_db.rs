@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use crate::models::{bookmark::Bookmark, page::Page, widget::Widget};
+use crate::models::{bookmark::Bookmark, page::Page, widget::Widget, id::Id, user::User};
 
 use super::{
     error::{DbError, DbResult, Whoopsie},
@@ -28,7 +28,7 @@ impl FileSystemDb {
 }
 
 impl DbTrait for FileSystemDb {
-    fn get_bookmarks(&self, user_id: &str) -> DbResult<Vec<Bookmark>> {
+    fn get_bookmarks(&self, user_id: &Id<User>) -> DbResult<Vec<Bookmark>> {
         let bookmark_directories =
             std::fs::read_dir(self.root_dir.join(format!("users/{user_id}/bookmarks")));
         let bookmark_directories = match bookmark_directories {
@@ -48,7 +48,7 @@ impl DbTrait for FileSystemDb {
             .collect()
     }
 
-    fn insert_page(&self, user_id: &str, page: &Page) -> DbResult {
+    fn insert_page(&self, user_id: &Id<User>, page: &Page) -> DbResult {
         let pages_dir = self.root_dir.join(format!("users/{user_id}/pages"));
         std::fs::create_dir_all(&pages_dir).whoopsie()?;
         let page_id = &page.id;
@@ -64,7 +64,7 @@ impl DbTrait for FileSystemDb {
         Ok(())
     }
 
-    fn insert_widget(&self, user_id: &str, widget: &Widget) -> DbResult {
+    fn insert_widget(&self, user_id: &Id<User>, widget: &Widget) -> DbResult {
         let page_id = &widget.page_id;
         let page_path = self
             .root_dir
@@ -90,7 +90,7 @@ impl DbTrait for FileSystemDb {
         Ok(())
     }
 
-    fn insert_bookmark(&self, user_id: &str, bookmark: &Bookmark) -> DbResult {
+    fn insert_bookmark(&self, user_id: &Id<User>, bookmark: &Bookmark) -> DbResult {
         let widget_id = &bookmark.widget_id;
         let widget_path = self
             .root_dir
@@ -119,6 +119,8 @@ impl DbTrait for FileSystemDb {
 
 #[cfg(test)]
 mod tests {
+    use crate::models::user::dev_user_id;
+
     use super::super::DbTrait;
     use super::*;
 
@@ -127,7 +129,7 @@ mod tests {
         let tmp_dir = tempfile::tempdir().unwrap();
         let db = FileSystemDb::new(tmp_dir.path());
 
-        assert_eq!(db.get_bookmarks("dev").unwrap(), Vec::new());
+        assert_eq!(db.get_bookmarks(&dev_user_id()).unwrap(), Vec::new());
     }
 
     #[test]
@@ -147,10 +149,10 @@ mod tests {
             widget_id: "0".into(),
         };
 
-        db.insert_page("dev", &page).unwrap();
-        db.insert_widget("dev", &widget).unwrap();
-        db.insert_bookmark("dev", &bookmark).unwrap();
+        db.insert_page(&dev_user_id(), &page).unwrap();
+        db.insert_widget(&dev_user_id(), &widget).unwrap();
+        db.insert_bookmark(&dev_user_id(), &bookmark).unwrap();
 
-        assert_eq!(db.get_bookmarks("dev").unwrap(), vec![bookmark])
+        assert_eq!(db.get_bookmarks(&dev_user_id()).unwrap(), vec![bookmark])
     }
 }

@@ -1,4 +1,4 @@
-use crate::models::{bookmark::Bookmark, page::Page, widget::Widget};
+use crate::models::{bookmark::Bookmark, id::Id, page::Page, user::User, widget::Widget};
 
 pub mod error;
 use error::DbResult;
@@ -11,10 +11,10 @@ pub use seed_data::insert_seeds;
 
 #[cfg_attr(test, mockall::automock)]
 pub trait DbTrait {
-    fn get_bookmarks(&self, user: &str) -> DbResult<Vec<Bookmark>>;
-    fn insert_page(&self, user_id: &str, page: &Page) -> DbResult;
-    fn insert_widget(&self, user_id: &str, widget: &Widget) -> DbResult;
-    fn insert_bookmark(&self, user_id: &str, bookmark: &Bookmark) -> DbResult;
+    fn get_bookmarks(&self, user_id: &Id<User>) -> DbResult<Vec<Bookmark>>;
+    fn insert_page(&self, user_id: &Id<User>, page: &Page) -> DbResult;
+    fn insert_widget(&self, user_id: &Id<User>, widget: &Widget) -> DbResult;
+    fn insert_bookmark(&self, user_id: &Id<User>, bookmark: &Bookmark) -> DbResult;
 }
 
 pub type DB = Arc<dyn DbTrait + Send + Sync>;

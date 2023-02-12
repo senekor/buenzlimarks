@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 
+use super::id::Id;
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Page {
-    pub id: String,
+    pub id: Id<Self>,
 }

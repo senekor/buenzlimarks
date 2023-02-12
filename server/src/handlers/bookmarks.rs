@@ -24,7 +24,7 @@ mod tests {
 
     use crate::{
         db::MockDbTrait,
-        models::{bookmark::Bookmark, user::DEV_USER},
+        models::{bookmark::Bookmark, user::dev_user_id},
     };
 
     use super::*;
@@ -42,7 +42,7 @@ mod tests {
         let expected = vec![bookmark.clone()];
 
         db.expect_get_bookmarks()
-            .with(predicate::eq(DEV_USER))
+            .with(predicate::eq(dev_user_id()))
             .returning(move |_| Ok(expected.clone()));
 
         let actual = get_bookmarks(User::dev(), State(Arc::new(db))).await;

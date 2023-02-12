@@ -1,18 +1,22 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+use super::id::Id;
+
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct User {
-    pub id: String,
+    pub id: Id<Self>,
     pub name: Option<String>,
 }
 
-pub const DEV_USER: &str = "dev_user";
+pub fn dev_user_id() -> Id<User> {
+    Id::dev_user_id()
+}
 
 impl User {
     /// returns the default development user
     pub fn dev() -> Self {
         Self {
-            id: DEV_USER.into(),
+            id: dev_user_id(),
             name: Some("Hackerman".into()),
         }
     }
