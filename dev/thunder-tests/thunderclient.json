@@ -8,9 +8,28 @@
     "method": "GET",
     "sortNum": 10000,
     "created": "2023-01-28T19:28:42.201Z",
-    "modified": "2023-01-28T19:30:19.748Z",
+    "modified": "2023-02-11T15:04:41.046Z",
     "headers": [],
     "params": [],
+    "tests": []
+  },
+  {
+    "_id": "983414a1-0563-4ab1-8755-fcdb972b3a02",
+    "colId": "6771bdef-36bc-49e3-a53c-1ae789e62c17",
+    "containerId": "",
+    "name": "create bookmark",
+    "url": "http://localhost:4000/api/bookmarks",
+    "method": "POST",
+    "sortNum": 20000,
+    "created": "2023-02-11T15:31:32.292Z",
+    "modified": "2023-02-12T12:10:25.736Z",
+    "headers": [],
+    "params": [],
+    "body": {
+      "type": "json",
+      "raw": "{\n  \"id\": \"random id\",\n  \"name\": \"random name\",\n  \"url\": \"http://leckmich.ch\",\n  \"widget_id\": \"0c47376b-1a3c-4c4a-a23d-a2fd3a2f3df\"\n}",
+      "form": []
+    },
     "tests": []
   }
 ]

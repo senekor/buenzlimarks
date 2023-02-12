@@ -3,7 +3,6 @@ use axum::Router;
 use crate::db::DB;
 
 mod auth;
-
 mod bookmarks;
 
 pub fn routes(db: DB) -> Router {
