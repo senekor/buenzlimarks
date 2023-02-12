@@ -78,4 +78,24 @@ mod tests {
         assert_eq!(actual.0, StatusCode::INTERNAL_SERVER_ERROR);
         assert_eq!(actual.1 .0, Vec::new());
     }
+
+    #[tokio::test]
+    async fn should_create_bookmark() {
+        let mut db = MockDbTrait::new();
+
+        let bookmark = Bookmark {
+            id: "0".into(),
+            name: "name".into(),
+            url: "url".into(),
+            widget_id: "0".into(),
+        };
+        let user_provided_id = bookmark.id.clone();
+
+        db.expect_insert_bookmark()
+            .times(1)
+            .withf(move |_, bm| bm.id != user_provided_id)
+            .returning(move |_, _| Err(DbError::WhoopsieDoopsie));
+
+        create_bookmark(User::dev(), State(Arc::new(db)), Json(bookmark)).await.ok();
+    }
 }
