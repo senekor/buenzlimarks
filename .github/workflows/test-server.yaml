@@ -20,6 +20,9 @@ jobs:
           workspaces: "server -> target"
           # Additional non workspace directories to be cached, separated by newlines.
           cache-directories: ""
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 7.17.1
       - name: rustfmt
         run: |
           cd server
