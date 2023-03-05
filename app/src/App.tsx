@@ -1,4 +1,11 @@
-import { createResource, createSignal, For, JSX, Show } from "solid-js";
+import {
+  createEffect,
+  createResource,
+  createSignal,
+  For,
+  JSX,
+  Show,
+} from "solid-js";
 
 import jwt_decode from "jwt-decode";
 import { Icon } from "solid-heroicons";
@@ -15,6 +22,7 @@ type BookmarkType = {
   id: string;
   name: string;
   url: string;
+  widget_id: string;
 };
 
 // const getURL = (userId: string) =>
@@ -41,22 +49,20 @@ const ubdateBookmark = async (payload: BookmarkType): Promise<BookmarkType> =>
     body: JSON.stringify(payload),
   }).then((resp) => resp.json()) as Promise<BookmarkType>;
 
-const deleteBookmark = async (id: string): Promise<Response> =>
+  const deleteBookmark = async (id: string): Promise<Response> =>
   fetch(`/api/bookmarks/${id}`, { method: "DELETE" });
 
 const [user, setUser] = createSignal<User>();
 
-const readUserFromCookie = () => {
-  const jwt = document.cookie.match(jwtRegex)?.[1];
-  if (jwt) {
-    setUser(jwt_decode(jwt));
-  } else {
-    setUser(undefined);
-  }
+const refetchUser = async () => {
+  fetch(`/api/users/me`).then((resp) =>
+    resp.json().then((user: User) => setUser(user))
+  );
 };
+refetchUser();
 
 const login = async (id: string) =>
-  fetch(`/api/auth/${id}`).then(readUserFromCookie);
+  fetch(`/api/auth/login/${id}`).then(refetchUser);
 
 const logout = () => {
   document.cookie =
@@ -70,13 +76,12 @@ const bookmarkTmpl: BookmarkType = {
   id: "",
   name: "",
   url: "",
+  widget_id: "",
 };
 
-const jwtRegex = /buenzlimarks-auth=(\w*\.\w*\.\w*)/;
-
-const UserForm = (props: { onLogin: () => void }): JSX.Element => {
+const UserForm = (): JSX.Element => {
   const [userId, setUserId] = createSignal("");
-  const submit = () => void login(userId()).then(props.onLogin);
+  const submit = () => login(userId());
   return (
     <div class="flex flex-row self-center gap-2">
       <input
@@ -98,12 +103,20 @@ const UserForm = (props: { onLogin: () => void }): JSX.Element => {
 };
 
 export const App = (): JSX.Element => {
-  readUserFromCookie();
-
   const [bookmarks, { refetch }] = createResource(
     createSignal(true)[0],
     fetchBookmarks
   );
+
+  createEffect(() => {
+    if (user()) refetch();
+  });
+
+  // hack to add bookmarks to valid widget
+  createEffect(() => {
+    const widget_id = bookmarks()?.[0]?.widget_id;
+    if (widget_id) setForm((oldForm) => ({ ...oldForm, widget_id }));
+  });
 
   const [form, setForm] = createSignal<BookmarkType>(bookmarkTmpl);
   const resetForm = () => setForm(bookmarkTmpl);
@@ -113,17 +126,14 @@ export const App = (): JSX.Element => {
       <p class="text-4xl text-orange-500 text-center mt-12 mb-8">
         buenzlimarks
       </p>
-      <Show
-        when={user()}
-        fallback={<UserForm onLogin={() => void refetch()} />}
-      >
+      <Show when={user()} fallback={<UserForm />}>
         <div class="flex flex-row self-center gap-2">
           <div class="text-gray-200">Hello {user()?.name}!</div>
           <button
             class="text-white bg-slate-600 w-fit rounded px-1"
             onClick={() => {
               logout();
-              void refetch();
+              refetch();
             }}
           >
             Logout
@@ -140,15 +150,15 @@ export const App = (): JSX.Element => {
               <Icon
                 path={pencil}
                 class="w-6 ml-2"
-                style={{ color: "white" }}
-                onClick={() => setForm(bm)}
+                style={{ color: "grey" }}
+                // onClick={() => setForm(bm)}
               />
               <Icon
                 path={trash}
                 class="w-6"
                 style={{ color: "white" }}
                 onClick={() =>
-                  void deleteBookmark(bm.id)
+                  deleteBookmark(bm.id)
                     .then(() => (bm.id === form().id ? resetForm() : null))
                     .then(refetch)
                 }
@@ -186,7 +196,7 @@ export const App = (): JSX.Element => {
           class="text-white bg-slate-600 w-fit rounded px-1 disabled:text-gray-400"
           disabled={!(form().name && form().url)}
           onClick={() =>
-            void (form().id ? ubdateBookmark(form()) : createBookmark(form()))
+            (form().id ? ubdateBookmark(form()) : createBookmark(form()))
               .then(resetForm)
               .then(refetch)
           }
