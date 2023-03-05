@@ -1,5 +1,5 @@
 //! This error handling is terrible. It should be improved!
-//! 
+//!
 //! See the [corresponding issue](https://github.com/remlse/buenzlimarks/issues/30)
 //! on GitHub.
 

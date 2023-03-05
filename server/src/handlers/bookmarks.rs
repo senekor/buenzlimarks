@@ -39,8 +39,8 @@ mod tests {
     use std::sync::Arc;
 
     use crate::{
-        db::{MockDbTrait, error::DbError},
-        models::{bookmark::Bookmark},
+        db::{error::DbError, MockDbTrait},
+        models::bookmark::Bookmark,
     };
 
     use super::*;
@@ -96,6 +96,8 @@ mod tests {
             .withf(move |_, bm| bm.id != user_provided_id)
             .returning(move |_, _| Err(DbError::WhoopsieDoopsie));
 
-        create_bookmark(User::dev(), State(Arc::new(db)), Json(bookmark)).await.ok();
+        create_bookmark(User::dev(), State(Arc::new(db)), Json(bookmark))
+            .await
+            .ok();
     }
 }
