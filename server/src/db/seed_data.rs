@@ -5,8 +5,8 @@ use super::DbTrait;
 pub fn insert_seeds(db: &(dyn DbTrait + Send + Sync)) {
     // user(id), pages, widgets, bookmarks(name, url)
     #[allow(clippy::type_complexity)]
-    let data: &[(Id<User>, &[&[&[(&str, &str)]]])] = &[(
-        crate::models::user::dev_user_id(),
+    let data: &[(User, &[&[&[(&str, &str)]]])] = &[(
+        crate::models::user::User::dev(),
         &[&[
             &[
                 (
@@ -30,7 +30,8 @@ pub fn insert_seeds(db: &(dyn DbTrait + Send + Sync)) {
     )];
 
     for user in data {
-        let user_id = user.0.clone();
+        let user_id = user.0.id.clone();
+        db.insert_user(user.0.clone()).unwrap();
         for page in user.1 {
             let p_id = Id::random();
             db.insert_page(&user_id, &Page { id: p_id.clone() })

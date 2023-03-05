@@ -15,6 +15,8 @@ pub trait DbTrait {
     fn insert_page(&self, user_id: &Id<User>, page: &Page) -> DbResult;
     fn insert_widget(&self, user_id: &Id<User>, widget: &Widget) -> DbResult;
     fn insert_bookmark(&self, user_id: &Id<User>, bookmark: Bookmark) -> DbResult<Bookmark>;
+    fn get_user(&self, user_id: &Id<User>) -> DbResult<User>;
+    fn insert_user(&self, user: User) -> DbResult<User>;
 }
 
 pub type DB = Arc<dyn DbTrait + Send + Sync>;

@@ -40,7 +40,7 @@ impl<T> Id<T> {
 impl Id<User> {
     pub fn dev_user_id() -> Self {
         Self {
-            id: "dev_user".into(),
+            id: super::user::DEV_USER_ID_STR.into(),
             _type: PhantomData,
         }
     }

@@ -115,6 +115,26 @@ impl DbTrait for FileSystemDb {
 
         Ok(bookmark)
     }
+
+    fn get_user(&self, user_id: &Id<User>) -> DbResult<User> {
+        std::fs::read_to_string(self.root_dir.join(format!("users/{user_id}/data.json")))
+            .whoopsie()
+            .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
+    }
+
+    fn insert_user(&self, user: User) -> DbResult<User> {
+        let user_id = &user.id;
+        let user_dir = self.root_dir.join(format!("users/{user_id}"));
+        for dir in ["pages", "widgets", "bookmarks"] {
+            std::fs::create_dir_all(user_dir.join(dir)).whoopsie()?;
+        }
+        std::fs::write(
+            self.root_dir.join(format!("users/{user_id}/data.json")),
+            serde_json::to_string_pretty(&user).whoopsie()?,
+        )
+        .whoopsie()?;
+        Ok(user)
+    }
 }
 
 #[cfg(test)]
