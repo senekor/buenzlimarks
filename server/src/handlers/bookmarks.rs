@@ -1,12 +1,12 @@
 use axum::{
     extract::State,
     http::StatusCode,
-    routing::{get, post},
+    routing::{delete, get, post},
     Json, Router,
 };
 
 use crate::{
-    db::DB,
+    db::{error::DbError, DB},
     models::{bookmark::Bookmark, id::Id, user::User},
 };
 
@@ -28,10 +28,23 @@ async fn create_bookmark(
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
 }
 
+async fn delete_bookmark(
+    user: User,
+    State(db): State<DB>,
+    Json(bookmark): Json<Bookmark>,
+) -> Result<Json<Bookmark>, StatusCode> {
+    match db.delete_bookmark(&user.id, bookmark) {
+        Ok(res) => Ok(Json(res)),
+        Err(DbError::NotFound) => Err(StatusCode::NOT_FOUND),
+        Err(DbError::WhoopsieDoopsie) => Err(StatusCode::INTERNAL_SERVER_ERROR),
+    }
+}
+
 pub fn routes() -> Router<DB> {
     Router::<DB>::new()
         .route("/", get(get_bookmarks))
         .route("/", post(create_bookmark))
+        .route("/", delete(delete_bookmark))
 }
 
 #[cfg(test)]

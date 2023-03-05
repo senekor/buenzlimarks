@@ -7,6 +7,7 @@ use std::fmt::Debug;
 
 #[derive(Debug, Clone)]
 pub enum DbError {
+    NotFound,
     WhoopsieDoopsie,
 }
 pub type DbResult<T = ()> = Result<T, DbError>;
