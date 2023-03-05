@@ -3,7 +3,7 @@ on: [push]
 
 jobs:
   test:
-    name: cargo test
+    name: test server
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -20,9 +20,15 @@ jobs:
           workspaces: "server -> target"
           # Additional non workspace directories to be cached, separated by newlines.
           cache-directories: ""
-      - name: Check formatting, run clippy & tests
+      - name: rustfmt
         run: |
           cd server
           cargo fmt --check
+      - name: clippy
+        run: |
+          cd server
           cargo clippy -- -D warnings
+      - name: tests
+        run: |
+          cd server
           cargo test
