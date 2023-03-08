@@ -135,14 +135,13 @@ impl DbTrait for FileSystemDb {
         .whoopsie()?;
         Ok(user)
     }
-    
-    fn delete_bookmark(&self, user_id: &Id<User>, bookmark: Bookmark) -> DbResult<Bookmark> {
-        let bookmark_id = &bookmark.id;
+
+    fn delete_bookmark(&self, user_id: &Id<User>, bookmark_id: &Id<Bookmark>) -> DbResult {
         match std::fs::remove_file(
             self.root_dir
                 .join(format!("users/{user_id}/bookmarks/{bookmark_id}.json")),
         ) {
-            Ok(_) => Ok(bookmark),
+            Ok(_) => Ok(()),
             Err(e) => match e.kind() {
                 std::io::ErrorKind::NotFound => Err(DbError::NotFound),
                 _ => Err(DbError::WhoopsieDoopsie),

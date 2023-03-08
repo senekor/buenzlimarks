@@ -17,7 +17,7 @@ pub trait DbTrait {
     fn insert_bookmark(&self, user_id: &Id<User>, bookmark: Bookmark) -> DbResult<Bookmark>;
     fn get_user(&self, user_id: &Id<User>) -> DbResult<User>;
     fn insert_user(&self, user: User) -> DbResult<User>;
-    fn delete_bookmark(&self, user_id: &Id<User>, bookmark: Bookmark) -> DbResult<Bookmark>;
+    fn delete_bookmark(&self, user_id: &Id<User>, bookmark_id: &Id<Bookmark>) -> DbResult;
 }
 
 pub type DB = Arc<dyn DbTrait + Send + Sync>;

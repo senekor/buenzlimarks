@@ -1,5 +1,5 @@
 use axum::{
-    extract::State,
+    extract::{Path, State},
     http::StatusCode,
     routing::{delete, get, post},
     Json, Router,
@@ -30,11 +30,11 @@ async fn create_bookmark(
 
 async fn delete_bookmark(
     user: User,
+    Path(bookmark_id): Path<Id<Bookmark>>,
     State(db): State<DB>,
-    Json(bookmark): Json<Bookmark>,
-) -> Result<Json<Bookmark>, StatusCode> {
-    match db.delete_bookmark(&user.id, bookmark) {
-        Ok(res) => Ok(Json(res)),
+) -> Result<(), StatusCode> {
+    match db.delete_bookmark(&user.id, &bookmark_id) {
+        Ok(_) => Ok(()),
         Err(DbError::NotFound) => Err(StatusCode::NOT_FOUND),
         Err(DbError::WhoopsieDoopsie) => Err(StatusCode::INTERNAL_SERVER_ERROR),
     }
@@ -44,7 +44,7 @@ pub fn routes() -> Router<DB> {
     Router::<DB>::new()
         .route("/", get(get_bookmarks))
         .route("/", post(create_bookmark))
-        .route("/", delete(delete_bookmark))
+        .route("/:bookmark_id", delete(delete_bookmark))
 }
 
 #[cfg(test)]

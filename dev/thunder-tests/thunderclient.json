@@ -31,5 +31,19 @@
       "form": []
     },
     "tests": []
+  },
+  {
+    "_id": "d4363cf9-5353-49ab-8e98-901496b2b8bf",
+    "colId": "6771bdef-36bc-49e3-a53c-1ae789e62c17",
+    "containerId": "",
+    "name": "delete bookmark",
+    "url": "http://localhost:4000/api/bookmarks/b18d4216-497b-41a7-ba5f-7fcb6f57f1d7",
+    "method": "DELETE",
+    "sortNum": 30000,
+    "created": "2023-03-08T21:31:46.377Z",
+    "modified": "2023-03-08T21:36:00.515Z",
+    "headers": [],
+    "params": [],
+    "tests": []
   }
 ]
