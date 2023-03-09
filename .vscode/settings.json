@@ -22,5 +22,6 @@
   },
   "thunder-client.defaultUrl": "http://localhost:4000/api/",
   "thunder-client.saveToWorkspace": true,
+  "thunder-client.sidebar.defaultTab": "Collections",
   "thunder-client.workspaceRelativePath": "dev"
 }
