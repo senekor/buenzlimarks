@@ -30,8 +30,8 @@
     "vite-plugin-solid": "^2.5.0"
   },
   "dependencies": {
-    "jwt-decode": "^3.1.2",
     "solid-heroicons": "3",
-    "solid-js": "^1.6.9"
+    "solid-js": "^1.6.9",
+    "zod": "^3.21.4"
   }
 }

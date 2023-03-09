@@ -12,7 +12,6 @@ specifiers:
   eslint-plugin-jsx-a11y: ^6.7.1
   eslint-plugin-prefer-arrow: ^1.2.3
   eslint-plugin-prettier: ^4.2.1
-  jwt-decode: ^3.1.2
   postcss: ^8.4.21
   prettier: '2.8'
   solid-heroicons: '3'
@@ -21,11 +20,12 @@ specifiers:
   typescript: ^4.9.4
   vite: '4'
   vite-plugin-solid: ^2.5.0
+  zod: ^3.21.4
 
 dependencies:
-  jwt-decode: 3.1.2
   solid-heroicons: 3.1.1_solid-js@1.6.9
   solid-js: 1.6.9
+  zod: 3.21.4
 
 devDependencies:
   '@types/babel__core': 7.20.0
@@ -2133,10 +2133,6 @@ packages:
       object.assign: 4.1.4
     dev: true
 
-  /jwt-decode/3.1.2:
-    resolution: {integrity: sha512-UfpWE/VZn0iP50d8cz9NrZLM9lSWhcJ+0Gt/nm4by88UL+J1SiKN8/5dkjMmbEzwL2CAe+67GsegCbIKtbp75A==}
-    dev: false
-
   /language-subtag-registry/0.3.22:
     resolution: {integrity: sha512-tN0MCzyWnoz/4nHS6uxdlFWoUZT7ABptwKPQ52Ea7URk6vll88bWBVhodtnlfEuCcKWNGoc+uGbw1cwa9IKh/w==}
     dev: true
@@ -2959,3 +2955,7 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
     dev: true
+
+  /zod/3.21.4:
+    resolution: {integrity: sha512-m46AKbrzKVzOzs/DZgVnG5H55N1sv1M8qZU3A8RIKbs3mrACDNeIOeilDymVb2HdmP8uwshOCF4uJ8uM9rCqJw==}
+    dev: false

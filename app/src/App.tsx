@@ -7,49 +7,51 @@ import {
   Show,
 } from "solid-js";
 
-import jwt_decode from "jwt-decode";
 import { Icon } from "solid-heroicons";
 import { pencil, trash } from "solid-heroicons/outline";
+import { z } from "zod";
 
 import Bookmark from "./components/bookmark";
 
-type User = {
-  id: string;
-  name: string;
-};
+const UserSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+});
 
-type BookmarkType = {
-  id: string;
-  name: string;
-  url: string;
-  widget_id: string;
-};
+type User = z.infer<typeof UserSchema>;
+
+const BookmarkSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  url: z.string(),
+  widget_id: z.string(),
+});
+
+type BookmarkType = z.infer<typeof BookmarkSchema>;
 
 // const getURL = (userId: string) =>
 //   `/api/bookmarks/${userId || "nobody"}`;
 
-const fetchBookmarks = async (): Promise<BookmarkType[]> =>
-  user()
-    ? (fetch("/api/bookmarks")
-        .then((resp) => resp.json())
-        .catch(() => []) as Promise<BookmarkType[]>)
-    : [];
+const fetchBookmarks = async () =>
+  fetch("/api/bookmarks").then((resp) =>
+    resp.json().then((json) => z.array(BookmarkSchema).parse(json))
+  );
 
 const createBookmark = async (payload: BookmarkType): Promise<BookmarkType> =>
   fetch("/api/bookmarks", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
-  }).then((resp) => resp.json()) as Promise<BookmarkType>;
+  }).then((resp) => resp.json());
 
 const ubdateBookmark = async (payload: BookmarkType): Promise<BookmarkType> =>
   fetch(`/api/bookmarks/${payload.id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
-  }).then((resp) => resp.json()) as Promise<BookmarkType>;
+  }).then((resp) => resp.json());
 
-  const deleteBookmark = async (id: string): Promise<Response> =>
+const deleteBookmark = async (id: string): Promise<Response> =>
   fetch(`/api/bookmarks/${id}`, { method: "DELETE" });
 
 const [user, setUser] = createSignal<User>();
@@ -88,7 +90,7 @@ const UserForm = (): JSX.Element => {
         class="self-center bg-slate-600 p-1 rounded text-white"
         placeholder="Enter a user name"
         value={userId()}
-        onInput={(e) => setUserId((e.target as HTMLInputElement).value)}
+        onInput={(e) => setUserId(e.currentTarget.value)}
         onkeydown={(e) => (e.key == "Enter" ? submit() : null)}
       />
       <button
@@ -171,17 +173,13 @@ export const App = (): JSX.Element => {
         class="self-center w-3/4 bg-slate-600 p-1 rounded text-white mb-1"
         placeholder="Name"
         value={form().name}
-        onInput={(e) =>
-          setForm({ ...form(), name: (e.target as HTMLInputElement).value })
-        }
+        onInput={(e) => setForm({ ...form(), name: e.currentTarget.value })}
       />
       <input
         class="self-center w-3/4 bg-slate-600 p-1 rounded text-white mb-2"
         placeholder="URL"
         value={form().url}
-        onInput={(e) =>
-          setForm({ ...form(), url: (e.target as HTMLInputElement).value })
-        }
+        onInput={(e) => setForm({ ...form(), url: e.currentTarget.value })}
       />
       <div class="self-center flex gap-2">
         <Show when={form().id}>
