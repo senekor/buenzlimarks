@@ -1,21 +1,26 @@
 {
-    "files.associations": {
-      "*.css": "tailwindcss"
-    },
-    "editor.quickSuggestions": {
-      "strings": true
-    },
-		"eslint.workingDirectories": [
-			"./app",
-		],
-		"eslint.packageManager": "pnpm",
-		"editor.codeActionsOnSave": {
-			"source.fixAll.eslint": true
-		},
-    "[markdown]": {
-      "editor.formatOnSave": true,
-    },
-    "thunder-client.saveToWorkspace": true,
-    "thunder-client.workspaceRelativePath": "dev",
-    "thunder-client.defaultUrl": "http://localhost:4000/api/",
+  "[javascript]": {
+    "editor.defaultFormatter": "rome.rome"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "rome.rome"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "rome.rome"
+  },
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "thunder-client.defaultUrl": "http://localhost:4000/api/",
+  "thunder-client.saveToWorkspace": true,
+  "thunder-client.workspaceRelativePath": "dev"
 }
