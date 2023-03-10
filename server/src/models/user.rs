@@ -16,6 +16,7 @@ pub fn dev_user_id() -> Id<User> {
 }
 
 impl User {
+    #[cfg(debug_assertions)]
     /// returns the default development user
     pub fn dev() -> Self {
         Self {
@@ -24,11 +25,12 @@ impl User {
         }
     }
 
+    #[cfg(debug_assertions)]
     /// returns a new user without a name
-    pub fn anonymous(user_id: &Id<User>) -> Self {
+    pub fn with_id_as_name(user_id: &Id<User>) -> Self {
         Self {
             id: user_id.clone(),
-            name: Some("Anonymous".into()),
+            name: Some(user_id.to_string()),
         }
     }
 }

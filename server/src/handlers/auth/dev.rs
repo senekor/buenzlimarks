@@ -31,7 +31,7 @@ impl FromRequestParts<DB> for User {
 async fn login(Path(user_id): Path<Id<User>>, State(db): State<DB>) -> (StatusCode, String) {
     match db
         .get_user(&user_id)
-        .or_else(|_| db.insert_user(User::anonymous(&user_id)))
+        .or_else(|_| db.insert_user(User::with_id_as_name(&user_id)))
     {
         Ok(_) => (StatusCode::OK, user_id.into()),
         Err(_) => (StatusCode::INTERNAL_SERVER_ERROR, String::new()),
