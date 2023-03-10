@@ -1,10 +1,10 @@
 import {
-	batch,
 	createEffect,
 	createMemo,
 	createResource,
 	createSignal,
 } from "solid-js";
+import { reqInit } from "./api";
 import { UserSchema } from "./models";
 
 export const [userId, setUserId] = createSignal<string>();
@@ -20,15 +20,9 @@ const [bearerToken, { mutate: mutateBearerToken }] = createResource(
 createEffect(() => userId() || mutateBearerToken(undefined));
 export { bearerToken };
 
-const [user, { mutate: mutateUser }] = createResource(
-	bearerToken,
-	async (token) => {
-		const resp = await fetch("/api/users/me", {
-			headers: { Authorization: `Bearer ${token}` },
-		});
-		const data = await resp.json();
-		return UserSchema.parse(data);
-	},
-);
+const [user, { mutate: mutateUser }] = createResource(bearerToken, async () => {
+	const resp = await fetch("/api/users/me", reqInit("GET"));
+	return UserSchema.parse(await resp.json());
+});
 createEffect(() => bearerToken() || mutateUser(undefined));
 export { user };

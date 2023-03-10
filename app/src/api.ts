@@ -3,58 +3,50 @@ import { z } from "zod";
 import { bearerToken } from "./auth";
 import { Bookmark, BookmarkSchema } from "./models";
 
+export function reqInit(
+	method: "GET" | "POST" | "PUT" | "DELETE",
+	data?: unknown,
+): RequestInit {
+	return {
+		method,
+		headers: {
+			Authorization: `Bearer ${bearerToken()}`,
+			...(data ? { "Content-Type": "application/json" } : {}),
+		},
+		...(data ? { body: JSON.stringify(data) } : {}),
+	};
+}
+
 const [bookmarks, { refetch: refetchBookmarks, mutate: mutateBookmarks }] =
 	createResource(bearerToken, async (token) => {
-		const resp = await fetch("/api/bookmarks", {
-			headers: { Authorization: `Bearer ${token}` },
-		});
-		const data = await resp.json();
-		return z.array(BookmarkSchema).parse(data);
+		const resp = await fetch("api/bookmarks", reqInit("GET"));
+		return z.array(BookmarkSchema).parse(await resp.json());
 	});
 createEffect(() => bearerToken() || mutateBookmarks(undefined));
 export { bookmarks };
 
-export const useCreateBookmark = createMemo(() => {
-	return (onSuccess: () => void) => async (payload: Bookmark) => {
-		const resp = await fetch(`/api/bookmarks/${payload.id}`, {
-			method: "POST",
-			headers: {
-				Authorization: `Bearer ${bearerToken()}`,
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(payload),
-		});
+export function useCreateBookmark(onSuccess: () => void) {
+	return async (data: Bookmark) => {
+		const resp = await fetch("api/bookmarks", reqInit("POST", data));
 		refetchBookmarks();
 		onSuccess();
-		const data = await resp.json();
-		return BookmarkSchema.parse(data);
+		return BookmarkSchema.parse(await resp.json());
 	};
-});
+}
 
-export const useUpdateBookmark = createMemo(() => {
-	return (onSuccess: () => void) => async (payload: Bookmark) => {
-		const resp = await fetch(`/api/bookmarks/${payload.id}`, {
-			method: "PUT",
-			headers: {
-				Authorization: `Bearer ${bearerToken()}`,
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(payload),
-		});
+export function useUpdateBookmark(onSuccess: () => void) {
+	return async (data: Bookmark) => {
+		const resp = await fetch(`api/bookmarks/${data.id}`, reqInit("PUT", data));
 		refetchBookmarks();
 		onSuccess();
-		const data = await resp.json();
-		return BookmarkSchema.parse(data);
+		return BookmarkSchema.parse(await resp.json());
 	};
-});
+}
 
-export const useDeleteBookmark = createMemo(() => {
-	return (onSuccess: () => void) => async (id: string) => {
-		fetch(`/api/bookmarks/${id}`, {
-			method: "DELETE",
-			headers: { Authorization: `Bearer ${bearerToken()}` },
-		});
+export function useDeleteBookmark(onSuccess: () => void) {
+	return async (id: string) => {
+		await fetch(`api/bookmarks/${id}`, reqInit("DELETE"));
 		refetchBookmarks();
 		onSuccess();
 	};
-});
+}

@@ -67,9 +67,9 @@ export function App() {
 		}
 	});
 
-	const createBookmark = () => useCreateBookmark()(resetForm);
-	const updateBookmark = () => useUpdateBookmark()(resetForm);
-	const deleteBookmark = () => useDeleteBookmark()(resetForm);
+	const createBookmark = (bm: BookmarkType) => useCreateBookmark(resetForm)(bm);
+	const updateBookmark = (bm: BookmarkType) => useUpdateBookmark(resetForm)(bm);
+	const deleteBookmark = (id: string) => useDeleteBookmark(resetForm)(id);
 
 	return (
 		<div class="flex flex-col bg-slate-800 h-screen">
@@ -104,7 +104,7 @@ export function App() {
 								path={trash}
 								class="w-6"
 								style={{ color: "white" }}
-								onClick={() => deleteBookmark()(bm.id)}
+								onClick={() => deleteBookmark(bm.id)}
 							/>
 						</div>
 					)}
@@ -135,7 +135,7 @@ export function App() {
 					class="text-white bg-slate-600 w-fit rounded px-1 disabled:text-gray-400"
 					disabled={!(form().name && form().url)}
 					onClick={() =>
-						form().id ? updateBookmark()(form()) : createBookmark()(form())
+						form().id ? updateBookmark(form()) : createBookmark(form())
 					}
 				>
 					{!form().id ? "Add" : "Save"}
