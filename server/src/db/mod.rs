@@ -1,5 +1,7 @@
 use crate::models::{bookmark::Bookmark, id::Id, page::Page, user::User, widget::Widget};
 
+mod entity;
+
 pub mod error;
 use error::DbResult;
 

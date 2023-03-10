@@ -3,6 +3,7 @@ use std::path::PathBuf;
 use crate::models::{bookmark::Bookmark, id::Id, page::Page, user::User, widget::Widget};
 
 use super::{
+    entity::DbEntity,
     error::{DbError, DbResult, Whoopsie},
     DbTrait,
 };
@@ -25,12 +26,27 @@ impl FileSystemDb {
             root_dir: PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../dev/db"),
         }
     }
+
+    fn get_user_path(&self, user_id: &Id<User>) -> PathBuf {
+        self.root_dir.join(format!("users/{user_id}"))
+    }
+
+    fn get_user_data_path(&self, user_id: &Id<User>) -> PathBuf {
+        self.get_user_path(user_id).join("data.json")
+    }
+
+    fn get_path<T: DbEntity>(&self, user_id: &Id<User>, entity_id: Option<&Id<T>>) -> PathBuf {
+        let mut path = self.get_user_path(user_id).join(T::plural());
+        if let Some(e) = entity_id {
+            path.push(format!("{e}.json"));
+        }
+        path
+    }
 }
 
 impl DbTrait for FileSystemDb {
     fn get_bookmarks(&self, user_id: &Id<User>) -> DbResult<Vec<Bookmark>> {
-        let bookmark_directories =
-            std::fs::read_dir(self.root_dir.join(format!("users/{user_id}/bookmarks")));
+        let bookmark_directories = std::fs::read_dir(self.get_path::<Bookmark>(user_id, None));
         let bookmark_directories = match bookmark_directories {
             Ok(dir) => dir,
             Err(e) => match e.kind() {
@@ -49,10 +65,10 @@ impl DbTrait for FileSystemDb {
     }
 
     fn insert_page(&self, user_id: &Id<User>, page: &Page) -> DbResult {
-        let pages_dir = self.root_dir.join(format!("users/{user_id}/pages"));
-        std::fs::create_dir_all(&pages_dir).whoopsie()?;
+        let pages_dir = self.get_path::<Page>(user_id, None);
+        std::fs::create_dir_all(pages_dir).whoopsie()?;
         let page_id = &page.id;
-        let page_path = pages_dir.join(format!("{page_id}.json"));
+        let page_path = self.get_path(user_id, Some(page_id));
 
         if std::fs::metadata(&page_path).is_ok() {
             eprintln!("page already exists");
@@ -66,21 +82,18 @@ impl DbTrait for FileSystemDb {
 
     fn insert_widget(&self, user_id: &Id<User>, widget: &Widget) -> DbResult {
         let page_id = &widget.page_id;
-        let page_path = self
-            .root_dir
-            .join(format!("users/{user_id}/pages/{page_id}.json"));
+        let page_path = self.get_path(user_id, Some(page_id));
         std::fs::metadata(page_path).whoopsie()?;
 
-        let widgets_dir = self.root_dir.join(format!("users/{user_id}/widgets"));
-        std::fs::create_dir_all(&widgets_dir).whoopsie()?;
-        let widget_id = &widget.id;
-        let widget_path = widgets_dir.join(format!("{widget_id}.json"));
+        let widgets_dir = self.get_path::<Widget>(user_id, None);
+        std::fs::create_dir_all(widgets_dir).whoopsie()?;
 
+        let widget_id = &widget.id;
+        let widget_path = self.get_path(user_id, Some(widget_id));
         if std::fs::metadata(&widget_path).is_ok() {
             eprintln!("widget already exists");
             return Err(DbError::WhoopsieDoopsie);
         }
-
         std::fs::write(
             widget_path,
             serde_json::to_string_pretty(widget).whoopsie()?,
@@ -92,15 +105,14 @@ impl DbTrait for FileSystemDb {
 
     fn insert_bookmark(&self, user_id: &Id<User>, bookmark: Bookmark) -> DbResult<Bookmark> {
         let widget_id = &bookmark.widget_id;
-        let widget_path = self
-            .root_dir
-            .join(format!("users/{user_id}/widgets/{widget_id}.json"));
+        let widget_path = self.get_path(user_id, Some(widget_id));
         std::fs::metadata(widget_path).whoopsie()?;
 
-        let bookmarks_dir = self.root_dir.join(format!("users/{user_id}/bookmarks"));
-        std::fs::create_dir_all(&bookmarks_dir).whoopsie()?;
+        let bookmarks_dir = self.get_path::<Bookmark>(user_id, None);
+
+        std::fs::create_dir_all(bookmarks_dir).whoopsie()?;
         let bookmark_id = &bookmark.id;
-        let bookmark_path = bookmarks_dir.join(format!("{bookmark_id}.json"));
+        let bookmark_path = self.get_path(user_id, Some(bookmark_id));
 
         if std::fs::metadata(&bookmark_path).is_ok() {
             eprintln!("bookmark already exists");
@@ -117,19 +129,19 @@ impl DbTrait for FileSystemDb {
     }
 
     fn get_user(&self, user_id: &Id<User>) -> DbResult<User> {
-        std::fs::read_to_string(self.root_dir.join(format!("users/{user_id}/data.json")))
+        std::fs::read_to_string(self.get_user_data_path(user_id))
             .whoopsie()
             .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
     }
 
     fn insert_user(&self, user: User) -> DbResult<User> {
-        let user_id = &user.id;
-        let user_dir = self.root_dir.join(format!("users/{user_id}"));
-        for dir in ["pages", "widgets", "bookmarks"] {
-            std::fs::create_dir_all(user_dir.join(dir)).whoopsie()?;
-        }
+        std::fs::create_dir_all(self.get_path::<Page>(&user.id, None)).whoopsie()?;
+        std::fs::create_dir_all(self.get_path::<Widget>(&user.id, None)).whoopsie()?;
+        std::fs::create_dir_all(self.get_path::<Bookmark>(&user.id, None)).whoopsie()?;
+
+        let user_data_path = self.get_user_data_path(&user.id);
         std::fs::write(
-            self.root_dir.join(format!("users/{user_id}/data.json")),
+            user_data_path,
             serde_json::to_string_pretty(&user).whoopsie()?,
         )
         .whoopsie()?;
@@ -137,10 +149,9 @@ impl DbTrait for FileSystemDb {
     }
 
     fn delete_bookmark(&self, user_id: &Id<User>, bookmark_id: &Id<Bookmark>) -> DbResult {
-        match std::fs::remove_file(
-            self.root_dir
-                .join(format!("users/{user_id}/bookmarks/{bookmark_id}.json")),
-        ) {
+        let bookmark_path = self.get_path(user_id, Some(bookmark_id));
+
+        match std::fs::remove_file(bookmark_path) {
             Ok(_) => Ok(()),
             Err(e) => match e.kind() {
                 std::io::ErrorKind::NotFound => Err(DbError::NotFound),
