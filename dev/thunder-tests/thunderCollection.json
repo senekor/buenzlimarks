@@ -4,6 +4,14 @@
     "colName": "default",
     "created": "2023-01-28T19:28:42.197Z",
     "sortNum": 10000,
-    "folders": []
+    "folders": [],
+    "settings": {
+      "headers": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": "buenzli"
+      },
+      "tests": []
+    }
   }
 ]

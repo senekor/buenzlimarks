@@ -46,12 +46,24 @@ impl Id<User> {
     }
 }
 
-impl<T, U: Into<String>> From<U> for Id<T> {
-    fn from(value: U) -> Self {
+impl<T> From<String> for Id<T> {
+    fn from(value: String) -> Self {
         Id {
-            id: value.into(),
+            id: value,
             _type: PhantomData,
         }
+    }
+}
+
+impl<T> From<&str> for Id<T> {
+    fn from(value: &str) -> Self {
+        Id::from(String::from(value))
+    }
+}
+
+impl<T> From<Id<T>> for String {
+    fn from(value: Id<T>) -> Self {
+        value.id
     }
 }
 

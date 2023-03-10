@@ -14,8 +14,6 @@
 //!
 //! TODO oauth2 based authentication for production.
 
-static COOKIE_NAME: &str = "buenzlimarks-auth";
-
 #[cfg(debug_assertions)]
 mod dev;
 #[cfg(debug_assertions)]

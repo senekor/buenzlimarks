@@ -1,5 +1,6 @@
 import {
 	createEffect,
+	createMemo,
 	createResource,
 	createSignal,
 	For,
@@ -8,75 +9,16 @@ import {
 
 import { Icon } from "solid-heroicons";
 import { pencil, trash } from "solid-heroicons/outline";
-import { z } from "zod";
 
-import Bookmark from "./components/bookmark";
-
-const UserSchema = z.object({
-	id: z.string(),
-	name: z.string(),
-});
-
-type User = z.infer<typeof UserSchema>;
-
-const BookmarkSchema = z.object({
-	id: z.string(),
-	name: z.string(),
-	url: z.string(),
-	widget_id: z.string(),
-});
-
-type BookmarkType = z.infer<typeof BookmarkSchema>;
-
-// const getURL = (userId: string) =>
-//   `/api/bookmarks/${userId || "nobody"}`;
-
-function fetchBookmarks(): Promise<BookmarkType[]> {
-	return fetch("/api/bookmarks").then((resp) =>
-		resp.json().then((json) => z.array(BookmarkSchema).parse(json)),
-	);
-}
-
-function createBookmark(payload: BookmarkType): Promise<BookmarkType> {
-	return fetch("/api/bookmarks", {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify(payload),
-	}).then((resp) => resp.json().then((json) => BookmarkSchema.parse(json)));
-}
-
-function updateBookmark(payload: BookmarkType): Promise<BookmarkType> {
-	return fetch(`/api/bookmarks/${payload.id}`, {
-		method: "PUT",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify(payload),
-	}).then((resp) => resp.json().then((json) => BookmarkSchema.parse(json)));
-}
-
-function deleteBookmark(id: string) {
-	return fetch(`/api/bookmarks/${id}`, { method: "DELETE" });
-}
-
-const [user, setUser] = createSignal<User>();
-
-function refetchUser() {
-	fetch("/api/users/me").then((resp) =>
-		resp.json().then((user: User) => setUser(user)),
-	);
-}
-refetchUser();
-
-function login(id: string) {
-	return fetch(`/api/auth/login/${id}`).then(refetchUser);
-}
-
-function logout() {
-	document.cookie =
-		"buenzlimarks-auth=none;" +
-		"SameSite=Lax;" +
-		"expires=Thu, 01 Jan 1970 00:00:01 GMT";
-	setUser(undefined);
-}
+import Bookmark from "./components/Bookmark";
+import {
+	bookmarks,
+	useCreateBookmark,
+	useDeleteBookmark,
+	useUpdateBookmark,
+} from "./api";
+import { Bookmark as BookmarkType, UserSchema } from "./models";
+import { useLogout, setUserId, user } from "./auth";
 
 const bookmarkTmpl: BookmarkType = {
 	id: "",
@@ -86,20 +28,20 @@ const bookmarkTmpl: BookmarkType = {
 };
 
 function UserForm() {
-	const [userId, setUserId] = createSignal("");
-	const submit = () => login(userId());
+	const [userIdForm, setUserIdForm] = createSignal("");
+	const submit = () => setUserId(userIdForm());
 	return (
 		<div class="flex flex-row self-center gap-2">
 			<input
 				class="self-center bg-slate-600 p-1 rounded text-white"
 				placeholder="Enter a user name"
-				value={userId()}
-				onInput={(e) => setUserId(e.currentTarget.value)}
+				value={userIdForm()}
+				onInput={(e) => setUserIdForm(e.currentTarget.value)}
 				onkeydown={(e) => (e.key === "Enter" ? submit() : null)}
 			/>
 			<button
 				class="text-white bg-slate-600 w-fit rounded px-1 disabled:text-gray-400"
-				disabled={!userId()}
+				disabled={!userIdForm()}
 				onClick={submit}
 			>
 				Login
@@ -109,23 +51,25 @@ function UserForm() {
 }
 
 export function App() {
-	const [bookmarks, { refetch }] = createResource(
-		createSignal(true)[0],
-		fetchBookmarks,
-	);
+	const widget_id = () => bookmarks()?.[0]?.widget_id || "";
 
-	createEffect(() => {
-		if (user()) refetch();
-	});
+	const [form, setForm] = createSignal<BookmarkType>(bookmarkTmpl);
+	const resetForm = () =>
+		setForm({
+			...bookmarkTmpl,
+			widget_id: widget_id(),
+		});
 
 	// hack to add bookmarks to valid widget
 	createEffect(() => {
-		const widget_id = bookmarks()?.[0]?.widget_id;
-		if (widget_id) setForm((oldForm) => ({ ...oldForm, widget_id }));
+		if (widget_id) {
+			setForm((oldForm) => ({ ...oldForm, widget_id: widget_id() }));
+		}
 	});
 
-	const [form, setForm] = createSignal<BookmarkType>(bookmarkTmpl);
-	const resetForm = () => setForm(bookmarkTmpl);
+	const createBookmark = () => useCreateBookmark()(resetForm);
+	const updateBookmark = () => useUpdateBookmark()(resetForm);
+	const deleteBookmark = () => useDeleteBookmark()(resetForm);
 
 	return (
 		<div class="flex flex-col bg-slate-800 h-screen">
@@ -137,10 +81,7 @@ export function App() {
 					<div class="text-gray-200">Hello {user()?.name}!</div>
 					<button
 						class="text-white bg-slate-600 w-fit rounded px-1"
-						onClick={() => {
-							logout();
-							refetch();
-						}}
+						onClick={useLogout()}
 					>
 						Logout
 					</button>
@@ -163,11 +104,7 @@ export function App() {
 								path={trash}
 								class="w-6"
 								style={{ color: "white" }}
-								onClick={() =>
-									deleteBookmark(bm.id)
-										.then(() => (bm.id === form().id ? resetForm() : null))
-										.then(refetch)
-								}
+								onClick={() => deleteBookmark()(bm.id)}
 							/>
 						</div>
 					)}
@@ -198,9 +135,7 @@ export function App() {
 					class="text-white bg-slate-600 w-fit rounded px-1 disabled:text-gray-400"
 					disabled={!(form().name && form().url)}
 					onClick={() =>
-						(form().id ? updateBookmark(form()) : createBookmark(form()))
-							.then(resetForm)
-							.then(refetch)
+						form().id ? updateBookmark()(form()) : createBookmark()(form())
 					}
 				>
 					{!form().id ? "Add" : "Save"}

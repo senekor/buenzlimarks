@@ -9,7 +9,7 @@ pub struct User {
 }
 
 #[cfg(debug_assertions)]
-pub static DEV_USER_ID_STR: &str = "dev_user";
+pub static DEV_USER_ID_STR: &str = "buenzli";
 
 pub fn dev_user_id() -> Id<User> {
     Id::dev_user_id()
@@ -20,7 +20,7 @@ impl User {
     pub fn dev() -> Self {
         Self {
             id: dev_user_id(),
-            name: Some("Hackerman".into()),
+            name: Some("Bünzli".into()),
         }
     }
 
@@ -28,7 +28,7 @@ impl User {
     pub fn anonymous(user_id: &Id<User>) -> Self {
         Self {
             id: user_id.clone(),
-            name: None,
+            name: Some("Anonymous".into()),
         }
     }
 }

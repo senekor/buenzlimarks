@@ -4,5 +4,13 @@ import "./index.css";
 import { render } from "solid-js/web";
 
 import { App } from "./App";
+import { Providers } from "./Providers";
 
-render(() => <App />, document.getElementById("root") as HTMLElement);
+render(
+	() => (
+		<Providers>
+			<App />
+		</Providers>
+	),
+	document.getElementById("root") as HTMLElement,
+);
