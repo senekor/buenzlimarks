@@ -1,8 +1,7 @@
 use axum::{
     extract::{Path, State},
     http::StatusCode,
-    routing::{delete, get, post},
-    Json, Router,
+    Json,
 };
 
 use crate::{
@@ -10,14 +9,14 @@ use crate::{
     models::{bookmark::Bookmark, id::Id, user::User},
 };
 
-async fn get_bookmarks(user: User, State(db): State<DB>) -> (StatusCode, Json<Vec<Bookmark>>) {
+pub async fn get_bookmarks(user: User, State(db): State<DB>) -> (StatusCode, Json<Vec<Bookmark>>) {
     match db.get_bookmarks(&user.id) {
         Ok(bookmarks) => (StatusCode::OK, Json(bookmarks)),
         Err(_) => (StatusCode::INTERNAL_SERVER_ERROR, Json(Vec::new())),
     }
 }
 
-async fn create_bookmark(
+pub async fn create_bookmark(
     user: User,
     State(db): State<DB>,
     Json(mut bookmark): Json<Bookmark>,
@@ -28,7 +27,7 @@ async fn create_bookmark(
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
 }
 
-async fn delete_bookmark(
+pub async fn delete_bookmark(
     user: User,
     Path(bookmark_id): Path<Id<Bookmark>>,
     State(db): State<DB>,
@@ -38,13 +37,6 @@ async fn delete_bookmark(
         Err(DbError::NotFound) => Err(StatusCode::NOT_FOUND),
         Err(DbError::WhoopsieDoopsie) => Err(StatusCode::INTERNAL_SERVER_ERROR),
     }
-}
-
-pub fn routes() -> Router<DB> {
-    Router::<DB>::new()
-        .route("/", get(get_bookmarks))
-        .route("/", post(create_bookmark))
-        .route("/:bookmark_id", delete(delete_bookmark))
 }
 
 #[cfg(test)]

@@ -1,11 +1,7 @@
-use axum::{routing::get, Json, Router};
+use axum::Json;
 
-use crate::{db::DB, models::user::User};
+use crate::models::user::User;
 
-async fn whoami(user: User) -> Json<User> {
+pub async fn whoami(user: User) -> Json<User> {
     Json(user)
-}
-
-pub fn routes() -> Router<DB> {
-    Router::<DB>::new().route("/me", get(whoami))
 }

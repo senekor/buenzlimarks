@@ -9,3 +9,6 @@ pub mod handlers;
 /// This module contains the domain models of buenzlimarks.
 /// That includes the data models and business logic.
 pub mod models;
+
+/// This module contains the routes to the graphical user interface.
+pub mod frontend;
