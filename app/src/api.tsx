@@ -2,6 +2,7 @@ import {
 	createContext,
 	createEffect,
 	createResource,
+	createSignal,
 	JSXElement,
 	useContext,
 } from "solid-js";
@@ -16,6 +17,7 @@ function uninit(): never {
 export type Api = {
 	user: () => User | undefined;
 	bookmarks: () => Bookmark[];
+	widgetId: () => string;
 	useCreateBookmark: (onSuccess: () => void) => (bm: Bookmark) => void;
 	useUpdateBookmark: (onSuccess: () => void) => (bm: Bookmark) => void;
 	useDeleteBookmark: (onSuccess: () => void) => (id: string) => void;
@@ -24,12 +26,14 @@ export type Api = {
 const ApiContext = createContext<Api>({
 	user: uninit,
 	bookmarks: uninit,
+	widgetId: uninit,
 	useCreateBookmark: uninit,
 	useUpdateBookmark: uninit,
 	useDeleteBookmark: uninit,
 });
 export const useUser = () => useContext(ApiContext).user;
 export const useBookmarks = () => useContext(ApiContext).bookmarks;
+export const useWidgetId = () => useContext(ApiContext).widgetId;
 
 export function useCreateBookmark(onSuccess: () => void) {
 	return useContext(ApiContext).useCreateBookmark(onSuccess);
@@ -64,12 +68,31 @@ export function ApiProvider(props: { children: JSXElement }) {
 	});
 	createEffect(() => token() || mutateUser());
 
+	const [widgetId, setWidgetId] = createSignal("");
+
 	const [bookmarks, { refetch: refetchBookmarks, mutate: mutateBookmarks }] =
 		createResource(
 			token,
 			async () => {
 				const resp = await fetch("api/bookmarks", request("GET"));
-				return z.array(BookmarkSchema).parse(await resp.json());
+				// return z.array(BookmarkSchema).parse(await resp.json());
+
+				// hacky stuff because there are no "get widgets" / "get bookmarks" endpoints
+				// TODO delete when endpoints are ready
+				const bookmarks = z.array(BookmarkSchema).parse(await resp.json());
+				if (bookmarks.length !== 0) {
+					setWidgetId(bookmarks[0].widget_id);
+					return bookmarks;
+				}
+				const pageResp = await fetch("api/pages", request("POST", { id: "" }));
+				const page = await pageResp.json();
+				const widgetResp = await fetch(
+					"api/widgets",
+					request("POST", { id: "", page_id: page.id }),
+				);
+				const widget = await widgetResp.json();
+				setWidgetId(z.string().parse(widget.id));
+				return bookmarks;
 			},
 			{ initialValue: [] },
 		);
@@ -109,6 +132,7 @@ export function ApiProvider(props: { children: JSXElement }) {
 			value={{
 				user,
 				bookmarks,
+				widgetId,
 				useCreateBookmark,
 				useUpdateBookmark,
 				useDeleteBookmark,

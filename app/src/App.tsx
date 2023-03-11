@@ -19,6 +19,7 @@ import {
 	useDeleteBookmark,
 	useUpdateBookmark,
 	useUser,
+	useWidgetId,
 } from "./api";
 
 const bookmarkTmpl: TBookmark = {
@@ -59,18 +60,18 @@ export function App() {
 	const user = useUser();
 	const bookmarks = useBookmarks();
 
-	const widget_id = () => bookmarks()?.[0]?.widget_id || "";
+	const widgetId = useWidgetId();
 
 	const [form, setForm] = createSignal<TBookmark>(bookmarkTmpl);
 	const resetForm = () =>
 		setForm({
 			...bookmarkTmpl,
-			widget_id: widget_id(),
+			widget_id: widgetId(),
 		});
 
 	// hack to add bookmarks to valid widget
 	createEffect(() => {
-		setForm((oldForm) => ({ ...oldForm, widget_id: widget_id() }));
+		setForm((oldForm) => ({ ...oldForm, widget_id: widgetId() }));
 	});
 
 	const createBookmark = useCreateBookmark(resetForm);
