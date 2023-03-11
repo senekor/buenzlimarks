@@ -106,7 +106,12 @@ impl DbTrait for FileSystemDb {
     fn insert_bookmark(&self, user_id: &Id<User>, bookmark: Bookmark) -> DbResult<Bookmark> {
         let widget_id = &bookmark.widget_id;
         let widget_path = self.get_path(user_id, Some(widget_id));
-        std::fs::metadata(widget_path).whoopsie()?;
+
+        match std::fs::metadata(widget_path).map_err(|e| e.kind()) {
+            Ok(_) => {}
+            Err(std::io::ErrorKind::NotFound) => return Err(DbError::NotFound),
+            _ => return Err(DbError::WhoopsieDoopsie),
+        };
 
         let bookmarks_dir = self.get_path::<Bookmark>(user_id, None);
 

@@ -24,7 +24,10 @@ pub async fn create_bookmark(
     bookmark.id = Id::random();
     db.insert_bookmark(&user.id, bookmark)
         .map(Json)
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
+        .map_err(|e| match e {
+            DbError::NotFound => StatusCode::NOT_FOUND,
+            DbError::WhoopsieDoopsie => StatusCode::INTERNAL_SERVER_ERROR,
+        })
 }
 
 pub async fn delete_bookmark(
