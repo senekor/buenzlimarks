@@ -34,13 +34,12 @@ pub fn insert_seeds(db: &(dyn DbTrait + Send + Sync)) {
         db.insert_user(user.0.clone()).unwrap();
         for page in user.1 {
             let p_id = Id::random();
-            db.insert_page(&user_id, &Page { id: p_id.clone() })
-                .unwrap();
+            db.insert_page(&user_id, Page { id: p_id.clone() }).unwrap();
             for widget in page.iter() {
                 let w_id = Id::random();
                 db.insert_widget(
                     &user_id,
-                    &Widget {
+                    Widget {
                         id: w_id.clone(),
                         page_id: p_id.clone(),
                     },

@@ -64,7 +64,7 @@ impl DbTrait for FileSystemDb {
             .collect()
     }
 
-    fn insert_page(&self, user_id: &Id<User>, page: &Page) -> DbResult {
+    fn insert_page(&self, user_id: &Id<User>, page: Page) -> DbResult<Page> {
         let pages_dir = self.get_path::<Page>(user_id, None);
         std::fs::create_dir_all(pages_dir).whoopsie()?;
         let page_id = &page.id;
@@ -75,15 +75,20 @@ impl DbTrait for FileSystemDb {
             return Err(DbError::WhoopsieDoopsie);
         }
 
-        std::fs::write(page_path, serde_json::to_string_pretty(page).whoopsie()?).whoopsie()?;
+        std::fs::write(page_path, serde_json::to_string_pretty(&page).whoopsie()?).whoopsie()?;
 
-        Ok(())
+        Ok(page)
     }
 
-    fn insert_widget(&self, user_id: &Id<User>, widget: &Widget) -> DbResult {
+    fn insert_widget(&self, user_id: &Id<User>, widget: Widget) -> DbResult<Widget> {
         let page_id = &widget.page_id;
         let page_path = self.get_path(user_id, Some(page_id));
-        std::fs::metadata(page_path).whoopsie()?;
+
+        match std::fs::metadata(page_path).map_err(|e| e.kind()) {
+            Ok(_) => {}
+            Err(std::io::ErrorKind::NotFound) => return Err(DbError::NotFound),
+            _ => return Err(DbError::WhoopsieDoopsie),
+        };
 
         let widgets_dir = self.get_path::<Widget>(user_id, None);
         std::fs::create_dir_all(widgets_dir).whoopsie()?;
@@ -96,11 +101,11 @@ impl DbTrait for FileSystemDb {
         }
         std::fs::write(
             widget_path,
-            serde_json::to_string_pretty(widget).whoopsie()?,
+            serde_json::to_string_pretty(&widget).whoopsie()?,
         )
         .whoopsie()?;
 
-        Ok(())
+        Ok(widget)
     }
 
     fn insert_bookmark(&self, user_id: &Id<User>, bookmark: Bookmark) -> DbResult<Bookmark> {
@@ -198,8 +203,8 @@ mod tests {
             widget_id: "0".into(),
         };
 
-        db.insert_page(&dev_user_id(), &page).unwrap();
-        db.insert_widget(&dev_user_id(), &widget).unwrap();
+        db.insert_page(&dev_user_id(), page).unwrap();
+        db.insert_widget(&dev_user_id(), widget).unwrap();
         db.insert_bookmark(&dev_user_id(), bookmark.clone())
             .unwrap();
 

@@ -45,5 +45,24 @@
     "headers": [],
     "params": [],
     "tests": []
+  },
+  {
+    "_id": "483f4680-0db7-41a0-b591-5725f75e0b77",
+    "colId": "6771bdef-36bc-49e3-a53c-1ae789e62c17",
+    "containerId": "",
+    "name": "create page",
+    "url": "http://localhost:4000/api/pages",
+    "method": "POST",
+    "sortNum": 40000,
+    "created": "2023-03-11T17:53:48.265Z",
+    "modified": "2023-03-11T17:58:42.331Z",
+    "headers": [],
+    "params": [],
+    "body": {
+      "type": "json",
+      "raw": "{\n  \"id\": \"40b56ab8-02a2-492f-b827-b864c59f0c03\"\n}",
+      "form": []
+    },
+    "tests": []
   }
 ]
