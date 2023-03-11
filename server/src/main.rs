@@ -9,6 +9,7 @@ use lib::{
         bookmarks::{create_bookmark, delete_bookmark, get_bookmarks},
         pages::create_page,
         users::whoami,
+        widgets::create_widget,
     },
 };
 use std::net::SocketAddr;
@@ -21,6 +22,7 @@ async fn main() {
         .route("/api/auth/login/:user_id", get(login))
         .route("/api/users/me", get(whoami))
         .route("/api/pages", post(create_page))
+        .route("/api/widgets", post(create_widget))
         .route("/api/bookmarks", get(get_bookmarks))
         .route("/api/bookmarks", post(create_bookmark))
         .route("/api/bookmarks/:bookmark_id", delete(delete_bookmark))

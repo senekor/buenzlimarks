@@ -64,5 +64,24 @@
       "form": []
     },
     "tests": []
+  },
+  {
+    "_id": "e381d76c-98cc-4686-a2d5-bdb1b212dfdc",
+    "colId": "6771bdef-36bc-49e3-a53c-1ae789e62c17",
+    "containerId": "",
+    "name": "create widget",
+    "url": "http://localhost:4000/api/widgets",
+    "method": "POST",
+    "sortNum": 50000,
+    "created": "2023-03-11T19:35:29.774Z",
+    "modified": "2023-03-11T19:37:25.267Z",
+    "headers": [],
+    "params": [],
+    "body": {
+      "type": "json",
+      "raw": "{\n  \"id\": \"f2f43c11-b31b-4290-b762-27638bf44088\",\n  \"page_id\": \"40b56ab8-02a2-492f-b827-b864c59f0c03\"\n}",
+      "form": []
+    },
+    "tests": []
   }
 ]
