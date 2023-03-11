@@ -4,13 +4,16 @@ import "./index.css";
 import { render } from "solid-js/web";
 
 import { App } from "./App";
-import { Providers } from "./Providers";
+import { AuthProvider } from "./auth";
+import { ApiProvider } from "./api";
 
 render(
 	() => (
-		<Providers>
-			<App />
-		</Providers>
+		<AuthProvider>
+			<ApiProvider>
+				<App />
+			</ApiProvider>
+		</AuthProvider>
 	),
 	document.getElementById("root") as HTMLElement,
 );

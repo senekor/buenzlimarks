@@ -11,16 +11,17 @@ import { Icon } from "solid-heroicons";
 import { pencil, trash } from "solid-heroicons/outline";
 
 import Bookmark from "./components/Bookmark";
+import { Bookmark as TBookmark } from "./models";
+import { useAuth } from "./auth";
 import {
-	bookmarks,
+	useBookmarks,
 	useCreateBookmark,
 	useDeleteBookmark,
 	useUpdateBookmark,
+	useUser,
 } from "./api";
-import { Bookmark as BookmarkType, UserSchema } from "./models";
-import { useLogout, setUserId, user } from "./auth";
 
-const bookmarkTmpl: BookmarkType = {
+const bookmarkTmpl: TBookmark = {
 	id: "",
 	name: "",
 	url: "",
@@ -28,20 +29,23 @@ const bookmarkTmpl: BookmarkType = {
 };
 
 function UserForm() {
-	const [userIdForm, setUserIdForm] = createSignal("");
-	const submit = () => setUserId(userIdForm());
+	const [userId, setUserId] = createSignal("");
+
+	const { login } = useAuth();
+	const submit = () => login(userId());
+
 	return (
 		<div class="flex flex-row self-center gap-2">
 			<input
 				class="self-center bg-slate-600 p-1 rounded text-white"
 				placeholder="Enter a user name"
-				value={userIdForm()}
-				onInput={(e) => setUserIdForm(e.currentTarget.value)}
+				value={userId()}
+				onInput={(e) => setUserId(e.currentTarget.value)}
 				onkeydown={(e) => (e.key === "Enter" ? submit() : null)}
 			/>
 			<button
 				class="text-white bg-slate-600 w-fit rounded px-1 disabled:text-gray-400"
-				disabled={!userIdForm()}
+				disabled={!userId()}
 				onClick={submit}
 			>
 				Login
@@ -51,9 +55,13 @@ function UserForm() {
 }
 
 export function App() {
+	const { logout } = useAuth();
+	const user = useUser();
+	const bookmarks = useBookmarks();
+
 	const widget_id = () => bookmarks()?.[0]?.widget_id || "";
 
-	const [form, setForm] = createSignal<BookmarkType>(bookmarkTmpl);
+	const [form, setForm] = createSignal<TBookmark>(bookmarkTmpl);
 	const resetForm = () =>
 		setForm({
 			...bookmarkTmpl,
@@ -62,14 +70,15 @@ export function App() {
 
 	// hack to add bookmarks to valid widget
 	createEffect(() => {
-		if (widget_id) {
-			setForm((oldForm) => ({ ...oldForm, widget_id: widget_id() }));
-		}
+		setForm((oldForm) => ({ ...oldForm, widget_id: widget_id() }));
 	});
 
-	const createBookmark = (bm: BookmarkType) => useCreateBookmark(resetForm)(bm);
-	const updateBookmark = (bm: BookmarkType) => useUpdateBookmark(resetForm)(bm);
-	const deleteBookmark = (id: string) => useDeleteBookmark(resetForm)(id);
+	const createBookmark = useCreateBookmark(resetForm);
+	const updateBookmark = useUpdateBookmark(resetForm);
+	const deleteBookmark = useDeleteBookmark(resetForm);
+
+	const submitBookmark = () =>
+		form().id ? updateBookmark(form()) : createBookmark(form());
 
 	return (
 		<div class="flex flex-col bg-slate-800 h-screen">
@@ -81,7 +90,7 @@ export function App() {
 					<div class="text-gray-200">Hello {user()?.name}!</div>
 					<button
 						class="text-white bg-slate-600 w-fit rounded px-1"
-						onClick={useLogout()}
+						onClick={logout}
 					>
 						Logout
 					</button>
@@ -94,12 +103,12 @@ export function App() {
 							<div class="flex-grow" />
 							<Bookmark title={bm.name} link={bm.url} />
 							<div class="flex-grow" />
-							<Icon
+							{/* <Icon
 								path={pencil}
 								class="w-6 ml-2"
-								style={{ color: "grey" }}
-								// onClick={() => setForm(bm)}
-							/>
+								style={{ color: "white" }}
+								onClick={() => setForm(bm)}
+							/> */}
 							<Icon
 								path={trash}
 								class="w-6"
@@ -134,9 +143,7 @@ export function App() {
 				<button
 					class="text-white bg-slate-600 w-fit rounded px-1 disabled:text-gray-400"
 					disabled={!(form().name && form().url)}
-					onClick={() =>
-						form().id ? updateBookmark(form()) : createBookmark(form())
-					}
+					onClick={submitBookmark}
 				>
 					{!form().id ? "Add" : "Save"}
 				</button>
