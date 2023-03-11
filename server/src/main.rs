@@ -18,16 +18,19 @@ use std::net::SocketAddr;
 async fn main() {
     let db = db::get();
 
-    let router = Router::new()
-        .route("/api/auth/login/:user_id", get(login))
-        .route("/api/users/me", get(whoami))
-        .route("/api/pages", post(create_page))
-        .route("/api/widgets", post(create_widget))
-        .route("/api/bookmarks", get(get_bookmarks))
-        .route("/api/bookmarks", post(create_bookmark))
-        .route("/api/bookmarks/:bookmark_id", delete(delete_bookmark))
+    let api_router = Router::new()
+        .route("/auth/login/:user_id", get(login))
+        .route("/users/me", get(whoami))
+        .route("/pages", post(create_page))
+        .route("/widgets", post(create_widget))
+        .route("/bookmarks", get(get_bookmarks))
+        .route("/bookmarks", post(create_bookmark))
+        .route("/bookmarks/:bookmark_id", delete(delete_bookmark))
         .with_state(db)
-        .layer(auth::extension())
+        .layer(auth::extension());
+
+    let router = Router::new()
+        .nest("/api", api_router)
         .merge(frontend::frontend_routes());
 
     // run it
