@@ -61,6 +61,16 @@ impl FileSystemDb {
             })
             .collect()
     }
+
+    fn get_entity_content<T: DbEntity>(
+        &self,
+        user_id: &Id<User>,
+        entity_id: &Id<T>,
+    ) -> DbResult<T> {
+        std::fs::read_to_string(self.get_path(user_id, Some(entity_id)))
+            .whoopsie()
+            .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
+    }
 }
 
 impl DbTrait for FileSystemDb {
@@ -105,9 +115,7 @@ impl DbTrait for FileSystemDb {
     }
 
     fn get_page(&self, user_id: &Id<User>, page_id: &Id<Page>) -> DbResult<Page> {
-        std::fs::read_to_string(self.get_path(user_id, Some(page_id)))
-            .whoopsie()
-            .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
+        self.get_entity_content(user_id, page_id)
     }
 
     fn get_widgets(&self, user_id: &Id<User>) -> DbResult<Vec<Widget>> {
@@ -143,9 +151,7 @@ impl DbTrait for FileSystemDb {
     }
 
     fn get_widget(&self, user_id: &Id<User>, widget_id: &Id<Widget>) -> DbResult<Widget> {
-        std::fs::read_to_string(self.get_path(user_id, Some(widget_id)))
-            .whoopsie()
-            .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
+        self.get_entity_content(user_id, widget_id)
     }
 
     fn get_bookmarks(&self, user_id: &Id<User>) -> DbResult<Vec<Bookmark>> {
@@ -180,6 +186,10 @@ impl DbTrait for FileSystemDb {
         .whoopsie()?;
 
         Ok(bookmark)
+    }
+
+    fn get_bookmark(&self, user_id: &Id<User>, bookmark_id: &Id<Bookmark>) -> DbResult<Bookmark> {
+        self.get_entity_content(user_id, bookmark_id)
     }
 
     fn delete_bookmark(&self, user_id: &Id<User>, bookmark_id: &Id<Bookmark>) -> DbResult {

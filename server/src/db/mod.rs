@@ -26,6 +26,7 @@ pub trait DbTrait {
 
     fn insert_bookmark(&self, user_id: &Id<User>, bookmark: Bookmark) -> DbResult<Bookmark>;
     fn delete_bookmark(&self, user_id: &Id<User>, bookmark_id: &Id<Bookmark>) -> DbResult;
+    fn get_bookmark(&self, user_id: &Id<User>, bookmark_id: &Id<Bookmark>) -> DbResult<Bookmark>;
     fn get_bookmarks(&self, user_id: &Id<User>) -> DbResult<Vec<Bookmark>>;
 }
 
