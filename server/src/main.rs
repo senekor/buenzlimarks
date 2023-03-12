@@ -7,7 +7,7 @@ use lib::{
     handlers::{
         auth::{self, login},
         bookmarks::{create_bookmark, delete_bookmark, get_bookmarks},
-        pages::create_page,
+        pages::{create_page, get_page},
         users::whoami,
         widgets::create_widget,
     },
@@ -22,6 +22,7 @@ async fn main() {
         .route("/auth/login/:user_id", get(login))
         .route("/users/me", get(whoami))
         .route("/pages", post(create_page))
+        .route("/pages/:page_id", get(get_page))
         .route("/widgets", post(create_widget))
         .route("/bookmarks", get(get_bookmarks))
         .route("/bookmarks", post(create_bookmark))

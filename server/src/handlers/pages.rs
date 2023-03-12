@@ -1,4 +1,4 @@
-use axum::{extract::State, http::StatusCode, Json};
+use axum::{extract::{State, Path}, http::StatusCode, Json};
 
 use crate::{
     db::{error::DbError, DB},
@@ -17,4 +17,15 @@ pub async fn create_page(
             DbError::NotFound => StatusCode::NOT_FOUND,
             DbError::WhoopsieDoopsie => StatusCode::INTERNAL_SERVER_ERROR,
         })
+}
+
+pub async fn get_page(
+    user: User,
+    Path(page_id): Path<Id<Page>>,
+    State(db): State<DB>,
+) -> Result<Json<Page>, StatusCode> {
+    db.read_page(&user.id, &page_id).map(Json).map_err(|e| match e {
+        DbError::NotFound => StatusCode::NOT_FOUND,
+        DbError::WhoopsieDoopsie => StatusCode::INTERNAL_SERVER_ERROR,
+    })
 }

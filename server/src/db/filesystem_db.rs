@@ -67,9 +67,9 @@ impl DbTrait for FileSystemDb {
     fn insert_page(&self, user_id: &Id<User>, page: Page) -> DbResult<Page> {
         let pages_dir = self.get_path::<Page>(user_id, None);
         std::fs::create_dir_all(pages_dir).whoopsie()?;
+
         let page_id = &page.id;
         let page_path = self.get_path(user_id, Some(page_id));
-
         if std::fs::metadata(&page_path).is_ok() {
             eprintln!("page already exists");
             return Err(DbError::WhoopsieDoopsie);
@@ -78,6 +78,12 @@ impl DbTrait for FileSystemDb {
         std::fs::write(page_path, serde_json::to_string_pretty(&page).whoopsie()?).whoopsie()?;
 
         Ok(page)
+    }
+
+    fn read_page(&self, user_id: &Id<User>, page_id: &Id<Page>) -> DbResult<Page> {
+        std::fs::read_to_string(self.get_path(user_id, Some(page_id)))
+            .whoopsie()
+            .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
     }
 
     fn insert_widget(&self, user_id: &Id<User>, widget: Widget) -> DbResult<Widget> {
