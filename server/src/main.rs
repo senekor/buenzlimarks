@@ -21,14 +21,22 @@ async fn main() {
     let api_router = Router::new()
         .route("/auth/login/:user_id", get(login))
         .route("/users/me", get(whoami))
-        .route("/pages", get(get_pages))
+        //
+        // POST - create
         .route("/pages", post(create_page))
-        .route("/pages/:page_id", get(get_page))
-        .route("/widgets", get(get_widgets))
         .route("/widgets", post(create_widget))
-        .route("/widgets/:widget_id", get(get_widget))
-        .route("/bookmarks", get(get_bookmarks))
         .route("/bookmarks", post(create_bookmark))
+        //
+        // GET - read
+        .route("/pages/:page_id", get(get_page))
+        .route("/pages", get(get_pages))
+        .route("/widgets/:widget_id", get(get_widget))
+        .route("/widgets", get(get_widgets))
+        .route("/bookmarks", get(get_bookmarks))
+        //
+        // PUT - update
+        //
+        // DELETE - delete
         .route("/bookmarks/:bookmark_id", delete(delete_bookmark))
         .with_state(db)
         .layer(auth::extension());

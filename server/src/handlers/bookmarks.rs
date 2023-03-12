@@ -9,13 +9,6 @@ use crate::{
     models::{bookmark::Bookmark, id::Id, user::User},
 };
 
-pub async fn get_bookmarks(user: User, State(db): State<DB>) -> (StatusCode, Json<Vec<Bookmark>>) {
-    match db.get_bookmarks(&user.id) {
-        Ok(bookmarks) => (StatusCode::OK, Json(bookmarks)),
-        Err(_) => (StatusCode::INTERNAL_SERVER_ERROR, Json(Vec::new())),
-    }
-}
-
 pub async fn create_bookmark(
     user: User,
     State(db): State<DB>,
@@ -28,6 +21,13 @@ pub async fn create_bookmark(
             DbError::NotFound => StatusCode::NOT_FOUND,
             DbError::WhoopsieDoopsie => StatusCode::INTERNAL_SERVER_ERROR,
         })
+}
+
+pub async fn get_bookmarks(user: User, State(db): State<DB>) -> (StatusCode, Json<Vec<Bookmark>>) {
+    match db.get_bookmarks(&user.id) {
+        Ok(bookmarks) => (StatusCode::OK, Json(bookmarks)),
+        Err(_) => (StatusCode::INTERNAL_SERVER_ERROR, Json(Vec::new())),
+    }
 }
 
 pub async fn delete_bookmark(
