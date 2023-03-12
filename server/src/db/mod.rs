@@ -21,6 +21,7 @@ pub trait DbTrait {
     fn get_page(&self, user_id: &Id<User>, page_id: &Id<Page>) -> DbResult<Page>;
 
     fn insert_widget(&self, user_id: &Id<User>, widget: Widget) -> DbResult<Widget>;
+    fn get_widget(&self, user_id: &Id<User>, widget_id: &Id<Widget>) -> DbResult<Widget>;
 
     fn insert_bookmark(&self, user_id: &Id<User>, bookmark: Bookmark) -> DbResult<Bookmark>;
     fn get_bookmarks(&self, user_id: &Id<User>) -> DbResult<Vec<Bookmark>>;

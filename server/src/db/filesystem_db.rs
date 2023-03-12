@@ -105,6 +105,12 @@ impl DbTrait for FileSystemDb {
             .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
     }
 
+    fn get_widget(&self, user_id: &Id<User>, widget_id: &Id<Widget>) -> DbResult<Widget> {
+        std::fs::read_to_string(self.get_path(user_id, Some(widget_id)))
+            .whoopsie()
+            .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
+    }
+
     fn insert_widget(&self, user_id: &Id<User>, widget: Widget) -> DbResult<Widget> {
         let page_id = &widget.page_id;
         let page_path = self.get_path(user_id, Some(page_id));
