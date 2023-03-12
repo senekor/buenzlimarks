@@ -20,6 +20,7 @@ pub async fn create_page(
         .map_err(|e| match e {
             DbError::NotFound => StatusCode::NOT_FOUND,
             DbError::WhoopsieDoopsie => StatusCode::INTERNAL_SERVER_ERROR,
+            DbError::AlreadyExists => StatusCode::INTERNAL_SERVER_ERROR,
         })
 }
 
@@ -33,6 +34,7 @@ pub async fn get_page(
         .map_err(|e| match e {
             DbError::NotFound => StatusCode::NOT_FOUND,
             DbError::WhoopsieDoopsie => StatusCode::INTERNAL_SERVER_ERROR,
+            DbError::AlreadyExists => StatusCode::INTERNAL_SERVER_ERROR,
         })
 }
 

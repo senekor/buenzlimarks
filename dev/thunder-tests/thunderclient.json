@@ -22,12 +22,12 @@
     "method": "POST",
     "sortNum": 20000,
     "created": "2023-02-11T15:31:32.292Z",
-    "modified": "2023-03-12T16:14:59.129Z",
+    "modified": "2023-03-12T19:59:38.720Z",
     "headers": [],
     "params": [],
     "body": {
       "type": "json",
-      "raw": "{\n  \"id\": \"random id\",\n  \"name\": \"random name\",\n  \"url\": \"http://leckmich.ch\",\n  \"widget_id\": \"4e4ce592-fa11-4361-a00b-f2592504c807\"\n}",
+      "raw": "{\n  \"id\": \"random id\",\n  \"name\": \"random name\",\n  \"url\": \"http://leckmich.ch\",\n  \"widget_id\": \"28433aee-b4a0-4c58-92e7-4580ca2224a9\"\n}",
       "form": []
     },
     "tests": []
@@ -74,12 +74,12 @@
     "method": "POST",
     "sortNum": 50000,
     "created": "2023-03-11T19:35:29.774Z",
-    "modified": "2023-03-11T19:37:25.267Z",
+    "modified": "2023-03-12T19:53:29.041Z",
     "headers": [],
     "params": [],
     "body": {
       "type": "json",
-      "raw": "{\n  \"id\": \"f2f43c11-b31b-4290-b762-27638bf44088\",\n  \"page_id\": \"40b56ab8-02a2-492f-b827-b864c59f0c03\"\n}",
+      "raw": "{\n    \"id\": \"04e697c3-6e48-4db7-85da-b9f1b43c8934\",\n    \"page_id\": \"40b56ab8-02a2-492f-b827-b864c59f0c03\"\n  }",
       "form": []
     },
     "tests": []

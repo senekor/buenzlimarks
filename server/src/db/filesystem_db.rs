@@ -27,6 +27,37 @@ impl FileSystemDb {
         }
     }
 
+    fn provided_entity<T: DbEntity>(&self, user_id: &Id<User>, provided_id: &Id<T>) -> bool {
+        let provided_entity_path = self.get_path(user_id, Some(provided_id));
+        match std::fs::metadata(provided_entity_path).map_err(|e| e.kind()) {
+            Ok(_) => true,
+            Err(std::io::ErrorKind::NotFound) => {
+                println!("Provided entity not found!");
+                false
+            }
+            _ => false,
+        }
+    }
+
+    fn insert_entity<T: DbEntity>(&self, user_id: &Id<User>, entity: T) -> DbResult<T> {
+        // availability
+        let entity_path = self.get_path(user_id, Some(entity.get_id()));
+        match std::fs::metadata(&entity_path).map_err(|e| e.kind()) {
+            Ok(_) => return Err(DbError::AlreadyExists),
+            Err(std::io::ErrorKind::NotFound) => {}
+            _ => return Err(DbError::WhoopsieDoopsie),
+        };
+
+        // insert
+        std::fs::write(
+            entity_path,
+            serde_json::to_string_pretty(&entity).whoopsie()?,
+        )
+        .whoopsie()?;
+
+        Ok(entity)
+    }
+
     fn get_user_path(&self, user_id: &Id<User>) -> PathBuf {
         self.root_dir.join(format!("users/{user_id}"))
     }
@@ -90,68 +121,23 @@ impl DbTrait for FileSystemDb {
     }
 
     fn insert_page(&self, user_id: &Id<User>, page: Page) -> DbResult<Page> {
-        let page_id = &page.id;
-        let page_path = self.get_path(user_id, Some(page_id));
-        if std::fs::metadata(&page_path).is_ok() {
-            eprintln!("page already exists");
-            return Err(DbError::WhoopsieDoopsie);
-        }
-
-        std::fs::write(page_path, serde_json::to_string_pretty(&page).whoopsie()?).whoopsie()?;
-
-        Ok(page)
+        self.insert_entity(user_id, page)
     }
 
     fn insert_widget(&self, user_id: &Id<User>, widget: Widget) -> DbResult<Widget> {
-        let page_id = &widget.page_id;
-        let page_path = self.get_path(user_id, Some(page_id));
-
-        match std::fs::metadata(page_path).map_err(|e| e.kind()) {
-            Ok(_) => {}
-            Err(std::io::ErrorKind::NotFound) => return Err(DbError::NotFound),
-            _ => return Err(DbError::WhoopsieDoopsie),
-        };
-
-        let widget_id = &widget.id;
-        let widget_path = self.get_path(user_id, Some(widget_id));
-        if std::fs::metadata(&widget_path).is_ok() {
-            eprintln!("widget already exists");
-            return Err(DbError::WhoopsieDoopsie);
+        if self.provided_entity(user_id, &widget.page_id) {
+            self.insert_entity(user_id, widget)
+        } else {
+            DbResult::Err(DbError::WhoopsieDoopsie)
         }
-        std::fs::write(
-            widget_path,
-            serde_json::to_string_pretty(&widget).whoopsie()?,
-        )
-        .whoopsie()?;
-
-        Ok(widget)
     }
 
     fn insert_bookmark(&self, user_id: &Id<User>, bookmark: Bookmark) -> DbResult<Bookmark> {
-        let widget_id = &bookmark.widget_id;
-        let widget_path = self.get_path(user_id, Some(widget_id));
-
-        match std::fs::metadata(widget_path).map_err(|e| e.kind()) {
-            Ok(_) => {}
-            Err(std::io::ErrorKind::NotFound) => return Err(DbError::NotFound),
-            _ => return Err(DbError::WhoopsieDoopsie),
-        };
-
-        let bookmark_id = &bookmark.id;
-        let bookmark_path = self.get_path(user_id, Some(bookmark_id));
-
-        if std::fs::metadata(&bookmark_path).is_ok() {
-            eprintln!("bookmark already exists");
-            return Err(DbError::WhoopsieDoopsie);
+        if self.provided_entity(user_id, &bookmark.widget_id) {
+            self.insert_entity(user_id, bookmark)
+        } else {
+            DbResult::Err(DbError::WhoopsieDoopsie)
         }
-
-        std::fs::write(
-            bookmark_path,
-            serde_json::to_string_pretty(&bookmark).whoopsie()?,
-        )
-        .whoopsie()?;
-
-        Ok(bookmark)
     }
 
     // GET - one
@@ -232,6 +218,7 @@ mod tests {
             widget_id: "0".into(),
         };
 
+        db.insert_user(User::dev()).unwrap();
         db.insert_page(&dev_user_id(), page).unwrap();
         db.insert_widget(&dev_user_id(), widget).unwrap();
         db.insert_bookmark(&dev_user_id(), bookmark.clone())

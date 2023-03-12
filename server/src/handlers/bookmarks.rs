@@ -20,6 +20,7 @@ pub async fn create_bookmark(
         .map_err(|e| match e {
             DbError::NotFound => StatusCode::NOT_FOUND,
             DbError::WhoopsieDoopsie => StatusCode::INTERNAL_SERVER_ERROR,
+            DbError::AlreadyExists => StatusCode::INTERNAL_SERVER_ERROR,
         })
 }
 
@@ -39,6 +40,7 @@ pub async fn delete_bookmark(
         Ok(_) => Ok(()),
         Err(DbError::NotFound) => Err(StatusCode::NOT_FOUND),
         Err(DbError::WhoopsieDoopsie) => Err(StatusCode::INTERNAL_SERVER_ERROR),
+        Err(DbError::AlreadyExists) => Err(StatusCode::INTERNAL_SERVER_ERROR),
     }
 }
 
