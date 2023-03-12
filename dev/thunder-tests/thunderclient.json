@@ -125,5 +125,19 @@
     "headers": [],
     "params": [],
     "tests": []
+  },
+  {
+    "_id": "c2b1658d-b4e7-43f6-a0dc-fe8c5c7c0220",
+    "colId": "6771bdef-36bc-49e3-a53c-1ae789e62c17",
+    "containerId": "",
+    "name": "get widgets",
+    "url": "http://localhost:4000/api/widgets",
+    "method": "GET",
+    "sortNum": 48750,
+    "created": "2023-03-12T11:52:45.996Z",
+    "modified": "2023-03-12T11:53:22.410Z",
+    "headers": [],
+    "params": [],
+    "tests": []
   }
 ]

@@ -35,3 +35,10 @@ pub async fn get_widget(
             DbError::WhoopsieDoopsie => StatusCode::INTERNAL_SERVER_ERROR,
         })
 }
+
+pub async fn get_widgets(user: User, State(db): State<DB>) -> (StatusCode, Json<Vec<Widget>>) {
+    match db.get_widgets(&user.id) {
+        Ok(widgets) => (StatusCode::OK, Json(widgets)),
+        Err(_) => (StatusCode::INTERNAL_SERVER_ERROR, Json(Vec::new())),
+    }
+}
