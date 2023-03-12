@@ -90,9 +90,6 @@ impl DbTrait for FileSystemDb {
     }
 
     fn insert_page(&self, user_id: &Id<User>, page: Page) -> DbResult<Page> {
-        let pages_dir = self.get_path::<Page>(user_id, None);
-        std::fs::create_dir_all(pages_dir).whoopsie()?;
-
         let page_id = &page.id;
         let page_path = self.get_path(user_id, Some(page_id));
         if std::fs::metadata(&page_path).is_ok() {
@@ -114,9 +111,6 @@ impl DbTrait for FileSystemDb {
             Err(std::io::ErrorKind::NotFound) => return Err(DbError::NotFound),
             _ => return Err(DbError::WhoopsieDoopsie),
         };
-
-        let widgets_dir = self.get_path::<Widget>(user_id, None);
-        std::fs::create_dir_all(widgets_dir).whoopsie()?;
 
         let widget_id = &widget.id;
         let widget_path = self.get_path(user_id, Some(widget_id));
@@ -143,9 +137,6 @@ impl DbTrait for FileSystemDb {
             _ => return Err(DbError::WhoopsieDoopsie),
         };
 
-        let bookmarks_dir = self.get_path::<Bookmark>(user_id, None);
-
-        std::fs::create_dir_all(bookmarks_dir).whoopsie()?;
         let bookmark_id = &bookmark.id;
         let bookmark_path = self.get_path(user_id, Some(bookmark_id));
 
