@@ -21,7 +21,7 @@ path = "cmd/db_reset.rs"
 [dependencies]
 tokio = { version = "1.0", features = ["full"] }
 axum = { version = "0.6", features = ["macros", "headers"] }
-tower-http = { version = "0.3.0", features = ["fs", "trace"] }
+tower-http = { version = "0.4.0", features = ["fs", "trace"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1"
 uuid = { version = "1.1.2", features = ["v4"] }
@@ -29,7 +29,6 @@ oauth2 = "4.2.3"
 jwt = "0.16.0"
 hmac = { version = "0.12.1", features = ["std"] }
 sha2 = "0.10.2"
-cfg-if = "1.0.0"
 rust-embed = { version = "6.6.0", features = ["axum"] }
 mime_guess = "2.0.4"
 
