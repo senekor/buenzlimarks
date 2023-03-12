@@ -64,6 +64,25 @@ impl DbTrait for FileSystemDb {
             .collect()
     }
 
+    fn get_pages(&self, user_id: &Id<User>) -> DbResult<Vec<Page>> {
+        let pages_directories = std::fs::read_dir(self.get_path::<Page>(user_id, None));
+        let pages_directories = match pages_directories {
+            Ok(dir) => dir,
+            Err(e) => match e.kind() {
+                std::io::ErrorKind::NotFound => return Ok(Vec::new()),
+                _ => return Err(DbError::WhoopsieDoopsie),
+            },
+        };
+
+        pages_directories
+            .map(|page_file| -> DbResult<Page> {
+                std::fs::read_to_string(page_file.whoopsie()?.path())
+                    .whoopsie()
+                    .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
+            })
+            .collect()
+    }
+
     fn insert_page(&self, user_id: &Id<User>, page: Page) -> DbResult<Page> {
         let pages_dir = self.get_path::<Page>(user_id, None);
         std::fs::create_dir_all(pages_dir).whoopsie()?;
@@ -80,7 +99,7 @@ impl DbTrait for FileSystemDb {
         Ok(page)
     }
 
-    fn read_page(&self, user_id: &Id<User>, page_id: &Id<Page>) -> DbResult<Page> {
+    fn get_page(&self, user_id: &Id<User>, page_id: &Id<Page>) -> DbResult<Page> {
         std::fs::read_to_string(self.get_path(user_id, Some(page_id)))
             .whoopsie()
             .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())

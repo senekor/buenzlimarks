@@ -13,13 +13,17 @@ pub use seed_data::insert_seeds;
 
 #[cfg_attr(test, mockall::automock)]
 pub trait DbTrait {
-    fn get_bookmarks(&self, user_id: &Id<User>) -> DbResult<Vec<Bookmark>>;
-    fn insert_page(&self, user_id: &Id<User>, page: Page) -> DbResult<Page>;
-    fn read_page(&self, user_id: &Id<User>, page_id: &Id<Page>) -> DbResult<Page>;
-    fn insert_widget(&self, user_id: &Id<User>, widget: Widget) -> DbResult<Widget>;
-    fn insert_bookmark(&self, user_id: &Id<User>, bookmark: Bookmark) -> DbResult<Bookmark>;
-    fn get_user(&self, user_id: &Id<User>) -> DbResult<User>;
     fn insert_user(&self, user: User) -> DbResult<User>;
+    fn get_user(&self, user_id: &Id<User>) -> DbResult<User>;
+
+    fn get_pages(&self, user_id: &Id<User>) -> DbResult<Vec<Page>>;
+    fn insert_page(&self, user_id: &Id<User>, page: Page) -> DbResult<Page>;
+    fn get_page(&self, user_id: &Id<User>, page_id: &Id<Page>) -> DbResult<Page>;
+
+    fn insert_widget(&self, user_id: &Id<User>, widget: Widget) -> DbResult<Widget>;
+
+    fn insert_bookmark(&self, user_id: &Id<User>, bookmark: Bookmark) -> DbResult<Bookmark>;
+    fn get_bookmarks(&self, user_id: &Id<User>) -> DbResult<Vec<Bookmark>>;
     fn delete_bookmark(&self, user_id: &Id<User>, bookmark_id: &Id<Bookmark>) -> DbResult;
 }
 

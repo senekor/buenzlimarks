@@ -7,7 +7,7 @@ use lib::{
     handlers::{
         auth::{self, login},
         bookmarks::{create_bookmark, delete_bookmark, get_bookmarks},
-        pages::{create_page, get_page},
+        pages::{create_page, get_page, get_pages},
         users::whoami,
         widgets::create_widget,
     },
@@ -19,14 +19,15 @@ async fn main() {
     let db = db::get();
 
     let api_router = Router::new()
-        .route("/auth/login/:user_id", get(login))
-        .route("/users/me", get(whoami))
-        .route("/pages", post(create_page))
-        .route("/pages/:page_id", get(get_page))
-        .route("/widgets", post(create_widget))
-        .route("/bookmarks", get(get_bookmarks))
-        .route("/bookmarks", post(create_bookmark))
-        .route("/bookmarks/:bookmark_id", delete(delete_bookmark))
+    .route("/auth/login/:user_id", get(login))
+    .route("/users/me", get(whoami))
+    .route("/pages", post(create_page))
+    .route("/pages", get(get_pages))
+    .route("/pages/:page_id", get(get_page))
+    .route("/widgets", post(create_widget))
+    .route("/bookmarks", get(get_bookmarks))
+    .route("/bookmarks", post(create_bookmark))
+    .route("/bookmarks/:bookmark_id", delete(delete_bookmark))
         .with_state(db)
         .layer(auth::extension());
 

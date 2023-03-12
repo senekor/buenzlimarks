@@ -97,5 +97,19 @@
     "headers": [],
     "params": [],
     "tests": []
+  },
+  {
+    "_id": "0506b56a-a497-489f-911a-f89022f17978",
+    "colId": "6771bdef-36bc-49e3-a53c-1ae789e62c17",
+    "containerId": "",
+    "name": "get pages",
+    "url": "http://localhost:4000/api/pages",
+    "method": "GET",
+    "sortNum": 47500,
+    "created": "2023-03-12T11:12:07.210Z",
+    "modified": "2023-03-12T11:13:02.831Z",
+    "headers": [],
+    "params": [],
+    "tests": []
   }
 ]
