@@ -9,6 +9,13 @@ use crate::{
     models::{id::Id, page::Page, user::User},
 };
 
+pub async fn get_pages(user: User, State(db): State<DB>) -> (StatusCode, Json<Vec<Page>>) {
+    match db.get_pages(&user.id) {
+        Ok(pages) => (StatusCode::OK, Json(pages)),
+        Err(_) => (StatusCode::INTERNAL_SERVER_ERROR, Json(Vec::new())),
+    }
+}
+
 pub async fn create_page(
     user: User,
     State(db): State<DB>,
@@ -21,13 +28,6 @@ pub async fn create_page(
             DbError::NotFound => StatusCode::NOT_FOUND,
             DbError::WhoopsieDoopsie => StatusCode::INTERNAL_SERVER_ERROR,
         })
-}
-
-pub async fn get_pages(user: User, State(db): State<DB>) -> (StatusCode, Json<Vec<Page>>) {
-    match db.get_pages(&user.id) {
-        Ok(pages) => (StatusCode::OK, Json(pages)),
-        Err(_) => (StatusCode::INTERNAL_SERVER_ERROR, Json(Vec::new())),
-    }
 }
 
 pub async fn get_page(

@@ -45,23 +45,24 @@ impl FileSystemDb {
 }
 
 impl DbTrait for FileSystemDb {
-    fn get_bookmarks(&self, user_id: &Id<User>) -> DbResult<Vec<Bookmark>> {
-        let bookmark_directories = std::fs::read_dir(self.get_path::<Bookmark>(user_id, None));
-        let bookmark_directories = match bookmark_directories {
-            Ok(dir) => dir,
-            Err(e) => match e.kind() {
-                std::io::ErrorKind::NotFound => return Ok(Vec::new()),
-                _ => return Err(DbError::WhoopsieDoopsie),
-            },
-        };
+    fn insert_user(&self, user: User) -> DbResult<User> {
+        std::fs::create_dir_all(self.get_path::<Page>(&user.id, None)).whoopsie()?;
+        std::fs::create_dir_all(self.get_path::<Widget>(&user.id, None)).whoopsie()?;
+        std::fs::create_dir_all(self.get_path::<Bookmark>(&user.id, None)).whoopsie()?;
 
-        bookmark_directories
-            .map(|bookmark_file| -> DbResult<Bookmark> {
-                std::fs::read_to_string(bookmark_file.whoopsie()?.path())
-                    .whoopsie()
-                    .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
-            })
-            .collect()
+        let user_data_path = self.get_user_data_path(&user.id);
+        std::fs::write(
+            user_data_path,
+            serde_json::to_string_pretty(&user).whoopsie()?,
+        )
+        .whoopsie()?;
+        Ok(user)
+    }
+
+    fn get_user(&self, user_id: &Id<User>) -> DbResult<User> {
+        std::fs::read_to_string(self.get_user_data_path(user_id))
+            .whoopsie()
+            .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
     }
 
     fn get_pages(&self, user_id: &Id<User>) -> DbResult<Vec<Page>> {
@@ -101,12 +102,6 @@ impl DbTrait for FileSystemDb {
 
     fn get_page(&self, user_id: &Id<User>, page_id: &Id<Page>) -> DbResult<Page> {
         std::fs::read_to_string(self.get_path(user_id, Some(page_id)))
-            .whoopsie()
-            .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
-    }
-
-    fn get_widget(&self, user_id: &Id<User>, widget_id: &Id<Widget>) -> DbResult<Widget> {
-        std::fs::read_to_string(self.get_path(user_id, Some(widget_id)))
             .whoopsie()
             .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
     }
@@ -158,6 +153,31 @@ impl DbTrait for FileSystemDb {
         Ok(widget)
     }
 
+    fn get_widget(&self, user_id: &Id<User>, widget_id: &Id<Widget>) -> DbResult<Widget> {
+        std::fs::read_to_string(self.get_path(user_id, Some(widget_id)))
+            .whoopsie()
+            .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
+    }
+
+    fn get_bookmarks(&self, user_id: &Id<User>) -> DbResult<Vec<Bookmark>> {
+        let bookmark_directories = std::fs::read_dir(self.get_path::<Bookmark>(user_id, None));
+        let bookmark_directories = match bookmark_directories {
+            Ok(dir) => dir,
+            Err(e) => match e.kind() {
+                std::io::ErrorKind::NotFound => return Ok(Vec::new()),
+                _ => return Err(DbError::WhoopsieDoopsie),
+            },
+        };
+
+        bookmark_directories
+            .map(|bookmark_file| -> DbResult<Bookmark> {
+                std::fs::read_to_string(bookmark_file.whoopsie()?.path())
+                    .whoopsie()
+                    .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
+            })
+            .collect()
+    }
+
     fn insert_bookmark(&self, user_id: &Id<User>, bookmark: Bookmark) -> DbResult<Bookmark> {
         let widget_id = &bookmark.widget_id;
         let widget_path = self.get_path(user_id, Some(widget_id));
@@ -186,26 +206,6 @@ impl DbTrait for FileSystemDb {
         .whoopsie()?;
 
         Ok(bookmark)
-    }
-
-    fn get_user(&self, user_id: &Id<User>) -> DbResult<User> {
-        std::fs::read_to_string(self.get_user_data_path(user_id))
-            .whoopsie()
-            .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
-    }
-
-    fn insert_user(&self, user: User) -> DbResult<User> {
-        std::fs::create_dir_all(self.get_path::<Page>(&user.id, None)).whoopsie()?;
-        std::fs::create_dir_all(self.get_path::<Widget>(&user.id, None)).whoopsie()?;
-        std::fs::create_dir_all(self.get_path::<Bookmark>(&user.id, None)).whoopsie()?;
-
-        let user_data_path = self.get_user_data_path(&user.id);
-        std::fs::write(
-            user_data_path,
-            serde_json::to_string_pretty(&user).whoopsie()?,
-        )
-        .whoopsie()?;
-        Ok(user)
     }
 
     fn delete_bookmark(&self, user_id: &Id<User>, bookmark_id: &Id<Bookmark>) -> DbResult {

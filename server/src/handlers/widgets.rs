@@ -9,6 +9,13 @@ use crate::{
     models::{id::Id, user::User, widget::Widget},
 };
 
+pub async fn get_widgets(user: User, State(db): State<DB>) -> (StatusCode, Json<Vec<Widget>>) {
+    match db.get_widgets(&user.id) {
+        Ok(widgets) => (StatusCode::OK, Json(widgets)),
+        Err(_) => (StatusCode::INTERNAL_SERVER_ERROR, Json(Vec::new())),
+    }
+}
+
 pub async fn create_widget(
     user: User,
     State(db): State<DB>,
@@ -34,11 +41,4 @@ pub async fn get_widget(
             DbError::NotFound => StatusCode::NOT_FOUND,
             DbError::WhoopsieDoopsie => StatusCode::INTERNAL_SERVER_ERROR,
         })
-}
-
-pub async fn get_widgets(user: User, State(db): State<DB>) -> (StatusCode, Json<Vec<Widget>>) {
-    match db.get_widgets(&user.id) {
-        Ok(widgets) => (StatusCode::OK, Json(widgets)),
-        Err(_) => (StatusCode::INTERNAL_SERVER_ERROR, Json(Vec::new())),
-    }
 }
