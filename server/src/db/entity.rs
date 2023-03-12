@@ -1,6 +1,10 @@
+use std::fmt::Debug;
+
+use serde::{Deserialize, Serialize};
+
 use crate::models::{bookmark::Bookmark, page::Page, widget::Widget};
 
-pub trait DbEntity {
+pub trait DbEntity: Debug + Serialize + for<'a> Deserialize<'a> {
     fn plural() -> &'static str;
 }
 

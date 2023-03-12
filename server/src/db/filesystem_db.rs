@@ -42,6 +42,25 @@ impl FileSystemDb {
         }
         path
     }
+
+    fn get_directory_content<T: DbEntity>(&self, user_id: &Id<User>) -> DbResult<Vec<T>> {
+        let entity_dir = std::fs::read_dir(self.get_path::<T>(user_id, None));
+        let entity_dir = match entity_dir {
+            Ok(dir) => dir,
+            Err(e) => match e.kind() {
+                std::io::ErrorKind::NotFound => return Ok(Vec::new()),
+                _ => return Err(DbError::WhoopsieDoopsie),
+            },
+        };
+
+        entity_dir
+            .map(|page_file| -> DbResult<T> {
+                std::fs::read_to_string(page_file.whoopsie()?.path())
+                    .whoopsie()
+                    .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
+            })
+            .collect()
+    }
 }
 
 impl DbTrait for FileSystemDb {
@@ -66,22 +85,7 @@ impl DbTrait for FileSystemDb {
     }
 
     fn get_pages(&self, user_id: &Id<User>) -> DbResult<Vec<Page>> {
-        let pages_directories = std::fs::read_dir(self.get_path::<Page>(user_id, None));
-        let pages_directories = match pages_directories {
-            Ok(dir) => dir,
-            Err(e) => match e.kind() {
-                std::io::ErrorKind::NotFound => return Ok(Vec::new()),
-                _ => return Err(DbError::WhoopsieDoopsie),
-            },
-        };
-
-        pages_directories
-            .map(|page_file| -> DbResult<Page> {
-                std::fs::read_to_string(page_file.whoopsie()?.path())
-                    .whoopsie()
-                    .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
-            })
-            .collect()
+        self.get_directory_content(user_id)
     }
 
     fn insert_page(&self, user_id: &Id<User>, page: Page) -> DbResult<Page> {
@@ -107,22 +111,7 @@ impl DbTrait for FileSystemDb {
     }
 
     fn get_widgets(&self, user_id: &Id<User>) -> DbResult<Vec<Widget>> {
-        let widgets_directories = std::fs::read_dir(self.get_path::<Widget>(user_id, None));
-        let pages_directories = match widgets_directories {
-            Ok(dir) => dir,
-            Err(e) => match e.kind() {
-                std::io::ErrorKind::NotFound => return Ok(Vec::new()),
-                _ => return Err(DbError::WhoopsieDoopsie),
-            },
-        };
-
-        pages_directories
-            .map(|page_file| -> DbResult<Widget> {
-                std::fs::read_to_string(page_file.whoopsie()?.path())
-                    .whoopsie()
-                    .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
-            })
-            .collect()
+        self.get_directory_content(user_id)
     }
 
     fn insert_widget(&self, user_id: &Id<User>, widget: Widget) -> DbResult<Widget> {
@@ -160,22 +149,7 @@ impl DbTrait for FileSystemDb {
     }
 
     fn get_bookmarks(&self, user_id: &Id<User>) -> DbResult<Vec<Bookmark>> {
-        let bookmark_directories = std::fs::read_dir(self.get_path::<Bookmark>(user_id, None));
-        let bookmark_directories = match bookmark_directories {
-            Ok(dir) => dir,
-            Err(e) => match e.kind() {
-                std::io::ErrorKind::NotFound => return Ok(Vec::new()),
-                _ => return Err(DbError::WhoopsieDoopsie),
-            },
-        };
-
-        bookmark_directories
-            .map(|bookmark_file| -> DbResult<Bookmark> {
-                std::fs::read_to_string(bookmark_file.whoopsie()?.path())
-                    .whoopsie()
-                    .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
-            })
-            .collect()
+        self.get_directory_content(user_id)
     }
 
     fn insert_bookmark(&self, user_id: &Id<User>, bookmark: Bookmark) -> DbResult<Bookmark> {
