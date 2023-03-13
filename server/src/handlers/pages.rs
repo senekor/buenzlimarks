@@ -38,9 +38,10 @@ pub async fn get_page(
         })
 }
 
-pub async fn get_pages(user: User, State(db): State<DB>) -> (StatusCode, Json<Vec<Page>>) {
-    match db.get_pages(&user.id) {
-        Ok(pages) => (StatusCode::OK, Json(pages)),
-        Err(_) => (StatusCode::INTERNAL_SERVER_ERROR, Json(Vec::new())),
-    }
+pub async fn get_pages(user: User, State(db): State<DB>) -> Result<Json<Vec<Page>>, StatusCode> {
+    db.get_pages(&user.id).map(Json).map_err(|e| match e {
+        DbError::NotFound => StatusCode::NOT_FOUND,
+        DbError::WhoopsieDoopsie => StatusCode::INTERNAL_SERVER_ERROR,
+        DbError::AlreadyExists => StatusCode::INTERNAL_SERVER_ERROR,
+    })
 }

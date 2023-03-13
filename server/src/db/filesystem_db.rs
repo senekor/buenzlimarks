@@ -27,16 +27,13 @@ impl FileSystemDb {
         }
     }
 
-    fn provided_entity<T: DbEntity>(&self, user_id: &Id<User>, provided_id: &Id<T>) -> bool {
+    fn contains_presupposed_entity<T: DbEntity>(
+        &self,
+        user_id: &Id<User>,
+        provided_id: &Id<T>,
+    ) -> bool {
         let provided_entity_path = self.get_path(user_id, Some(provided_id));
-        match std::fs::metadata(provided_entity_path).map_err(|e| e.kind()) {
-            Ok(_) => true,
-            Err(std::io::ErrorKind::NotFound) => {
-                println!("Provided entity not found!");
-                false
-            }
-            _ => false,
-        }
+        std::fs::metadata(provided_entity_path).is_ok()
     }
 
     fn insert_entity<T: DbEntity>(&self, user_id: &Id<User>, entity: T) -> DbResult<T> {
@@ -75,16 +72,13 @@ impl FileSystemDb {
     }
 
     fn get_directory_content<T: DbEntity>(&self, user_id: &Id<User>) -> DbResult<Vec<T>> {
-        let entity_dir = std::fs::read_dir(self.get_path::<T>(user_id, None));
-        let entity_dir = match entity_dir {
+        let entity_file = std::fs::read_dir(self.get_path::<T>(user_id, None));
+        let entity_file = match entity_file {
             Ok(dir) => dir,
-            Err(e) => match e.kind() {
-                std::io::ErrorKind::NotFound => return Ok(Vec::new()),
-                _ => return Err(DbError::WhoopsieDoopsie),
-            },
+            Err(_) => return Err(DbError::WhoopsieDoopsie),
         };
 
-        entity_dir
+        entity_file
             .map(|page_file| -> DbResult<T> {
                 std::fs::read_to_string(page_file.whoopsie()?.path())
                     .whoopsie()
@@ -125,18 +119,18 @@ impl DbTrait for FileSystemDb {
     }
 
     fn insert_widget(&self, user_id: &Id<User>, widget: Widget) -> DbResult<Widget> {
-        if self.provided_entity(user_id, &widget.page_id) {
+        if self.contains_presupposed_entity(user_id, &widget.page_id) {
             self.insert_entity(user_id, widget)
         } else {
-            DbResult::Err(DbError::WhoopsieDoopsie)
+            Err(DbError::WhoopsieDoopsie)
         }
     }
 
     fn insert_bookmark(&self, user_id: &Id<User>, bookmark: Bookmark) -> DbResult<Bookmark> {
-        if self.provided_entity(user_id, &bookmark.widget_id) {
+        if self.contains_presupposed_entity(user_id, &bookmark.widget_id) {
             self.insert_entity(user_id, bookmark)
         } else {
-            DbResult::Err(DbError::WhoopsieDoopsie)
+            Err(DbError::WhoopsieDoopsie)
         }
     }
 

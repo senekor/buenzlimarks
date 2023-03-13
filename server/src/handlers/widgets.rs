@@ -38,9 +38,13 @@ pub async fn get_widget(
         })
 }
 
-pub async fn get_widgets(user: User, State(db): State<DB>) -> (StatusCode, Json<Vec<Widget>>) {
-    match db.get_widgets(&user.id) {
-        Ok(widgets) => (StatusCode::OK, Json(widgets)),
-        Err(_) => (StatusCode::INTERNAL_SERVER_ERROR, Json(Vec::new())),
-    }
+pub async fn get_widgets(
+    user: User,
+    State(db): State<DB>,
+) -> Result<Json<Vec<Widget>>, StatusCode> {
+    db.get_widgets(&user.id).map(Json).map_err(|e| match e {
+        DbError::NotFound => StatusCode::NOT_FOUND,
+        DbError::WhoopsieDoopsie => StatusCode::INTERNAL_SERVER_ERROR,
+        DbError::AlreadyExists => StatusCode::INTERNAL_SERVER_ERROR,
+    })
 }
