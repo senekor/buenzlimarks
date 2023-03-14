@@ -19,7 +19,7 @@ name = "db_reset"
 path = "cmd/db_reset.rs"
 
 [dependencies]
-tokio = { version = "1.0", features = ["full"] }
+tokio = { version = "1.26", features = ["full"] }
 axum = { version = "0.6", features = ["macros", "headers"] }
 tower-http = { version = "0.4.0", features = ["fs", "trace"] }
 serde = { version = "1.0", features = ["derive"] }

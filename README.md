@@ -1,5 +1,7 @@
 # buenzlimarks
 
+[![dependency status](https://deps.rs/repo/github/remlse/buenzlimarks/status.svg?path=server)](https://deps.rs/repo/github/remlse/buenzlimarks?path=server)
+
 This is a work in progress!
 
 buenzlimarks is a web application for bookmark management and more.
