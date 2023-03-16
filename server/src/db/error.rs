@@ -5,7 +5,7 @@
 
 use std::fmt::Debug;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum DbError {
     NotFound,
     AlreadyExists,

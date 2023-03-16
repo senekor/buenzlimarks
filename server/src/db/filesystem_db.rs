@@ -66,7 +66,7 @@ impl FileSystemDb {
         let entity_dir = std::fs::read_dir(self.get_path::<T>(user_id, None));
         let entity_dir = match entity_dir {
             Ok(dir) => dir,
-            Err(_) => return Err(DbError::WhoopsieDoopsie),
+            Err(_) => return Err(DbError::NotFound),
         };
 
         entity_dir
@@ -179,11 +179,11 @@ mod tests {
     use super::*;
 
     #[test]
-    fn empty_db_should_empty_vec() {
+    fn empty_db_should_return_not_found() {
         let tmp_dir = tempfile::tempdir().unwrap();
         let db = FileSystemDb::new(tmp_dir.path());
 
-        assert_eq!(db.get_bookmarks(&dev_user_id()).unwrap(), Vec::new());
+        assert_eq!(db.get_bookmarks(&dev_user_id()), Err(DbError::NotFound));
     }
 
     #[test]
