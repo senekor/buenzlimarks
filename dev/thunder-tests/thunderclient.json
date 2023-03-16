@@ -22,12 +22,12 @@
     "method": "POST",
     "sortNum": 20000,
     "created": "2023-02-11T15:31:32.292Z",
-    "modified": "2023-03-13T10:24:28.956Z",
+    "modified": "2023-03-16T18:14:38.579Z",
     "headers": [],
     "params": [],
     "body": {
       "type": "json",
-      "raw": "{\n  \"id\": \"7d5c15c3-7280-4c42-849e-57f14d584ee0\",\n  \"name\": \"random name\",\n  \"url\": \"http://leckmich.ch\",\n  \"widget_id\": \"28433aee-b4a0-4c58-92e7-4580ca2224a9\"\n}",
+      "raw": "{\n  \"id\": \"7d5c15c3-7280-4c42-849e-57f14d584ee0\",\n  \"name\": \"random name\",\n  \"url\": \"http://leckmich.ch\",\n  \"widget_id\": \"23aee-b4a0-4c58-92e7-4580ca2224a9\"\n}",
       "form": []
     },
     "tests": []

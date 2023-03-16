@@ -37,21 +37,12 @@ impl FileSystemDb {
     }
 
     fn insert_entity<T: DbEntity>(&self, user_id: &Id<User>, entity: T) -> DbResult<T> {
-        // availability
         let entity_path = self.get_path(user_id, Some(entity.get_id()));
-        match std::fs::metadata(&entity_path).map_err(|e| e.kind()) {
-            Ok(_) => return Err(DbError::AlreadyExists),
-            Err(std::io::ErrorKind::NotFound) => {}
-            _ => return Err(DbError::WhoopsieDoopsie),
-        };
-
-        // insert
         std::fs::write(
             entity_path,
             serde_json::to_string_pretty(&entity).whoopsie()?,
         )
         .whoopsie()?;
-
         Ok(entity)
     }
 
@@ -72,15 +63,15 @@ impl FileSystemDb {
     }
 
     fn get_directory_content<T: DbEntity>(&self, user_id: &Id<User>) -> DbResult<Vec<T>> {
-        let entity_file = std::fs::read_dir(self.get_path::<T>(user_id, None));
-        let entity_file = match entity_file {
+        let entity_dir = std::fs::read_dir(self.get_path::<T>(user_id, None));
+        let entity_dir = match entity_dir {
             Ok(dir) => dir,
             Err(_) => return Err(DbError::WhoopsieDoopsie),
         };
 
-        entity_file
-            .map(|page_file| -> DbResult<T> {
-                std::fs::read_to_string(page_file.whoopsie()?.path())
+        entity_dir
+            .map(|entity_file| -> DbResult<T> {
+                std::fs::read_to_string(entity_file.whoopsie()?.path())
                     .whoopsie()
                     .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
             })
