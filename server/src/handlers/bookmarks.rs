@@ -24,11 +24,15 @@ pub async fn create_bookmark(
         })
 }
 
-pub async fn get_bookmarks(user: User, State(db): State<DB>) -> (StatusCode, Json<Vec<Bookmark>>) {
-    match db.get_bookmarks(&user.id) {
-        Ok(bookmarks) => (StatusCode::OK, Json(bookmarks)),
-        Err(_) => (StatusCode::INTERNAL_SERVER_ERROR, Json(Vec::new())),
-    }
+pub async fn get_bookmarks(
+    user: User,
+    State(db): State<DB>,
+) -> Result<Json<Vec<Bookmark>>, StatusCode> {
+    db.get_bookmarks(&user.id).map(Json).map_err(|e| match e {
+        DbError::NotFound => StatusCode::NOT_FOUND,
+        DbError::WhoopsieDoopsie => StatusCode::INTERNAL_SERVER_ERROR,
+        DbError::AlreadyExists => StatusCode::INTERNAL_SERVER_ERROR,
+    })
 }
 
 pub async fn delete_bookmark(
@@ -72,8 +76,7 @@ mod tests {
 
         let actual = get_bookmarks(User::dev(), State(Arc::new(db))).await;
 
-        assert_eq!(actual.0, StatusCode::OK);
-        assert_eq!(actual.1 .0, vec![bookmark]);
+        assert_eq!(actual.unwrap().0, vec![bookmark]);
     }
 
     #[tokio::test]
@@ -85,8 +88,7 @@ mod tests {
 
         let actual = get_bookmarks(User::dev(), State(Arc::new(db))).await;
 
-        assert_eq!(actual.0, StatusCode::INTERNAL_SERVER_ERROR);
-        assert_eq!(actual.1 .0, Vec::new());
+        assert_eq!(actual.unwrap_err(), StatusCode::INTERNAL_SERVER_ERROR);
     }
 
     #[tokio::test]
