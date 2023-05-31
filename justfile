@@ -20,3 +20,6 @@ render-diagram diagram:
     d2 --watch --layout=elk --pad=32 \
         docs/arc42/d2/{{diagram}}.d2 \
         docs/arc42/diagrams/{{diagram}}.svg
+
+zellij:
+    zellij --layout dev/zellij.kdl

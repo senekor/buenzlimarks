@@ -1,8 +1,9 @@
 #!/bin/bash
+set -eo pipefail
 
-cd $(dirname $0)/../..
+cd "$(dirname "$0")/../.."
 
-distro="$(cat /etc/os-release | grep ^ID= | cut -c 4-)"
+distro="$(grep ^ID= /etc/os-release | cut -c 4-)"
 
 if [ "$distro" = "fedora" ]; then
     # packages=()
