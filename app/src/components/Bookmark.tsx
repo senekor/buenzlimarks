@@ -1,15 +1,12 @@
-type Props = {
-	title: string;
-	link: string;
-};
-
-export default function Bookmark(props: Props) {
-	return (
-		<a
-			class="text-2xl dark:text-orange-200 dark:hover:text-orange-400 underline"
-			href={props.link}
-		>
-			{props.title}
-		</a>
-	);
+function Bookmark({ title, link }: { title: string; link: string }) {
+  return (
+    <a
+      className="text-2xl dark:text-orange-200 dark:hover:text-orange-400 underline"
+      href={link}
+    >
+      {title}
+    </a>
+  );
 }
+
+export default Bookmark;

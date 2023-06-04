@@ -1,12 +1,9 @@
-/* eslint-disable import/no-default-export */
-import { defineConfig } from "vite";
-import solidPlugin from "vite-plugin-solid";
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
 
+// https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [solidPlugin()],
-  build: {
-    target: "esnext",
-  },
+  plugins: [react()],
   server: {
     port: 3000,
     proxy: {
@@ -17,4 +14,4 @@ export default defineConfig({
       },
     },
   },
-});
+})

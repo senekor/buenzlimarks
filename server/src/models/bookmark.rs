@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use super::{id::Id, widget::Widget};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Bookmark {
     pub id: Id<Self>,
     pub name: String,

@@ -3,7 +3,6 @@
         "ecmel.vscode-html-css",
         "bradlc.vscode-tailwindcss",
         "dbaeumer.vscode-eslint",
-        "rome.rome",
         "rust-lang.rust-analyzer",
         "vadimcn.vscode-lldb",
         "terrastruct.d2",
