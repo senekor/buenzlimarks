@@ -50,6 +50,20 @@ pub async fn get_bookmarks(
         })
 }
 
+pub async fn update_bookmark(
+    user: User,
+    State(db): State<DB>,
+    Json(bookmark): Json<Bookmark>,
+) -> Result<Json<Bookmark>, StatusCode> {
+    db.update_bookmark(&user.id, bookmark)
+        .map(Json)
+        .map_err(|e| match e {
+            DbError::NotFound => StatusCode::NOT_FOUND,
+            DbError::WhoopsieDoopsie => StatusCode::INTERNAL_SERVER_ERROR,
+            DbError::AlreadyExists => StatusCode::INTERNAL_SERVER_ERROR,
+        })
+}
+
 pub async fn delete_bookmark(
     user: User,
     Path(bookmark_id): Path<Id<Bookmark>>,

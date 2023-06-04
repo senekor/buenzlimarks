@@ -27,16 +27,12 @@ impl FileSystemDb {
         }
     }
 
-    fn contains_presupposed_entity<T: DbEntity>(
-        &self,
-        user_id: &Id<User>,
-        provided_id: &Id<T>,
-    ) -> bool {
+    fn contains_entity<T: DbEntity>(&self, user_id: &Id<User>, provided_id: &Id<T>) -> bool {
         let provided_entity_path = self.get_path(user_id, Some(provided_id));
         std::fs::metadata(provided_entity_path).is_ok()
     }
 
-    fn insert_entity<T: DbEntity>(&self, user_id: &Id<User>, entity: T) -> DbResult<T> {
+    fn store_entity<T: DbEntity>(&self, user_id: &Id<User>, entity: T) -> DbResult<T> {
         let entity_path = self.get_path(user_id, Some(entity.get_id()));
         std::fs::write(
             entity_path,
@@ -44,6 +40,20 @@ impl FileSystemDb {
         )
         .whoopsie()?;
         Ok(entity)
+    }
+
+    fn insert_entity<T: DbEntity>(&self, user_id: &Id<User>, entity: T) -> DbResult<T> {
+        if self.contains_entity(user_id, entity.get_id()) {
+            return Err(DbError::AlreadyExists);
+        };
+        self.store_entity(user_id, entity)
+    }
+
+    fn update_entity<T: DbEntity>(&self, user_id: &Id<User>, entity: T) -> DbResult<T> {
+        if !self.contains_entity(user_id, entity.get_id()) {
+            return Err(DbError::NotFound);
+        };
+        self.store_entity(user_id, entity)
     }
 
     fn get_user_path(&self, user_id: &Id<User>) -> PathBuf {
@@ -110,7 +120,7 @@ impl DbTrait for FileSystemDb {
     }
 
     fn insert_widget(&self, user_id: &Id<User>, widget: Widget) -> DbResult<Widget> {
-        if self.contains_presupposed_entity(user_id, &widget.page_id) {
+        if self.contains_entity(user_id, &widget.page_id) {
             self.insert_entity(user_id, widget)
         } else {
             Err(DbError::WhoopsieDoopsie)
@@ -118,7 +128,7 @@ impl DbTrait for FileSystemDb {
     }
 
     fn insert_bookmark(&self, user_id: &Id<User>, bookmark: Bookmark) -> DbResult<Bookmark> {
-        if self.contains_presupposed_entity(user_id, &bookmark.widget_id) {
+        if self.contains_entity(user_id, &bookmark.widget_id) {
             self.insert_entity(user_id, bookmark)
         } else {
             Err(DbError::WhoopsieDoopsie)
@@ -155,6 +165,11 @@ impl DbTrait for FileSystemDb {
 
     fn get_bookmarks(&self, user_id: &Id<User>) -> DbResult<Vec<Bookmark>> {
         self.get_directory_content(user_id)
+    }
+
+    // PUT
+    fn update_bookmark(&self, user_id: &Id<User>, bookmark: Bookmark) -> DbResult<Bookmark> {
+        self.update_entity(user_id, bookmark)
     }
 
     // DELETE

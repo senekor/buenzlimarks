@@ -30,7 +30,8 @@ pub trait DbTrait {
     fn get_widgets(&self, user_id: &Id<User>) -> DbResult<Vec<Widget>>;
     fn get_bookmarks(&self, user_id: &Id<User>) -> DbResult<Vec<Bookmark>>;
 
-    // PUT
+    // PUT - one
+    fn update_bookmark(&self, user_id: &Id<User>, bookmark: Bookmark) -> DbResult<Bookmark>;
 
     // DELETE
     fn delete_bookmark(&self, user_id: &Id<User>, bookmark_id: &Id<Bookmark>) -> DbResult;

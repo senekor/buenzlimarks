@@ -1,12 +1,12 @@
 use axum::{
-    routing::{delete, get, post},
+    routing::{delete, get, post, put},
     Router,
 };
 use lib::{
     db, frontend,
     handlers::{
         auth::{self, login},
-        bookmarks::{create_bookmark, delete_bookmark, get_bookmarks},
+        bookmarks::{create_bookmark, delete_bookmark, get_bookmarks, update_bookmark},
         pages::{create_page, get_page, get_pages},
         users::whoami,
         widgets::{create_widget, get_widget, get_widgets},
@@ -35,6 +35,7 @@ async fn main() {
         .route("/bookmarks", get(get_bookmarks))
         //
         // PUT - update
+        .route("/bookmarks", put(update_bookmark))
         //
         // DELETE - delete
         .route("/bookmarks/:bookmark_id", delete(delete_bookmark))

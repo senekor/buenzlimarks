@@ -159,5 +159,24 @@
       }
     ],
     "tests": []
+  },
+  {
+    "_id": "2318078f-cad4-473b-b2f6-2e16b85ad49d",
+    "colId": "6771bdef-36bc-49e3-a53c-1ae789e62c17",
+    "containerId": "",
+    "name": "update bookmark",
+    "url": "http://localhost:4000/api/bookmarks",
+    "method": "PUT",
+    "sortNum": 25000,
+    "created": "2023-06-04T12:51:49.132Z",
+    "modified": "2023-06-04T13:01:50.968Z",
+    "headers": [],
+    "params": [],
+    "body": {
+      "type": "json",
+      "raw": "{\n  \"id\": \"5ca89c69-ab5f-4654-a979-b670e576b1c0\",\n  \"name\": \"random name\",\n  \"url\": \"http://leckmich_nochmehr.ch\",\n  \"widget_id\": \"4e4ce592-fa11-4361-a00b-f2592504c807\"\n}",
+      "form": []
+    },
+    "tests": []
   }
 ]
