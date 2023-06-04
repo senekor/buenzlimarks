@@ -15,12 +15,14 @@ if [ "$distro" = "fedora" ]; then
     # )
     # cargo install -q ${crates}
 
-    echo "No distro specific packages to install."
+    printf "" # noop
 
 else
     echo "This OS is not supported, feel free to fix that."
     exit
 fi
 
-# d2 diagram renderer
-go install oss.terrastruct.com/d2@latest
+if ! which d2 > /dev/null ; then
+    echo "installing d2 diagram renderer..."
+    go install oss.terrastruct.com/d2@latest
+fi
