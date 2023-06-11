@@ -8,7 +8,9 @@ use crate::{
     db,
     handlers::{
         auth::{self, login},
-        bookmarks::{create_bookmark, delete_bookmark, get_bookmarks, update_bookmark},
+        bookmarks::{
+            create_bookmark, delete_bookmark, get_bookmark, get_bookmarks, update_bookmark,
+        },
         pages::{create_page, get_page, get_pages},
         users::whoami,
         widgets::{create_widget, get_widget, get_widgets},
@@ -29,6 +31,7 @@ pub fn api_router(config: &Config) -> Router {
         .route("/pages", get(get_pages))
         .route("/widgets/:widget_id", get(get_widget))
         .route("/widgets", get(get_widgets))
+        .route("/bookmarks/:bookmark_id", get(get_bookmark))
         .route("/bookmarks", get(get_bookmarks))
         //
         // PUT - update

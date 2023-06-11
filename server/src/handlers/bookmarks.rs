@@ -27,6 +27,20 @@ pub async fn create_bookmark(
         })
 }
 
+pub async fn get_bookmark(
+    user: User,
+    Path(bookmark_id): Path<Id<Bookmark>>,
+    State(db): State<DB>,
+) -> Result<Json<Bookmark>, StatusCode> {
+    db.get_bookmark(&user.id, &bookmark_id)
+        .map(Json)
+        .map_err(|e| match e {
+            DbError::NotFound => StatusCode::NOT_FOUND,
+            DbError::WhoopsieDoopsie => StatusCode::INTERNAL_SERVER_ERROR,
+            DbError::AlreadyExists => StatusCode::INTERNAL_SERVER_ERROR,
+        })
+}
+
 #[derive(Debug, Deserialize)]
 pub struct WidgetId {
     widget_id: Id<Widget>,

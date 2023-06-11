@@ -176,7 +176,20 @@
       "type": "json",
       "raw": "{\n  \"id\": \"5ca89c69-ab5f-4654-a979-b670e576b1c0\",\n  \"name\": \"random name\",\n  \"url\": \"http://leckmich_nochmehr.ch\",\n  \"widget_id\": \"4e4ce592-fa11-4361-a00b-f2592504c807\"\n}",
       "form": []
-    },
+    }
+  },
+  {
+    "_id": "9e164c27-8c3d-4b07-9683-67e7f71addaf",
+    "colId": "6771bdef-36bc-49e3-a53c-1ae789e62c17",
+    "containerId": "",
+    "name": "get bookmark",
+    "url": "http://localhost:4000/api/bookmarks/5ca89c69-ab5f-4654-a979-b670e576b1c0",
+    "method": "GET",
+    "sortNum": 12500,
+    "created": "2023-06-11T14:07:54.456Z",
+    "modified": "2023-06-11T14:13:11.780Z",
+    "headers": [],
+    "params": [],
     "tests": []
   }
 ]
