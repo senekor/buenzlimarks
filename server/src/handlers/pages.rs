@@ -48,3 +48,17 @@ pub async fn get_pages(user: User, State(db): State<DB>) -> Result<Json<Vec<Page
         DbError::AlreadyExists => StatusCode::INTERNAL_SERVER_ERROR,
     })
 }
+
+pub async fn update_page(
+    user: User,
+    State(db): State<DB>,
+    Json(page): Json<Page>,
+) -> Result<Json<Page>, StatusCode> {
+    db.update_page(&user.id, page)
+        .map(Json)
+        .map_err(|e| match e {
+            DbError::NotFound => StatusCode::NOT_FOUND,
+            DbError::WhoopsieDoopsie => StatusCode::INTERNAL_SERVER_ERROR,
+            DbError::AlreadyExists => StatusCode::INTERNAL_SERVER_ERROR,
+        })
+}

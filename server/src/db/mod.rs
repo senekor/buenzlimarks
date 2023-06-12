@@ -32,6 +32,7 @@ pub trait DbTrait: Debug {
     fn get_bookmarks(&self, user_id: &Id<User>) -> DbResult<Vec<Bookmark>>;
 
     // PUT - one
+    fn update_page(&self, user_id: &Id<User>, page: Page) -> DbResult<Page>;
     fn update_bookmark(&self, user_id: &Id<User>, bookmark: Bookmark) -> DbResult<Bookmark>;
 
     // DELETE

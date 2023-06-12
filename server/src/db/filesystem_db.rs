@@ -164,6 +164,10 @@ impl DbTrait for FileSystemDb {
     }
 
     // PUT
+    fn update_page(&self, user_id: &Id<User>, page: Page) -> DbResult<Page> {
+        self.update_entity(user_id, page)
+    }
+
     fn update_bookmark(&self, user_id: &Id<User>, bookmark: Bookmark) -> DbResult<Bookmark> {
         self.update_entity(user_id, bookmark)
     }
@@ -202,7 +206,10 @@ mod tests {
         let tmp_dir = tempfile::tempdir().unwrap();
         let db = FileSystemDb::new(tmp_dir.path());
 
-        let page = Page { id: "0".into() };
+        let page = Page {
+            id: "0".into(),
+            name: String::from("p name"),
+        };
         let widget = Widget {
             id: "0".into(),
             page_id: "0".into(),
