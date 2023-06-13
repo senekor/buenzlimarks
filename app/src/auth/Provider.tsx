@@ -2,7 +2,7 @@ import { useState } from "react";
 import { AuthContext } from "./context";
 import { useQueryClient } from "@tanstack/react-query";
 
-function AuthProvider({ children }: { children: React.ReactNode }) {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string>();
 
   const queryClient = useQueryClient();
@@ -23,5 +23,3 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
     </AuthContext.Provider>
   );
 }
-
-export default AuthProvider;

@@ -1,4 +1,4 @@
-import ApiProvider from "./Provider";
-import { useApi } from "./context";
+import { UserProvider } from "./Provider";
+import { useUser } from "./context";
 
-export { ApiProvider, useApi };
+export { UserProvider, useUser };

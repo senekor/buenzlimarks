@@ -1,4 +1,4 @@
-function Bookmark({ title, link }: { title: string; link: string }) {
+export function Bookmark({ title, link }: { title: string; link: string }) {
   return (
     <a
       className="text-2xl dark:text-orange-200 dark:hover:text-orange-400 underline"
@@ -8,5 +8,3 @@ function Bookmark({ title, link }: { title: string; link: string }) {
     </a>
   );
 }
-
-export default Bookmark;
