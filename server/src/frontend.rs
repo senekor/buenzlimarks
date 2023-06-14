@@ -34,6 +34,6 @@ async fn frontend_handler(uri: Uri) -> FrontendResponse {
     serve_file(path)
 }
 
-pub fn frontend_routes() -> Router {
+pub fn frontend_router() -> Router {
     Router::new().fallback(frontend_handler)
 }
