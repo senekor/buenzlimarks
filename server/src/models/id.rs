@@ -4,12 +4,18 @@ use serde::{Deserialize, Serialize};
 
 use super::user::User;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct Id<T> {
     id: String,
     #[serde(skip)]
     _type: PhantomData<T>,
+}
+
+impl<T> std::fmt::Debug for Id<T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:?}", self.id)
+    }
 }
 
 impl<T> Clone for Id<T> {
