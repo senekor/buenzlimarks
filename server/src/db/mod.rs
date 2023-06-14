@@ -33,6 +33,7 @@ pub trait DbTrait: Debug {
 
     // PUT - one
     fn update_page(&self, user_id: &Id<User>, page: Page) -> DbResult<Page>;
+    fn update_widget(&self, user_id: &Id<User>, widget: Widget) -> DbResult<Widget>;
     fn update_bookmark(&self, user_id: &Id<User>, bookmark: Bookmark) -> DbResult<Bookmark>;
 
     // DELETE

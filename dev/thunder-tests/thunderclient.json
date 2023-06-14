@@ -210,5 +210,24 @@
       "form": []
     },
     "tests": []
+  },
+  {
+    "_id": "63491be7-eefd-4b86-bdf7-1c69730043aa",
+    "colId": "6771bdef-36bc-49e3-a53c-1ae789e62c17",
+    "containerId": "",
+    "name": "update widget",
+    "url": "http://localhost:4000/api/widgets",
+    "method": "PUT",
+    "sortNum": 43750,
+    "created": "2023-06-14T18:31:17.408Z",
+    "modified": "2023-06-14T18:38:39.828Z",
+    "headers": [],
+    "params": [],
+    "body": {
+      "type": "json",
+      "raw": "{\n  \"id\": \"0d4c79c6-3229-4d54-8b35-3f6f8617bd70\",\n  \"page_id\": \"d00c0e9e-7917-43c5-8205-86986e7cfce6\"\n}",
+      "form": []
+    },
+    "tests": []
   }
 ]

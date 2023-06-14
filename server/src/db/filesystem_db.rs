@@ -168,6 +168,10 @@ impl DbTrait for FileSystemDb {
         self.update_entity(user_id, page)
     }
 
+    fn update_widget(&self, user_id: &Id<User>, widget: Widget) -> DbResult<Widget> {
+        self.update_entity(user_id, widget)
+    }
+
     fn update_bookmark(&self, user_id: &Id<User>, bookmark: Bookmark) -> DbResult<Bookmark> {
         self.update_entity(user_id, bookmark)
     }
