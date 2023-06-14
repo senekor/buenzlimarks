@@ -24,7 +24,7 @@ pub fn api_router() -> Router {
         .route("/bookmarks", post(create_bookmark))
         //
         // GET - read
-        .route("/pa ges/:page_id", get(get_page))
+        .route("/pages/:page_id", get(get_page))
         .route("/pages", get(get_pages))
         .route("/widgets/:widget_id", get(get_widget))
         .route("/widgets", get(get_widgets))
