@@ -18,16 +18,13 @@ pub fn api_router() -> Router {
     let db = db::get();
 
     Router::new()
-        .route("/auth/login/:user_id", get(login))
-        .route("/users/me", get(whoami))
-        //
         // POST - create
         .route("/pages", post(create_page))
         .route("/widgets", post(create_widget))
         .route("/bookmarks", post(create_bookmark))
         //
         // GET - read
-        .route("/pages/:page_id", get(get_page))
+        .route("/pa ges/:page_id", get(get_page))
         .route("/pages", get(get_pages))
         .route("/widgets/:widget_id", get(get_widget))
         .route("/widgets", get(get_widgets))
@@ -38,6 +35,12 @@ pub fn api_router() -> Router {
         //
         // DELETE - delete
         .route("/bookmarks/:bookmark_id", delete(delete_bookmark))
+        //
+        // authentication
+        .route("/auth/login/:user_id", get(login))
+        .route("/users/me", get(whoami))
+        //
+        // shared state
         .with_state(db)
         .layer(auth::extension())
 }
