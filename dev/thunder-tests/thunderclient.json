@@ -229,5 +229,19 @@
       "form": []
     },
     "tests": []
+  },
+  {
+    "_id": "583e181b-e5f9-4bc0-b996-f3ea4f273a8b",
+    "colId": "6771bdef-36bc-49e3-a53c-1ae789e62c17",
+    "containerId": "",
+    "name": "delete widget",
+    "url": "http://localhost:4000/api/widgets/0d4c79c6-3229-4d54-8b35-3f6f8617bd70",
+    "method": "DELETE",
+    "sortNum": 35000,
+    "created": "2023-06-15T18:31:34.772Z",
+    "modified": "2023-06-15T18:33:30.233Z",
+    "headers": [],
+    "params": [],
+    "tests": []
   }
 ]

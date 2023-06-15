@@ -37,6 +37,7 @@ pub trait DbTrait: Debug {
     fn update_bookmark(&self, user_id: &Id<User>, bookmark: Bookmark) -> DbResult<Bookmark>;
 
     // DELETE
+    fn delete_widget(&self, user_id: &Id<User>, widget_id: &Id<Widget>) -> DbResult;
     fn delete_bookmark(&self, user_id: &Id<User>, bookmark_id: &Id<Bookmark>) -> DbResult;
 }
 

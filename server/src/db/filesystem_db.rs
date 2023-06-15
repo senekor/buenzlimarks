@@ -177,6 +177,23 @@ impl DbTrait for FileSystemDb {
     }
 
     // DELETE
+    fn delete_widget(&self, user_id: &Id<User>, widget_id: &Id<Widget>) -> DbResult {
+        let mut bookmarks = self.get_bookmarks(user_id)?;
+        bookmarks.retain(|b| &b.widget_id == widget_id);
+        for b in bookmarks {
+            self.delete_bookmark(user_id, &b.id)?;
+        }
+        let widget_path = self.get_path(user_id, Some(widget_id));
+
+        match std::fs::remove_file(widget_path) {
+            Ok(_) => Ok(()),
+            Err(e) => match e.kind() {
+                std::io::ErrorKind::NotFound => Err(DbError::NotFound),
+                _ => Err(DbError::WhoopsieDoopsie),
+            },
+        }
+    }
+
     fn delete_bookmark(&self, user_id: &Id<User>, bookmark_id: &Id<Bookmark>) -> DbResult {
         let bookmark_path = self.get_path(user_id, Some(bookmark_id));
 
