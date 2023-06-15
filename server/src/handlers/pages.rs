@@ -62,3 +62,15 @@ pub async fn update_page(
             DbError::AlreadyExists => StatusCode::INTERNAL_SERVER_ERROR,
         })
 }
+
+pub async fn delete_page(
+    user: User,
+    Path(page_id): Path<Id<Page>>,
+    State(db): State<DB>,
+) -> Result<(), StatusCode> {
+    db.delete_page(&user.id, &page_id).map_err(|e| match e {
+        DbError::NotFound => StatusCode::NOT_FOUND,
+        DbError::WhoopsieDoopsie => StatusCode::INTERNAL_SERVER_ERROR,
+        DbError::AlreadyExists => StatusCode::INTERNAL_SERVER_ERROR,
+    })
+}

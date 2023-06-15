@@ -11,7 +11,7 @@ use crate::{
         bookmarks::{
             create_bookmark, delete_bookmark, get_bookmark, get_bookmarks, update_bookmark,
         },
-        pages::{create_page, get_page, get_pages, update_page},
+        pages::{create_page, delete_page, get_page, get_pages, update_page},
         users::whoami,
         widgets::{create_widget, delete_widget, get_widget, get_widgets, update_widget},
     },
@@ -40,6 +40,7 @@ pub fn api_router(config: &Config) -> Router {
         .route("/bookmarks", put(update_bookmark))
         //
         // DELETE - delete
+        .route("/pages/:page_id", delete(delete_page))
         .route("/widgets/:widget_id", delete(delete_widget))
         .route("/bookmarks/:bookmark_id", delete(delete_bookmark))
         //
