@@ -8,7 +8,7 @@ use super::{
     DbTrait,
 };
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct FileSystemDb {
     root_dir: PathBuf,
 }
@@ -131,7 +131,10 @@ impl DbTrait for FileSystemDb {
     // GET - one
     fn get_user(&self, user_id: &Id<User>) -> DbResult<User> {
         std::fs::read_to_string(self.get_user_data_path(user_id))
-            .whoopsie()
+            .map_err(|e| match e.kind() {
+                std::io::ErrorKind::NotFound => DbError::NotFound,
+                _ => DbError::WhoopsieDoopsie,
+            })
             .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
     }
 

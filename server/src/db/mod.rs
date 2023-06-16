@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{fmt::Debug, sync::Arc};
 
 use crate::models::{bookmark::Bookmark, id::Id, page::Page, user::User, widget::Widget};
 
@@ -13,7 +13,7 @@ mod filesystem_db;
 use filesystem_db::FileSystemDb;
 
 #[cfg_attr(test, mockall::automock)]
-pub trait DbTrait {
+pub trait DbTrait: Debug {
     // POST
     fn insert_user(&self, user: User) -> DbResult<User>;
     fn insert_page(&self, user_id: &Id<User>, page: Page) -> DbResult<Page>;

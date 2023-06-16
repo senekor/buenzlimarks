@@ -1,8 +1,8 @@
-use clap::Parser;
-use lib::{
+use buenzlimarks::{
     db::{self, config::DbConfig, DbTrait},
     models::{bookmark::Bookmark, id::Id, page::Page, user::User, widget::Widget},
 };
+use clap::Parser;
 
 fn insert_seeds(db: &(dyn DbTrait + Send + Sync)) {
     // user(id), pages, widgets, bookmarks(name, url)

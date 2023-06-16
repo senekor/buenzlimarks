@@ -10,11 +10,13 @@ use crate::{
     models::{bookmark::Bookmark, id::Id, user::User, widget::Widget},
 };
 
+#[tracing::instrument]
 pub async fn create_bookmark(
     user: User,
     State(db): State<DB>,
     Json(mut bookmark): Json<Bookmark>,
 ) -> Result<Json<Bookmark>, StatusCode> {
+    tracing::debug!("create bookmark");
     bookmark.id = Id::random();
     db.insert_bookmark(&user.id, bookmark)
         .map(Json)
@@ -30,7 +32,7 @@ pub struct WidgetId {
     widget_id: Id<Widget>,
 }
 
-#[axum::debug_handler]
+#[tracing::instrument]
 pub async fn get_bookmarks(
     user: User,
     State(db): State<DB>,
@@ -50,6 +52,7 @@ pub async fn get_bookmarks(
         })
 }
 
+#[tracing::instrument]
 pub async fn update_bookmark(
     user: User,
     State(db): State<DB>,
@@ -64,6 +67,7 @@ pub async fn update_bookmark(
         })
 }
 
+#[tracing::instrument]
 pub async fn delete_bookmark(
     user: User,
     Path(bookmark_id): Path<Id<Bookmark>>,

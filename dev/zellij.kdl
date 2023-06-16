@@ -20,11 +20,11 @@ layout {
 	}
 	compact_tab name="buenzlimarks" {
 		pane name="app" cwd="app" {
-			command "pnpm"
-			args "dev"
+			command "j"
+			args "app-run"
 		}
 		pane name="server" cwd="server" {
-			command "cargo"
+			command "j"
 			args "run"
 		}
 	}

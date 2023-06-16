@@ -20,7 +20,7 @@ impl<T: Debug, E: Debug> Whoopsie<T> for Result<T, E> {
     #[track_caller]
     fn whoopsie(self) -> DbResult<T> {
         self.map_err(|e| {
-            println!("{e:?}");
+            tracing::error!("{e:?}");
             DbError::WhoopsieDoopsie
         })
     }

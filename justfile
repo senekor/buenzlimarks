@@ -1,9 +1,13 @@
 _default:
     @just --list
 
+# run the server, watching for changes
+watch:
+    cd server && cargo watch -x run
+
 # run the server
-run:
-    cd server && cargo run
+run *args:
+    cd server && cargo run -- {{ args }}
 
 # run the web app dev server
 app-run:
