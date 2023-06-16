@@ -2,8 +2,8 @@
 
 ## Level 1 - Containers
 
-buenzlimarks is mostly a standalone application.
-Users interact with it through the web app built with Solid
+Buenzlimarks is mostly a standalone application.
+Users interact with it through the web app built with React.
 The web app installs itself with a service worker for offline use upon first visit.
 Additionally, users may manually install a browser extension to interact with.
 Both the web app and the browser extension access the browser's indexedDB for locally cached data.
@@ -23,7 +23,7 @@ For convenient deployment, the web app may be bundled with and served by the bac
 
 The main GUI for interacting with buenzlimarks.
 Installs itself via a service worker for offline use upon first visit.
-Based on HTML, CSS, TypeScript, Solid, Tailwind.
+Based on HTML, CSS, TypeScript, React, Tailwind.
 Accesses user data locally via indexedDB, remotely via the REST API and may listen to remotely updated data via websocket.
 
 ### Backend server

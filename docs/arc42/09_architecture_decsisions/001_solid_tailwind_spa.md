@@ -24,7 +24,7 @@ We will write the web app with Solid and Tailwind.
 
 ## Status
 
-Accepted.
+Partially superceded by [React Single Page Application](./005_react_spa.md).
 
 ## Consequences
 
@@ -34,3 +34,8 @@ The resulting code is expected to be more maintainable.
 Styling customization as a user-facing feature can be provided easily.
 
 ## Experience report
+
+SolidJS has a few developer experience pitfalls just like React does.
+For example, object destructuring breaks reactivity in some cases.
+The argument that SolidJS would provide a better developer exerience than React is much weaker in hindsight.
+The smaller, less mature ecosystem has been much more noticeable.
