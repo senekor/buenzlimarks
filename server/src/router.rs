@@ -4,6 +4,7 @@ use axum::{
 };
 
 use crate::{
+    config::Config,
     db,
     handlers::{
         auth::{self, login},
@@ -14,8 +15,8 @@ use crate::{
     },
 };
 
-pub fn api_router() -> Router {
-    let db = db::get();
+pub fn api_router(config: &Config) -> Router {
+    let db = db::get(&config.db);
 
     Router::new()
         // POST - create

@@ -20,13 +20,6 @@ impl FileSystemDb {
         }
     }
 
-    #[cfg(debug_assertions)]
-    pub fn new_dev() -> Self {
-        Self {
-            root_dir: PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../dev/db"),
-        }
-    }
-
     fn contains_entity<T: DbEntity>(&self, user_id: &Id<User>, provided_id: &Id<T>) -> bool {
         let provided_entity_path = self.get_path(user_id, Some(provided_id));
         std::fs::metadata(provided_entity_path).is_ok()

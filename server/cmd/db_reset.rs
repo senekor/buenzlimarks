@@ -1,9 +1,11 @@
-use std::path::PathBuf;
-
-use lib::db;
+use clap::Parser;
+use lib::db::{self, config::DbConfig};
 
 fn main() {
-    std::fs::remove_dir_all(PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../dev/db")).ok();
-    let db = db::get();
+    let config = DbConfig::parse();
+
+    std::fs::remove_dir_all(&config.db_root_dir).ok();
+
+    let db = db::get(&config);
     db::insert_seeds(db.as_ref());
 }

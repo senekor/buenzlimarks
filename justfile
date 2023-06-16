@@ -1,10 +1,8 @@
 _default:
     @just --list
 
-set dotenv-load
-
 # run the server
-server-run:
+run:
     cd server && cargo run
 
 # run the web app dev server

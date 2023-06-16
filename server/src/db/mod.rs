@@ -1,4 +1,8 @@
+use std::sync::Arc;
+
 use crate::models::{bookmark::Bookmark, id::Id, page::Page, user::User, widget::Widget};
+
+pub mod config;
 
 mod entity;
 
@@ -39,17 +43,6 @@ pub trait DbTrait {
 
 pub type DB = Arc<dyn DbTrait + Send + Sync>;
 
-use std::{env::VarError, sync::Arc};
-
-pub fn get() -> DB {
-    match std::env::var("FS_DB_ROOT_DIR") {
-        Ok(db_dir) => Arc::new(FileSystemDb::new(db_dir)),
-        Err(VarError::NotPresent) => {
-            #[cfg(debug_assertions)]
-            return Arc::new(FileSystemDb::new_dev());
-            #[cfg(not(debug_assertions))]
-            panic!("env var FS_DB_ROOT_DIR must be provided");
-        }
-        Err(VarError::NotUnicode(_)) => panic!("env var FS_DB_ROOT_DIR must be valid unicode"),
-    }
+pub fn get(config: &config::DbConfig) -> DB {
+    Arc::new(FileSystemDb::new(&config.db_root_dir))
 }

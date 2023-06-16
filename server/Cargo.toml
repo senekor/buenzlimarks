@@ -20,6 +20,7 @@ path = "cmd/db_reset.rs"
 
 [dependencies]
 axum = { version = "0.6", features = ["macros", "headers"] }
+clap = { version = "4.3.4", features = ["derive"] }
 hmac = { version = "0.12.1", features = ["std"] }
 jwt = "0.16.0"
 mime_guess = "2.0.4"

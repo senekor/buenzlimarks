@@ -18,5 +18,9 @@ pub mod router;
 /// That includes the data models and business logic.
 pub mod models;
 
+/// Contains the runtime configruation of the server,
+/// including which port to run on and the database location.
+pub mod config;
+
 /// This module contains the routes to the graphical user interface.
 pub mod frontend;
