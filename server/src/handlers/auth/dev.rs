@@ -7,7 +7,7 @@ use axum::{
 };
 
 use crate::{
-    db::DB,
+    db::{error::DbError, DB},
     models::{id::Id, user::User},
 };
 
@@ -28,16 +28,40 @@ impl FromRequestParts<DB> for User {
     }
 }
 
-#[tracing::instrument]
-pub async fn login(Path(user_id): Path<Id<User>>, State(db): State<DB>) -> (StatusCode, String) {
-    tracing::info!("login");
-    match db
-        .get_user(&user_id)
-        .or_else(|_| db.insert_user(User::with_id_as_name(&user_id)))
-    {
-        Ok(_) => (StatusCode::OK, user_id.into()),
-        Err(_) => (StatusCode::INTERNAL_SERVER_ERROR, String::new()),
-    }
+#[tracing::instrument(skip(db))]
+pub async fn login(
+    Path(user_id): Path<Id<User>>,
+    State(db): State<DB>,
+) -> Result<String, StatusCode> {
+    // tracing::debug!("present user: {present_user:?}");
+    let user = match db.get_user(&user_id) {
+        Ok(present_user) => {
+            tracing::debug!("user was already present: {present_user:?}");
+            present_user
+        }
+        Err(DbError::NotFound) => {
+            tracing::debug!(
+                "user with id {:?} was not found, attempting to insert",
+                &user_id
+            );
+            match db.insert_user(User::with_id_as_name(&user_id)) {
+                Ok(inserted_user) => {
+                    tracing::debug!("successfully inserted new user: {:?}", &inserted_user);
+                    inserted_user
+                }
+                Err(e) => {
+                    tracing::error!("DB failed to insert error: {e:?}");
+                    return Err(StatusCode::INTERNAL_SERVER_ERROR);
+                }
+            }
+        }
+        Err(e) => {
+            tracing::error!("db returned garbage error while fetching user: {e:?}");
+            return Err(StatusCode::INTERNAL_SERVER_ERROR);
+        }
+    };
+    tracing::debug!("login succeeded for user {user:?}");
+    Ok(user.id.into())
 }
 
 pub fn routes() -> Router<DB> {

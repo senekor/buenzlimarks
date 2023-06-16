@@ -9,7 +9,7 @@ use crate::{
     models::{id::Id, user::User, widget::Widget},
 };
 
-#[tracing::instrument]
+#[tracing::instrument(skip(db))]
 pub async fn create_widget(
     user: User,
     State(db): State<DB>,
@@ -25,7 +25,7 @@ pub async fn create_widget(
         })
 }
 
-#[tracing::instrument]
+#[tracing::instrument(skip(db))]
 pub async fn get_widget(
     user: User,
     Path(widget_id): Path<Id<Widget>>,
@@ -40,7 +40,7 @@ pub async fn get_widget(
         })
 }
 
-#[tracing::instrument]
+#[tracing::instrument(skip(db))]
 pub async fn get_widgets(
     user: User,
     State(db): State<DB>,

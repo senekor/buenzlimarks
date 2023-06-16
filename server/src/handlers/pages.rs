@@ -9,7 +9,7 @@ use crate::{
     models::{id::Id, page::Page, user::User},
 };
 
-#[tracing::instrument]
+#[tracing::instrument(skip(db))]
 pub async fn create_page(
     user: User,
     State(db): State<DB>,
@@ -25,7 +25,7 @@ pub async fn create_page(
         })
 }
 
-#[tracing::instrument]
+#[tracing::instrument(skip(db))]
 pub async fn get_page(
     user: User,
     Path(page_id): Path<Id<Page>>,
@@ -40,7 +40,7 @@ pub async fn get_page(
         })
 }
 
-#[tracing::instrument]
+#[tracing::instrument(skip(db))]
 pub async fn get_pages(user: User, State(db): State<DB>) -> Result<Json<Vec<Page>>, StatusCode> {
     db.get_pages(&user.id).map(Json).map_err(|e| match e {
         DbError::NotFound => StatusCode::NOT_FOUND,

@@ -10,7 +10,7 @@ use crate::{
     models::{bookmark::Bookmark, id::Id, user::User, widget::Widget},
 };
 
-#[tracing::instrument]
+#[tracing::instrument(skip(db))]
 pub async fn create_bookmark(
     user: User,
     State(db): State<DB>,
@@ -32,7 +32,7 @@ pub struct WidgetId {
     widget_id: Id<Widget>,
 }
 
-#[tracing::instrument]
+#[tracing::instrument(skip(db))]
 pub async fn get_bookmarks(
     user: User,
     State(db): State<DB>,
@@ -52,7 +52,7 @@ pub async fn get_bookmarks(
         })
 }
 
-#[tracing::instrument]
+#[tracing::instrument(skip(db))]
 pub async fn update_bookmark(
     user: User,
     State(db): State<DB>,
@@ -67,7 +67,7 @@ pub async fn update_bookmark(
         })
 }
 
-#[tracing::instrument]
+#[tracing::instrument(skip(db))]
 pub async fn delete_bookmark(
     user: User,
     Path(bookmark_id): Path<Id<Bookmark>>,
