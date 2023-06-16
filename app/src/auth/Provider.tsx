@@ -4,7 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState(
-    import.meta.env.DEV ? "buenzli" : undefined
+    import.meta.env.MODE === "development" ? "buenzli" : undefined
   );
 
   const queryClient = useQueryClient();
