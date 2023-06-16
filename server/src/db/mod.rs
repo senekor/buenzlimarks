@@ -12,9 +12,6 @@ use error::DbResult;
 mod filesystem_db;
 use filesystem_db::FileSystemDb;
 
-mod seed_data;
-pub use seed_data::insert_seeds;
-
 #[cfg_attr(test, mockall::automock)]
 pub trait DbTrait {
     // POST

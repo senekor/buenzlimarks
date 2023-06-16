@@ -5,7 +5,7 @@ static BUILD_CMD: &str = "build";
 
 fn main() {
     // println!("cargo:warning= Nifty trick to debug build scripts! ");
-    println!("cargo:rerun-if-changed=../app");
+    println!("cargo:rerun-if-changed=../app/src");
     std::process::Command::new("pnpm")
         .args(["--frozen-lockfile", "--dir", "../app", "install"])
         .output()
