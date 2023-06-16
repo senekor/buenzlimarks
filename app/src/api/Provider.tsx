@@ -17,8 +17,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     },
     { enabled: Boolean(token) }
   );
-
-  if (!user) return <Login />;
+  if (!token || !user) return <Login />;
 
   return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
 }

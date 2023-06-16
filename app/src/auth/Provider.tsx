@@ -3,7 +3,9 @@ import { AuthContext } from "./context";
 import { useQueryClient } from "@tanstack/react-query";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [token, setToken] = useState(import.meta.env.DEV ? "buenzli" : undefined);
+  const [token, setToken] = useState(
+    import.meta.env.DEV ? "buenzli" : undefined
+  );
 
   const queryClient = useQueryClient();
 
