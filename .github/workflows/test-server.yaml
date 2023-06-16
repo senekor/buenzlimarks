@@ -22,7 +22,7 @@ jobs:
           cache-directories: ""
       - uses: pnpm/action-setup@v2
         with:
-          version: 7.17.1
+          version: latest
       - name: rustfmt
         run: |
           cd server
