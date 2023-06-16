@@ -9,13 +9,23 @@ import { useAuth } from "../auth";
 import { Entity, EntityKey, parse, plural, schema } from "../models";
 import { useCallback, useMemo } from "react";
 import { z } from "zod";
+import { snakeCase } from "change-case";
+
+function keysToSnakeCase(
+  data: Record<string, unknown>
+): Record<string, unknown> {
+  return Object.entries(data).reduce(
+    (acc, [key, val]) => ({ ...acc, [snakeCase(key)]: val }),
+    {}
+  );
+}
 
 export function useRequest() {
   const { token } = useAuth();
 
   return (
     method: "GET" | "POST" | "PUT" | "DELETE",
-    data?: unknown
+    data?: Record<string, unknown>
   ): RequestInit => {
     return {
       method,
@@ -23,7 +33,7 @@ export function useRequest() {
         Authorization: `Bearer ${token}`,
         ...(data ? { "Content-Type": "application/json" } : {}),
       },
-      ...(data ? { body: JSON.stringify(data) } : {}),
+      ...(data ? { body: JSON.stringify(keysToSnakeCase(data)) } : {}),
     };
   };
 }
@@ -45,7 +55,7 @@ export function useEntity<K extends EntityKey, TData = Entity<K>>(
   const queryFn = useCallback(async (): Promise<Entity<K>> => {
     const resp = await fetch(path(k, id), request("GET"));
     return resp.json().then(parse(k));
-  }, [k, id]);
+  }, [k, id, request]);
 
   return useQuery([k, id], queryFn, options);
 }
@@ -59,7 +69,7 @@ export function useEntities<K extends EntityKey, TData = Entity<K>[]>(
   const queryFn = useCallback(async (): Promise<Entity<K>[]> => {
     const resp = await fetch(path(k), request("GET"));
     return resp.json().then(z.array(schema(k)).parse);
-  }, [k]);
+  }, [k, request]);
 
   return useQuery([k] as string[], queryFn, options);
 }
@@ -77,7 +87,7 @@ export function useSubmitEntity<K extends EntityKey>(
       const resp = await fetch(path(k), request(method, data));
       return resp.json().then(parse(k));
     },
-    [k]
+    [k, request]
   );
 
   const internalOptions = useMemo(() => {
@@ -93,7 +103,7 @@ export function useSubmitEntity<K extends EntityKey>(
       ...options,
       onSuccess,
     };
-  }, []);
+  }, [k, options, queryClient]);
 
   return useMutation([k], mutationFn, internalOptions);
 }
@@ -109,7 +119,7 @@ export function useDeleteEntity<K extends EntityKey>(
     async (id: string) => {
       await fetch(path(k, id), request("DELETE"));
     },
-    [k]
+    [k, request]
   );
 
   const internalOptions = useMemo(() => {
@@ -121,7 +131,7 @@ export function useDeleteEntity<K extends EntityKey>(
       ...options,
       onSuccess,
     };
-  }, []);
+  }, [k, options, queryClient]);
 
   return useMutation([k], mutationFn, internalOptions);
 }

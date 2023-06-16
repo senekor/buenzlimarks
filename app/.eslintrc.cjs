@@ -1,4 +1,6 @@
-export default {
+/* eslint-disable @typescript-eslint/naming-convention */
+
+module.exports = {
   env: { browser: true, es2020: true },
   extends: [
     "eslint:recommended",

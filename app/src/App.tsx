@@ -30,7 +30,7 @@ export function App() {
         { onSuccess: (page) => submitWidget({ id: "", pageId: page.id }) }
       );
     }
-  }, [widgets]);
+  }, [submitPage, submitWidget, widgets]);
 
   const { data: bookmarks } = useEntities("bookmark");
 

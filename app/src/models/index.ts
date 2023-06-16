@@ -32,7 +32,7 @@ export type Widget = Entity<"widget">;
 export function schema<K extends EntityKey>(k: K): Entities[K]["schema"] {
   return entities[k].schema;
 }
-export function parse<K extends EntityKey>(k: K): (data: any) => Entity<K> {
+export function parse<K extends EntityKey>(k: K): (data: unknown) => Entity<K> {
   return schema(k).parse;
 }
 
