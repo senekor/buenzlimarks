@@ -234,15 +234,16 @@ mod tests {
 
         let page = Page {
             id: "0".into(),
-            name: String::from("p name"),
+            name: "p name".into(),
         };
         let widget = Widget {
             id: "0".into(),
+            name: "w name".into(),
             page_id: "0".into(),
         };
         let bookmark = Bookmark {
             id: "0".into(),
-            name: "name".into(),
+            name: "b name".into(),
             url: "url".into(),
             widget_id: "0".into(),
         };

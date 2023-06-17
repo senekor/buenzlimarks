@@ -4,34 +4,49 @@ use buenzlimarks::{
 };
 use clap::Parser;
 
+type NameSeed<'a> = &'a str;
+type UrlSeed<'a> = &'a str;
+
+type UserSeed<'a> = (User, &'a [PageSeed<'a>]);
+type PageSeed<'a> = (NameSeed<'a>, &'a [WidgetSeed<'a>]);
+type WidgetSeed<'a> = (NameSeed<'a>, &'a [BookmarkSeed<'a>]);
+type BookmarkSeed<'a> = (NameSeed<'a>, UrlSeed<'a>);
+
 fn insert_seeds(db: &(dyn DbTrait + Send + Sync)) {
     // user(id), pages, widgets, bookmarks(name, url)
     #[allow(clippy::type_complexity)]
-    let data: &[(User, &[(&str, &[&[(&str, &str)]])])] = &[(
+    let data: &[UserSeed] = &[(
         User::dev(),
         &[(
             "Seed page",
             &[
-                // widgets
-                &[
-                    // bookmarks
-                    (
-                        "Requirements",
-                        "https://github.com/users/remlse/projects/1/views/6",
-                    ),
-                    (
-                        "Prioritization",
-                        "https://github.com/users/remlse/projects/1/views/7",
-                    ),
-                    (
-                        "Tasks",
-                        "https://github.com/users/remlse/projects/1/views/2",
-                    ),
-                ],
-                &[
-                    ("YouTube", "https://youtube.com"),
-                    ("Rust std docs", "https://std.rs"),
-                ],
+                // 1. widget
+                (
+                    "wandern",
+                    &[
+                        // bookmarks
+                        (
+                            "Requirements",
+                            "https://github.com/users/remlse/projects/1/views/6",
+                        ),
+                        (
+                            "Prioritization",
+                            "https://github.com/users/remlse/projects/1/views/7",
+                        ),
+                        (
+                            "Tasks",
+                            "https://github.com/users/remlse/projects/1/views/2",
+                        ),
+                    ],
+                ),
+                // 2. widget
+                (
+                    "Sozialversicherungen",
+                    &[
+                        ("YouTube", "https://youtube.com"),
+                        ("Rust std docs", "https://std.rs"),
+                    ],
+                ),
             ],
         )],
     )];
@@ -55,11 +70,12 @@ fn insert_seeds(db: &(dyn DbTrait + Send + Sync)) {
                     &user_id,
                     Widget {
                         id: w_id.clone(),
+                        name: widget.0.into(),
                         page_id: p_id.clone(),
                     },
                 )
                 .unwrap();
-                for (name, url) in widget.iter().copied() {
+                for (name, url) in widget.1.iter().copied() {
                     let bm_id = Id::random();
                     let bookmark = Bookmark {
                         id: bm_id,
