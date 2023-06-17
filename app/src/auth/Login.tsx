@@ -11,7 +11,7 @@ export function Login() {
   return (
     <div className="flex flex-col gap-8 h-screen items-center bg-slate-800">
       <FlexSpace />
-      <h1 className="text-5xl text-orange-500">buenzlimarks</h1>
+      <img src="logo.svg" />
       <input
         className="bg-slate-600 p-2 rounded text-white text-center text-3xl"
         placeholder="Enter a user name"
