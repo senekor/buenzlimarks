@@ -90,6 +90,18 @@ impl FileSystemDb {
             .whoopsie()
             .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
     }
+
+    fn remove_entity<T: DbEntity>(&self, user_id: &Id<User>, entity_id: &Id<T>) -> DbResult<()> {
+        let path = self.get_path(user_id, Some(entity_id));
+
+        match std::fs::remove_file(path) {
+            Ok(_) => Ok(()),
+            Err(e) => match e.kind() {
+                std::io::ErrorKind::NotFound => Err(DbError::NotFound),
+                _ => Err(DbError::WhoopsieDoopsie),
+            },
+        }
+    }
 }
 
 impl DbTrait for FileSystemDb {
@@ -183,15 +195,7 @@ impl DbTrait for FileSystemDb {
         for w in widgets {
             self.delete_widget(user_id, &w.id)?;
         }
-        let page_path = self.get_path(user_id, Some(page_id));
-
-        match std::fs::remove_file(page_path) {
-            Ok(_) => Ok(()),
-            Err(e) => match e.kind() {
-                std::io::ErrorKind::NotFound => Err(DbError::NotFound),
-                _ => Err(DbError::WhoopsieDoopsie),
-            },
-        }
+        self.remove_entity(user_id, page_id)
     }
 
     fn delete_widget(&self, user_id: &Id<User>, widget_id: &Id<Widget>) -> DbResult {
@@ -200,27 +204,11 @@ impl DbTrait for FileSystemDb {
         for b in bookmarks {
             self.delete_bookmark(user_id, &b.id)?;
         }
-        let widget_path = self.get_path(user_id, Some(widget_id));
-
-        match std::fs::remove_file(widget_path) {
-            Ok(_) => Ok(()),
-            Err(e) => match e.kind() {
-                std::io::ErrorKind::NotFound => Err(DbError::NotFound),
-                _ => Err(DbError::WhoopsieDoopsie),
-            },
-        }
+        self.remove_entity(user_id, widget_id)
     }
 
     fn delete_bookmark(&self, user_id: &Id<User>, bookmark_id: &Id<Bookmark>) -> DbResult {
-        let bookmark_path = self.get_path(user_id, Some(bookmark_id));
-
-        match std::fs::remove_file(bookmark_path) {
-            Ok(_) => Ok(()),
-            Err(e) => match e.kind() {
-                std::io::ErrorKind::NotFound => Err(DbError::NotFound),
-                _ => Err(DbError::WhoopsieDoopsie),
-            },
-        }
+        self.remove_entity(user_id, bookmark_id)
     }
 }
 
