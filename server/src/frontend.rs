@@ -1,7 +1,6 @@
 use axum::{
     http::{header, HeaderMap, StatusCode, Uri},
     response::Html,
-    Router,
 };
 use rust_embed::RustEmbed;
 
@@ -25,15 +24,7 @@ fn serve_file(path: &str) -> FrontendResponse {
     Ok((headers, Html(content)))
 }
 
-async fn frontend_handler(uri: Uri) -> FrontendResponse {
+pub async fn frontend_handler(uri: Uri) -> FrontendResponse {
     let path = uri.path().trim_start_matches('/');
-
-    if path.is_empty() || path == INDEX_HTML {
-        return serve_file(INDEX_HTML);
-    }
-    serve_file(path)
-}
-
-pub fn frontend_router() -> Router {
-    Router::new().fallback(frontend_handler)
+    serve_file(path).or_else(|_| serve_file(INDEX_HTML))
 }

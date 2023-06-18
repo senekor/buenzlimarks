@@ -1,5 +1,5 @@
 use axum::Router;
-use buenzlimarks::{config::Config, frontend::frontend_router, router::api_router};
+use buenzlimarks::{config::Config, frontend::frontend_handler, router::api_router};
 use clap::Parser;
 use std::net::SocketAddr;
 use tower_http::trace::TraceLayer;
@@ -19,7 +19,7 @@ async fn main() {
             "/api",
             api_router(&config).layer(TraceLayer::new_for_http()),
         )
-        .merge(frontend_router());
+        .fallback(frontend_handler);
 
     // run it
     let addr = SocketAddr::from(([127, 0, 0, 1], config.port));
