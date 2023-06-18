@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::{id::Id, page::Page};
+use super::{Id, Page};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Widget {

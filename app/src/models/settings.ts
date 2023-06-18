@@ -1,9 +1,7 @@
 import { z } from "zod";
 
-export const page = {
+export const settings = {
   schema: z.object({
-    id: z.string(),
     name: z.string(),
   }),
-  plural: "pages",
 };

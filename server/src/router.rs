@@ -5,21 +5,19 @@ use axum::{
 
 use crate::{
     config::Config,
-    db,
     handlers::{
-        auth::{self, login},
+        auth,
         bookmarks::{
             create_bookmark, delete_bookmark, get_bookmark, get_bookmarks, update_bookmark,
         },
         pages::{create_page, delete_page, get_page, get_pages, update_page},
-        users::whoami,
+        settings::settings,
         widgets::{create_widget, delete_widget, get_widget, get_widgets, update_widget},
     },
+    state::AppState,
 };
 
 pub fn api_router(config: &Config) -> Router {
-    let db = db::get(&config.db);
-
     Router::new()
         // POST - create
         .route("/pages", post(create_page))
@@ -45,10 +43,9 @@ pub fn api_router(config: &Config) -> Router {
         .route("/bookmarks/:bookmark_id", delete(delete_bookmark))
         //
         // authentication
-        .route("/auth/login/:user_id", get(login))
-        .route("/users/me", get(whoami))
+        .nest("/auth", auth::routes())
+        .route("/settings", get(settings))
         //
         // shared state
-        .with_state(db)
-        .layer(auth::extension())
+        .with_state(AppState::new(config))
 }

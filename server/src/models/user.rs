@@ -1,36 +1,20 @@
 use serde::{Deserialize, Serialize};
+use strum_macros::Display;
 
-use super::id::Id;
+use super::Id;
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Display)]
+pub enum AuthProvider {
+    #[serde(rename = "dev")]
+    #[strum(serialize = "dev")]
+    Dev,
+    #[serde(rename = "github")]
+    #[strum(serialize = "github")]
+    GitHub,
+}
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct User {
     pub id: Id<Self>,
-    pub name: Option<String>,
-}
-
-#[cfg(debug_assertions)]
-pub static DEV_USER_ID_STR: &str = "buenzli";
-
-pub fn dev_user_id() -> Id<User> {
-    Id::dev_user_id()
-}
-
-impl User {
-    #[cfg(debug_assertions)]
-    /// returns the default development user
-    pub fn dev() -> Self {
-        Self {
-            id: dev_user_id(),
-            name: Some("Bünzli".into()),
-        }
-    }
-
-    #[cfg(debug_assertions)]
-    /// returns a new user without a name
-    pub fn with_id_as_name(user_id: &Id<User>) -> Self {
-        Self {
-            id: user_id.clone(),
-            name: Some(user_id.to_string()),
-        }
-    }
+    pub provider: AuthProvider,
 }

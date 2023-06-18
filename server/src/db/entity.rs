@@ -2,7 +2,7 @@ use std::fmt::Debug;
 
 use serde::{Deserialize, Serialize};
 
-use crate::models::{bookmark::Bookmark, id::Id, page::Page, widget::Widget};
+use crate::models::{Bookmark, Id, Page, Widget};
 
 pub trait DbEntity: Debug + Serialize + for<'a> Deserialize<'a> {
     fn get_id(&self) -> &Id<Self>;

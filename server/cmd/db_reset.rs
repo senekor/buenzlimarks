@@ -1,29 +1,33 @@
 use buenzlimarks::{
-    db::{self, config::DbConfig, DbTrait},
-    models::{bookmark::Bookmark, id::Id, page::Page, user::User, widget::Widget},
+    db::{self, config::DbConfig, Database},
+    models::{AuthProvider, Bookmark, Id, Page, Settings, User, Widget},
 };
 use clap::Parser;
 
 type NameSeed<'a> = &'a str;
 type UrlSeed<'a> = &'a str;
 
-type UserSeed<'a> = (User, &'a [PageSeed<'a>]);
-type PageSeed<'a> = (NameSeed<'a>, &'a [WidgetSeed<'a>]);
-type WidgetSeed<'a> = (NameSeed<'a>, &'a [BookmarkSeed<'a>]);
+type UserSeed<'a> = (User, Settings, Vec<PageSeed<'a>>);
+type PageSeed<'a> = (NameSeed<'a>, Vec<WidgetSeed<'a>>);
+type WidgetSeed<'a> = (NameSeed<'a>, Vec<BookmarkSeed<'a>>);
 type BookmarkSeed<'a> = (NameSeed<'a>, UrlSeed<'a>);
 
-fn insert_seeds(db: &(dyn DbTrait + Send + Sync)) {
-    // user(id), pages, widgets, bookmarks(name, url)
-    #[allow(clippy::type_complexity)]
-    let data: &[UserSeed] = &[(
-        User::dev(),
-        &[(
+fn insert_seeds(db: &Database) {
+    let seed_data: Vec<UserSeed> = vec![(
+        User {
+            id: "buenzli".into(),
+            provider: AuthProvider::Dev,
+        },
+        Settings {
+            name: "Bünzli".into(),
+        },
+        vec![(
             "Seed page",
-            &[
+            vec![
                 // 1. widget
                 (
                     "wandern",
-                    &[
+                    vec![
                         // bookmarks
                         (
                             "Requirements",
@@ -42,7 +46,7 @@ fn insert_seeds(db: &(dyn DbTrait + Send + Sync)) {
                 // 2. widget
                 (
                     "Sozialversicherungen",
-                    &[
+                    vec![
                         ("YouTube", "https://youtube.com"),
                         ("Rust std docs", "https://std.rs"),
                     ],
@@ -51,31 +55,30 @@ fn insert_seeds(db: &(dyn DbTrait + Send + Sync)) {
         )],
     )];
 
-    for user in data {
-        let user_id = user.0.id.clone();
-        db.insert_user(user.0.clone()).unwrap();
-        for &(page_name, widgets) in user.1 {
+    for (user, settings, pages) in seed_data {
+        db.insert_user(&user, settings).unwrap();
+        for (page_name, widgets) in pages {
             let p_id = Id::random();
             db.insert_page(
-                &user_id,
+                &user,
                 Page {
                     id: p_id.clone(),
                     name: page_name.into(),
                 },
             )
             .unwrap();
-            for widget in widgets.iter() {
+            for (widget_name, bookmarks) in widgets {
                 let w_id = Id::random();
                 db.insert_widget(
-                    &user_id,
+                    &user,
                     Widget {
                         id: w_id.clone(),
-                        name: widget.0.into(),
+                        name: widget_name.into(),
                         page_id: p_id.clone(),
                     },
                 )
                 .unwrap();
-                for (name, url) in widget.1.iter().copied() {
+                for (name, url) in bookmarks {
                     let bm_id = Id::random();
                     let bookmark = Bookmark {
                         id: bm_id,
@@ -83,7 +86,7 @@ fn insert_seeds(db: &(dyn DbTrait + Send + Sync)) {
                         url: url.into(),
                         widget_id: w_id.clone(),
                     };
-                    db.insert_bookmark(&user_id, bookmark).unwrap();
+                    db.insert_bookmark(&user, bookmark).unwrap();
                 }
             }
         }
@@ -93,8 +96,8 @@ fn insert_seeds(db: &(dyn DbTrait + Send + Sync)) {
 fn main() {
     let config = DbConfig::parse();
 
-    std::fs::remove_dir_all(&config.db_root_dir).ok();
+    std::fs::remove_dir_all(&config.db_dir).ok();
 
     let db = db::get(&config);
-    insert_seeds(db.as_ref());
+    insert_seeds(&db);
 }

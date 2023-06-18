@@ -5,18 +5,18 @@ use axum::{
 };
 
 use crate::{
-    db::{error::DbError, DB},
-    models::{id::Id, user::User, widget::Widget},
+    db::{error::DbError, Database},
+    models::{Id, User, Widget},
 };
 
 #[tracing::instrument(skip(db))]
 pub async fn create_widget(
     user: User,
-    State(db): State<DB>,
+    State(db): State<Database>,
     Json(mut widget): Json<Widget>,
 ) -> Result<Json<Widget>, StatusCode> {
     widget.id = Id::random();
-    db.insert_widget(&user.id, widget)
+    db.insert_widget(&user, widget)
         .map(Json)
         .map_err(|e| match e {
             DbError::NotFound => StatusCode::NOT_FOUND,
@@ -29,9 +29,9 @@ pub async fn create_widget(
 pub async fn get_widget(
     user: User,
     Path(widget_id): Path<Id<Widget>>,
-    State(db): State<DB>,
+    State(db): State<Database>,
 ) -> Result<Json<Widget>, StatusCode> {
-    db.get_widget(&user.id, &widget_id)
+    db.get_widget(&user, &widget_id)
         .map(Json)
         .map_err(|e| match e {
             DbError::NotFound => StatusCode::NOT_FOUND,
@@ -43,9 +43,9 @@ pub async fn get_widget(
 #[tracing::instrument(skip(db))]
 pub async fn get_widgets(
     user: User,
-    State(db): State<DB>,
+    State(db): State<Database>,
 ) -> Result<Json<Vec<Widget>>, StatusCode> {
-    db.get_widgets(&user.id).map(Json).map_err(|e| match e {
+    db.get_widgets(&user).map(Json).map_err(|e| match e {
         DbError::NotFound => StatusCode::NOT_FOUND,
         DbError::WhoopsieDoopsie => StatusCode::INTERNAL_SERVER_ERROR,
         DbError::AlreadyExists => StatusCode::INTERNAL_SERVER_ERROR,
@@ -54,10 +54,10 @@ pub async fn get_widgets(
 
 pub async fn update_widget(
     user: User,
-    State(db): State<DB>,
+    State(db): State<Database>,
     Json(widget): Json<Widget>,
 ) -> Result<Json<Widget>, StatusCode> {
-    db.update_widget(&user.id, widget)
+    db.update_widget(&user, widget)
         .map(Json)
         .map_err(|e| match e {
             DbError::NotFound => StatusCode::NOT_FOUND,
@@ -69,9 +69,9 @@ pub async fn update_widget(
 pub async fn delete_widget(
     user: User,
     Path(widget_id): Path<Id<Widget>>,
-    State(db): State<DB>,
+    State(db): State<Database>,
 ) -> Result<(), StatusCode> {
-    db.delete_widget(&user.id, &widget_id).map_err(|e| match e {
+    db.delete_widget(&user, &widget_id).map_err(|e| match e {
         DbError::NotFound => StatusCode::NOT_FOUND,
         DbError::WhoopsieDoopsie => StatusCode::INTERNAL_SERVER_ERROR,
         DbError::AlreadyExists => StatusCode::INTERNAL_SERVER_ERROR,

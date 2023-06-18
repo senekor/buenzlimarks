@@ -22,5 +22,8 @@ pub mod models;
 /// including which port to run on and the database location.
 pub mod config;
 
+/// Contains the shared state of the server.
+pub mod state;
+
 /// This module contains the routes to the graphical user interface.
 pub mod frontend;

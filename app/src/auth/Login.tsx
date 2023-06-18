@@ -1,17 +1,18 @@
-import { useState } from "react";
-import { useAuth } from ".";
+import { useCallback, useState } from "react";
+import { useAuth } from "./context";
 import { FlexSpace } from "../components/FlexSpace";
 
-export function Login() {
-  const [userId, setUserId] = useState("");
-
+function DevLogin() {
   const { login } = useAuth();
-  const submit = () => login(userId);
+
+  const [userId, setUserId] = useState("");
+  const submit = useCallback(
+    () => login(`/api/auth/login/${userId}`),
+    [login, userId]
+  );
 
   return (
-    <div className="flex flex-col gap-8 h-screen items-center bg-slate-800">
-      <FlexSpace />
-      <img src="logo.svg" />
+    <>
       <input
         className="bg-slate-600 p-2 rounded text-white text-center text-3xl"
         placeholder="Enter a user name"
@@ -26,6 +27,27 @@ export function Login() {
       >
         Login
       </button>
+    </>
+  );
+}
+
+export function GithubLogin() {
+  return (
+    <a
+      className="text-white bg-slate-600 w-fit rounded px-4 py-2 text-3xl"
+      href="/api/auth/github/login"
+    >
+      GitHub Login
+    </a>
+  );
+}
+
+export function Login() {
+  return (
+    <div className="flex flex-col gap-8 h-screen items-center">
+      <FlexSpace />
+      <img src="logo.svg" height={256} width={256} />
+      {import.meta.env.MODE === "development" ? <DevLogin /> : <GithubLogin />}
       <FlexSpace />
       <FlexSpace />
     </div>

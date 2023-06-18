@@ -3,6 +3,7 @@ import { bookmark } from "./bookmark";
 import { widget } from "./widget";
 import { page } from "./page";
 import { user } from "./user";
+import { settings } from "./settings";
 
 // ################################################################
 // definitions
@@ -25,6 +26,8 @@ export type Bookmark = Entity<"bookmark">;
 export type Page = Entity<"page">;
 export type User = Entity<"user">;
 export type Widget = Entity<"widget">;
+
+export type Settings = z.infer<typeof settings["schema"]>;
 
 // ################################################################
 // generic functionality

@@ -14,6 +14,8 @@
 //!
 //! TODO oauth2 based authentication for production.
 
+mod user_extractor;
+
 #[cfg(debug_assertions)]
 mod dev;
 #[cfg(debug_assertions)]
@@ -22,4 +24,4 @@ pub use dev::*;
 #[cfg(not(debug_assertions))]
 mod prod;
 #[cfg(not(debug_assertions))]
-pub use prod::routes;
+pub use prod::*;

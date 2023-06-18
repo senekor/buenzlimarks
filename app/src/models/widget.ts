@@ -4,6 +4,7 @@ export const widget = {
   schema: z
     .object({
       id: z.string(),
+      name: z.string(),
       page_id: z.string(),
     })
     .transform(({ page_id, ...rest }) => ({ pageId: page_id, ...rest })),

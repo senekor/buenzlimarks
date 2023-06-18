@@ -6,7 +6,7 @@ function uninit(): never {
 
 type Auth = {
   token: string | undefined;
-  login: (id: string) => void;
+  login: (id: string) => Promise<void>;
   logout: () => void;
 };
 

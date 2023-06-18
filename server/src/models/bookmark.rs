@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::{id::Id, widget::Widget};
+use super::{Id, Widget};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Bookmark {

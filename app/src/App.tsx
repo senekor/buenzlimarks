@@ -3,7 +3,7 @@ import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import { Bookmark as BookmarkComp } from "./components/Bookmark";
 import { Bookmark } from "./models";
 import { useEffect, useState } from "react";
-import { LogoutButton } from "./auth/Logout";
+import { LogoutButton } from "./auth/LogoutButton";
 import { useDeleteEntity, useEntities, useSubmitEntity } from "./api/hooks";
 import { FlexSpace } from "./components/FlexSpace";
 
@@ -26,8 +26,8 @@ export function App() {
       setWidgetId(widgets[0].id);
     } else if (widgets) {
       submitPage(
-        { id: "" },
-        { onSuccess: (page) => submitWidget({ id: "", pageId: page.id }) }
+        { id: "", name: "" },
+        { onSuccess: (page) => submitWidget({ id: "", name: "", pageId: page.id }) }
       );
     }
   }, [submitPage, submitWidget, widgets]);
@@ -51,7 +51,7 @@ export function App() {
   const { mutate: deleteBookmark } = useDeleteEntity("bookmark", options);
 
   return (
-    <div className="flex flex-col bg-slate-800 h-screen">
+    <div className="flex flex-col h-screen">
       <h1 className="text-4xl text-orange-500 text-center mt-12 mb-8">
         buenzlimarks
       </h1>

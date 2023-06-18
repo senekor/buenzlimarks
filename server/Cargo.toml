@@ -19,15 +19,18 @@ path = "cmd/db_reset.rs"
 
 [dependencies]
 axum = { version = "0.6", features = ["macros", "headers"] }
-clap = { version = "4.3.4", features = ["derive"] }
+clap = { version = "4.3.4", features = ["derive", "env"] }
 hmac = { version = "0.12.1", features = ["std"] }
 jwt = "0.16.0"
 mime_guess = "2.0.4"
 oauth2 = "4.2.3"
+reqwest = { version = "0.11.18", features = ["json"] }
 rust-embed = { version = "6.6.0", features = ["axum"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1"
 sha2 = "0.10.2"
+strum = { version = "0.24.1", features = ["strum_macros"] }
+strum_macros = "0.24.3"
 tokio = { version = "1.26", features = ["full"] }
 tower-http = { version = "0.4.0", features = ["fs", "trace"] }
 tracing = "0.1.37"
@@ -35,5 +38,4 @@ tracing-subscriber = { version = "0.3.17", features = ["env-filter"] }
 uuid = { version = "1.1.2", features = ["v4"] }
 
 [dev-dependencies]
-mockall = "0.11.3"
 tempfile = "3.3.0"

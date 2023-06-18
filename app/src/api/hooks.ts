@@ -5,11 +5,12 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { useAuth } from "../auth";
-import { Entity, EntityKey, parse, plural, schema } from "../models";
+import { useAuth } from "../auth/context";
+import { Entity, EntityKey, Settings, parse, plural, schema } from "../models";
 import { useCallback, useMemo } from "react";
 import { z } from "zod";
 import { snakeCase } from "change-case";
+import { settings } from "../models/settings";
 
 function keysToSnakeCase(
   data: Record<string, unknown>
@@ -58,6 +59,20 @@ export function useEntity<K extends EntityKey, TData = Entity<K>>(
   }, [k, id, request]);
 
   return useQuery([k, id], queryFn, options);
+}
+
+export function useSettings(
+  options?: UseQueryOptions<Settings, TError, Settings, string[]>
+) {
+  const request = useRequest();
+  const settingsKey = "settings";
+
+  const queryFn = useCallback(async (): Promise<Settings> => {
+    const resp = await fetch(`api/${settingsKey}`, request("GET"));
+    return resp.json().then(settings.schema.parse);
+  }, [request]);
+
+  return useQuery([settingsKey], queryFn, options);
 }
 
 export function useEntities<K extends EntityKey, TData = Entity<K>[]>(

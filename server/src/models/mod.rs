@@ -1,5 +1,13 @@
-pub mod bookmark;
-pub mod id;
-pub mod page;
-pub mod user;
-pub mod widget;
+mod bookmark;
+mod id;
+mod page;
+mod settings;
+mod user;
+mod widget;
+
+pub use bookmark::*;
+pub use id::*;
+pub use page::*;
+pub use settings::*;
+pub use user::*;
+pub use widget::*;
