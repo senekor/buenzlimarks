@@ -7,7 +7,7 @@ use serde::Deserialize;
 
 use crate::{
     db::{error::DbError, Database},
-    models::{Bookmark, Id, User, Widget},
+    models::{sanitize_bookmark, Bookmark, Id, User, Widget},
 };
 
 #[tracing::instrument(skip(db))]
@@ -18,6 +18,7 @@ pub async fn create_bookmark(
 ) -> Result<Json<Bookmark>, StatusCode> {
     tracing::debug!("create bookmark");
     bookmark.id = Id::random();
+    sanitize_bookmark(&mut bookmark);
     db.insert_bookmark(&user, bookmark)
         .map(Json)
         .map_err(|e| match e {
@@ -70,8 +71,9 @@ pub async fn get_bookmarks(
 pub async fn update_bookmark(
     user: User,
     State(db): State<Database>,
-    Json(bookmark): Json<Bookmark>,
+    Json(mut bookmark): Json<Bookmark>,
 ) -> Result<Json<Bookmark>, StatusCode> {
+    sanitize_bookmark(&mut bookmark);
     db.update_bookmark(&user, bookmark)
         .map(Json)
         .map_err(|e| match e {

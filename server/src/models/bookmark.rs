@@ -9,3 +9,9 @@ pub struct Bookmark {
     pub url: String,
     pub widget_id: Id<Widget>,
 }
+
+pub fn sanitize_bookmark(bookmark: &mut Bookmark) {
+    if !bookmark.url.contains("://") {
+        bookmark.url = format!("https://{}", bookmark.url);
+    };
+}
