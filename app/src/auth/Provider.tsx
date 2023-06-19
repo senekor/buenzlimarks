@@ -3,7 +3,7 @@ import { AuthContext } from "./context";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
-const TOKEN_STORAGE_KEY = "auth_token";
+const TOKEN_STORAGE_KEY = "buenzlimarks_auth";
 
 function initialToken(): string | undefined {
   const storedToken = localStorage.getItem(TOKEN_STORAGE_KEY);
