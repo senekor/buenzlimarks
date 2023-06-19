@@ -51,7 +51,7 @@ export function App() {
   const { mutate: deleteBookmark } = useDeleteEntity("bookmark", options);
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen text-white">
       <h1 className="text-4xl text-orange-500 text-center mt-12 mb-8">
         buenzlimarks
       </h1>
