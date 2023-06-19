@@ -8,15 +8,15 @@
 //! development seed data has a user with ID "buenzli". This ID is also used in
 //! the default collection of the thunderclient requests as well as the
 //! frontend.
-//! 
+//!
 //! The goal of this approach is to be as close to production auth as possible
 //! (requests are required to use authentication) while preserving developer
 //! convenience (clients authenticate themselves with a default user).
-//! 
+//!
 //! Users other than the default one may be used after they login for the first
 //! time by sending a GET request to `/api/auth/login/:user_id`, which
 //! initializes the user's database entry.
-//! 
+//!
 //! ## In production (release build)
 //!
 //! The production authentication is based on OAuth2. A successful login will
@@ -25,7 +25,7 @@
 //! (Currently, GitHub is the only supported provider.) Like during development,
 //! all requests require bearer authentication, where the bearer token is the
 //! JWT received from a successful login.
-//! 
+//!
 //! The login flow is straight-forward OAuth2. Two requests need to be made
 //! to the server.
 //! 1. `/api/auth/<provider>/login`
@@ -37,7 +37,6 @@
 //!    to plan, the response will have the JWT in its body.
 
 mod user_extractor;
-
 
 #[cfg(debug_assertions)]
 mod dev;
