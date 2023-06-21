@@ -1,12 +1,13 @@
 use axum::{
-    extract::{Path, State},
+    extract::{Path, Query, State},
     http::StatusCode,
     Json,
 };
+use serde::Deserialize;
 
 use crate::{
     db::{error::DbError, Database},
-    models::{Id, User, Widget},
+    models::{Id, Page, User, Widget},
 };
 
 #[tracing::instrument(skip(db))]
@@ -40,16 +41,29 @@ pub async fn get_widget(
         })
 }
 
+#[derive(Debug, Deserialize)]
+pub struct WidgetFilter {
+    page_id: Option<Id<Page>>,
+}
+
 #[tracing::instrument(skip(db))]
 pub async fn get_widgets(
     user: User,
     State(db): State<Database>,
+    query: Query<WidgetFilter>,
 ) -> Result<Json<Vec<Widget>>, StatusCode> {
-    db.get_widgets(&user).map(Json).map_err(|e| match e {
-        DbError::NotFound => StatusCode::NOT_FOUND,
-        DbError::WhoopsieDoopsie => StatusCode::INTERNAL_SERVER_ERROR,
-        DbError::AlreadyExists => StatusCode::INTERNAL_SERVER_ERROR,
-    })
+    db.get_widgets(&user)
+        .map(|mut v| {
+            if let Some(page_id) = &query.page_id {
+                v.retain(|w| w.page_id == *page_id);
+            }
+            Json(v)
+        })
+        .map_err(|e| match e {
+            DbError::NotFound => StatusCode::NOT_FOUND,
+            DbError::WhoopsieDoopsie => StatusCode::INTERNAL_SERVER_ERROR,
+            DbError::AlreadyExists => StatusCode::INTERNAL_SERVER_ERROR,
+        })
 }
 
 pub async fn update_widget(

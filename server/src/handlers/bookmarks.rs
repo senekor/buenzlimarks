@@ -28,6 +28,7 @@ pub async fn create_bookmark(
         })
 }
 
+#[tracing::instrument(skip(db))]
 pub async fn get_bookmark(
     user: User,
     Path(bookmark_id): Path<Id<Bookmark>>,
@@ -43,20 +44,20 @@ pub async fn get_bookmark(
 }
 
 #[derive(Debug, Deserialize)]
-pub struct WidgetId {
-    widget_id: Id<Widget>,
+pub struct BookmarkFilter {
+    widget_id: Option<Id<Widget>>,
 }
 
 #[tracing::instrument(skip(db))]
 pub async fn get_bookmarks(
     user: User,
     State(db): State<Database>,
-    query: Option<Query<WidgetId>>,
+    query: Query<BookmarkFilter>,
 ) -> Result<Json<Vec<Bookmark>>, StatusCode> {
     db.get_bookmarks(&user)
         .map(|mut v| {
-            if let Some(w) = query {
-                v.retain(|b| b.widget_id == w.widget_id);
+            if let Some(widget_id) = &query.widget_id {
+                v.retain(|b| b.widget_id == *widget_id);
             }
             Json(v)
         })

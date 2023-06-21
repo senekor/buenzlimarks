@@ -21,38 +21,50 @@ fn insert_seeds(db: &Database) {
         Settings {
             name: "Bünzli".into(),
         },
-        vec![(
-            "Seed page",
-            vec![
-                // 1. widget
-                (
-                    "wandern",
+        vec![
+            (
+                "Seed page",
+                vec![
+                    // 1. widget
+                    (
+                        "wandern",
+                        vec![
+                            // bookmarks
+                            (
+                                "Requirements",
+                                "https://github.com/users/remlse/projects/1/views/6",
+                            ),
+                            (
+                                "Prioritization",
+                                "https://github.com/users/remlse/projects/1/views/7",
+                            ),
+                            (
+                                "Tasks",
+                                "https://github.com/users/remlse/projects/1/views/2",
+                            ),
+                        ],
+                    ),
+                    // 2. widget
+                    (
+                        "Sozialversicherungen",
+                        vec![
+                            ("YouTube", "https://youtube.com"),
+                            ("Rust std docs", "https://std.rs"),
+                        ],
+                    ),
+                ],
+            ),
+            (
+                "Second page",
+                vec![(
+                    "Tastaturen",
                     vec![
-                        // bookmarks
-                        (
-                            "Requirements",
-                            "https://github.com/users/remlse/projects/1/views/6",
-                        ),
-                        (
-                            "Prioritization",
-                            "https://github.com/users/remlse/projects/1/views/7",
-                        ),
-                        (
-                            "Tasks",
-                            "https://github.com/users/remlse/projects/1/views/2",
-                        ),
+                        ("beekeeb", "https://beekeeb.com"),
+                        ("ZSA", "https://zsa.io"),
                     ],
-                ),
-                // 2. widget
-                (
-                    "Sozialversicherungen",
-                    vec![
-                        ("YouTube", "https://youtube.com"),
-                        ("Rust std docs", "https://std.rs"),
-                    ],
-                ),
-            ],
-        )],
+                )],
+            ),
+        ],
     )];
 
     for (user, settings, pages) in seed_data {

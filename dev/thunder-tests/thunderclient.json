@@ -145,16 +145,16 @@
     "colId": "6771bdef-36bc-49e3-a53c-1ae789e62c17",
     "containerId": "",
     "name": "get bookmarks by widget-ID",
-    "url": "http://localhost:4000/api/bookmarks?widget_id=4e4ce592-fa11-4361-a00b-f2592504c807",
+    "url": "http://localhost:4000/api/bookmarks?widget_id=7620336d-3644-4ef7-b495-0c6505976ef2",
     "method": "GET",
     "sortNum": 15000,
     "created": "2023-03-19T11:16:20.968Z",
-    "modified": "2023-03-19T12:41:44.128Z",
+    "modified": "2023-06-21T14:13:22.531Z",
     "headers": [],
     "params": [
       {
         "name": "widget_id",
-        "value": "4e4ce592-fa11-4361-a00b-f2592504c807",
+        "value": "7620336d-3644-4ef7-b495-0c6505976ef2",
         "isPath": false
       }
     ],
@@ -256,6 +256,26 @@
     "modified": "2023-06-17T07:05:39.397Z",
     "headers": [],
     "params": [],
+    "tests": []
+  },
+  {
+    "_id": "f82dd62c-ab2d-4c11-b2bb-b44844fe70b0",
+    "colId": "6771bdef-36bc-49e3-a53c-1ae789e62c17",
+    "containerId": "",
+    "name": "get widgets by page-ID",
+    "url": "http://localhost:4000/api/widgets?page_id=e0ddac21-4f16-4e40-a877-cad3712f4f15",
+    "method": "GET",
+    "sortNum": 17500,
+    "created": "2023-06-21T14:17:47.190Z",
+    "modified": "2023-06-21T14:18:44.964Z",
+    "headers": [],
+    "params": [
+      {
+        "name": "page_id",
+        "value": "e0ddac21-4f16-4e40-a877-cad3712f4f15",
+        "isPath": false
+      }
+    ],
     "tests": []
   }
 ]
