@@ -1,54 +1,10 @@
-import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
-
-import { Bookmark as BookmarkComp } from "./components/Bookmark";
-import { Bookmark } from "./models";
-import { useEffect, useState } from "react";
 import { LogoutButton } from "./auth/LogoutButton";
-import { useDeleteEntity, useEntities, useSubmitEntity } from "./api/hooks";
-import { FlexSpace } from "./components/FlexSpace";
-
-const bookmarkTmpl: Bookmark = {
-  id: "",
-  name: "",
-  url: "",
-  widgetId: "",
-};
+import { useEntities } from "./api/hooks";
+import { Page as PageType } from "./models";
+import { Page } from "./components/Page";
 
 export function App() {
-  // hacky stuff to make sure a widget exists.
-  // remove once UI for creating pages and widgets exists.
-  const [widgetId, setWidgetId] = useState("");
-  const { data: widgets } = useEntities("widget");
-  const { mutate: submitPage } = useSubmitEntity("page");
-  const { mutate: submitWidget } = useSubmitEntity("widget");
-  useEffect(() => {
-    if (widgets && widgets.length > 0) {
-      setWidgetId(widgets[0].id);
-    } else if (widgets) {
-      submitPage(
-        { id: "", name: "" },
-        { onSuccess: (page) => submitWidget({ id: "", name: "", pageId: page.id }) }
-      );
-    }
-  }, [submitPage, submitWidget, widgets]);
-
-  const { data: bookmarks } = useEntities("bookmark");
-
-  const [form, setForm] = useState<Bookmark>(bookmarkTmpl);
-  const resetForm = () =>
-    setForm({
-      ...bookmarkTmpl,
-      widgetId: widgetId,
-    });
-
-  // hack to add bookmarks to valid widget
-  useEffect(() => {
-    setForm((oldForm) => ({ ...oldForm, widgetId: widgetId }));
-  }, [widgetId]);
-
-  const options = { onSuccess: resetForm };
-  const { mutate: submitBookmark } = useSubmitEntity("bookmark", options);
-  const { mutate: deleteBookmark } = useDeleteEntity("bookmark", options);
+  const { data: pages } = useEntities("page");
 
   return (
     <div className="flex flex-col h-screen text-white">
@@ -57,25 +13,26 @@ export function App() {
       </h1>
       <LogoutButton />
       <div className="self-center flex flex-col gap-1 my-4">
-        {bookmarks?.map((bm: Bookmark) => (
-          <div key={bm.id} className="flex w-full gap-1">
-            <FlexSpace />
-            <BookmarkComp title={bm.name} link={bm.url} />
-            <FlexSpace />
-            <PencilIcon
-              className="w-6 ml-2"
-              style={{ color: "white" }}
-              onClick={() => setForm(bm)}
-            />
-            <TrashIcon
-              className="w-6"
-              style={{ color: "white" }}
-              onClick={() => deleteBookmark(bm.id)}
-            />
-          </div>
+        {pages?.map((p: PageType) => (
+          <Page key={p.id} page={p} />
+          // <div key={bm.id} className="flex w-full gap-1">
+          //   <FlexSpace />
+          //   <BookmarkComp title={bm.name} link={bm.url} />
+          //   <FlexSpace />
+          //   <PencilIcon
+          //     className="w-6 ml-2"
+          //     style={{ color: "white" }}
+          //     onClick={() => setForm(bm)}
+          //   />
+          //   <TrashIcon
+          //     className="w-6"
+          //     style={{ color: "white" }}
+          //     onClick={() => deleteBookmark(bm.id)}
+          //   />
+          // </div>
         ))}
       </div>
-      <input
+      {/* <input
         className="self-center w-3/4 bg-slate-600 p-1 rounded text-white mb-1"
         placeholder="Name"
         value={form.name}
@@ -103,7 +60,7 @@ export function App() {
         >
           {!form.id ? "Add" : "Save"}
         </button>
-      </div>
+      </div> */}
     </div>
   );
 }

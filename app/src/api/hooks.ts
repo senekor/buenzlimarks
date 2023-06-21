@@ -39,8 +39,17 @@ export function useRequest() {
   };
 }
 
-export function path<K extends EntityKey>(k: K, id?: string) {
-  return `api/${plural(k)}${id ? `/${id}` : ""}`;
+type Query = Record<string, string>;
+
+export function path<K extends EntityKey>(k: K, id?: string, query?: Query) {
+  const path = `api/${plural(k)}${id ? `/${id}` : ""}`;
+  if (!query) {
+    return path;
+  }
+  const queryStr = Object.entries(query)
+    .map(([k, v]) => `${k}=${v}`)
+    .join("&");
+  return `${path}?${queryStr}`;
 }
 
 // start here for better error handling
@@ -76,15 +85,16 @@ export function useSettings(
 }
 
 export function useEntities<K extends EntityKey, TData = Entity<K>[]>(
-  k: K,
+  k: K | [K, Query],
   options?: UseQueryOptions<Entity<K>[], TError, TData, string[]>
 ) {
   const request = useRequest();
+  const [validK, query] = Array.isArray(k) ? k : [k, undefined];
 
   const queryFn = useCallback(async (): Promise<Entity<K>[]> => {
-    const resp = await fetch(path(k), request("GET"));
-    return resp.json().then(z.array(schema(k)).parse);
-  }, [k, request]);
+    const resp = await fetch(path(validK, undefined, query), request("GET"));
+    return resp.json().then(z.array(schema(validK)).parse);
+  }, [validK, request, query]);
 
   return useQuery([k] as string[], queryFn, options);
 }
