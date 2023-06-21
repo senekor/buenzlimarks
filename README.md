@@ -6,7 +6,7 @@ This is a work in progress!
 
 buenzlimarks is a web application for bookmark management and more.
 
-Check it out at [buenzlimarks.remlse.dev](https://buenzlimarks.remlse.dev).
+Check it out at [marks.buenzli.dev](https://marks.buenzli.dev).
 
 You can find information about working on the backend server [here](https://remlse.github.io/buenzlimarks/server_dev_tips).
 
