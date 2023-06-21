@@ -1,66 +1,69 @@
-import { LogoutButton } from "./auth/LogoutButton";
-import { useEntities } from "./api/hooks";
+import { useDeleteEntity, useEntities, useSubmitEntity } from "./api/hooks";
 import { Page as PageType } from "./models";
 import { Page } from "./components/Page";
+import * as Tabs from "@radix-ui/react-tabs";
+import { LoadingScreen } from "./components/LoadingScreen";
+import { useEffect, useState } from "react";
+import { PlusIcon, XMarkIcon } from "@heroicons/react/24/solid";
+import { FlexSpace } from "./components/FlexSpace";
+import { useAuth } from "./auth/context";
+import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
 
 export function App() {
-  const { data: pages } = useEntities("page");
+  const { logout } = useAuth();
+
+  const { data: pages } = useEntities(["page"]);
+
+  const { mutate: submitPage } = useSubmitEntity("page");
+  const { mutate: deletePage } = useDeleteEntity("page");
+
+  const [selectedPage, setSelectedPage] = useState<PageType>();
+  useEffect(() => {
+    if (pages && pages.length > 0) {
+      setSelectedPage(pages[0]);
+    }
+  }, [pages]);
+
+  if (!pages) return <LoadingScreen />;
 
   return (
     <div className="flex flex-col h-screen text-white">
-      <h1 className="text-4xl text-orange-500 text-center mt-12 mb-8">
-        buenzlimarks
-      </h1>
-      <LogoutButton />
-      <div className="self-center flex flex-col gap-1 my-4">
-        {pages?.map((p: PageType) => (
-          <Page key={p.id} page={p} />
-          // <div key={bm.id} className="flex w-full gap-1">
-          //   <FlexSpace />
-          //   <BookmarkComp title={bm.name} link={bm.url} />
-          //   <FlexSpace />
-          //   <PencilIcon
-          //     className="w-6 ml-2"
-          //     style={{ color: "white" }}
-          //     onClick={() => setForm(bm)}
-          //   />
-          //   <TrashIcon
-          //     className="w-6"
-          //     style={{ color: "white" }}
-          //     onClick={() => deleteBookmark(bm.id)}
-          //   />
-          // </div>
-        ))}
-      </div>
-      {/* <input
-        className="self-center w-3/4 bg-slate-600 p-1 rounded text-white mb-1"
-        placeholder="Name"
-        value={form.name}
-        onInput={(e) => setForm({ ...form, name: e.currentTarget.value })}
-      />
-      <input
-        className="self-center w-3/4 bg-slate-600 p-1 rounded text-white mb-2"
-        placeholder="URL"
-        value={form.url}
-        onInput={(e) => setForm({ ...form, url: e.currentTarget.value })}
-      />
-      <div className="self-center flex gap-2">
-        {form.id && (
-          <button
-            className="text-white bg-slate-600 w-fit rounded px-1"
-            onClick={resetForm}
+      <Tabs.Root value={selectedPage?.id || "none"}>
+        <Tabs.List className="flex gap-2 p-2">
+          {pages?.map((p) => (
+            <Tabs.Trigger
+              key={p.id}
+              className={`bg-slate-600 rounded-lg pl-3 pr-2 py-1 flex flex-row gap-2 ${
+                p.id === selectedPage?.id ? "bg-orange-800" : ""
+              }`}
+              value={p.id}
+              onClick={() => setSelectedPage(p)}
+            >
+              {p.name}
+              <XMarkIcon
+                className="w-4"
+                onClick={(e) => {
+                  deletePage(p.id);
+                  e.stopPropagation();
+                }}
+              />
+            </Tabs.Trigger>
+          ))}
+          <FlexSpace />
+          <div
+            className="bg-slate-600 rounded-full p-1.5"
+            onClick={() => submitPage({ id: "", name: "new page" })}
           >
-            Cancel
-          </button>
-        )}
-        <button
-          className="text-white bg-slate-600 w-fit rounded px-1 disabled:text-gray-400"
-          disabled={!(form.name && form.url)}
-          onClick={() => submitBookmark(form)}
-        >
-          {!form.id ? "Add" : "Save"}
-        </button>
-      </div> */}
+            <PlusIcon className="w-5" />
+          </div>
+          <div className="bg-slate-600 rounded-full p-1.5" onClick={logout}>
+            <ArrowRightOnRectangleIcon className="w-5" />
+          </div>
+        </Tabs.List>
+      </Tabs.Root>
+      <div className="self-center flex flex-col gap-1 my-4">
+        {selectedPage && <Page page={selectedPage} />}
+      </div>
     </div>
   );
 }

@@ -85,18 +85,17 @@ export function useSettings(
 }
 
 export function useEntities<K extends EntityKey, TData = Entity<K>[]>(
-  k: K | [K, Query],
+  [k, query]: [K, Query?],
   options?: UseQueryOptions<Entity<K>[], TError, TData, string[]>
 ) {
   const request = useRequest();
-  const [validK, query] = Array.isArray(k) ? k : [k, undefined];
 
   const queryFn = useCallback(async (): Promise<Entity<K>[]> => {
-    const resp = await fetch(path(validK, undefined, query), request("GET"));
-    return resp.json().then(z.array(schema(validK)).parse);
-  }, [validK, request, query]);
+    const resp = await fetch(path(k, undefined, query), request("GET"));
+    return resp.json().then(z.array(schema(k)).parse);
+  }, [k, request, query]);
 
-  return useQuery([k] as string[], queryFn, options);
+  return useQuery([k, query] as string[], queryFn, options);
 }
 
 export function useSubmitEntity<K extends EntityKey>(

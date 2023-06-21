@@ -1,17 +1,24 @@
-import { useEntities } from "../api/hooks";
+import { useEntities, useSubmitEntity } from "../api/hooks";
 import { Widget } from "./Widget";
 import { Page as PageType } from "../models";
+import { PlusIcon } from "@heroicons/react/24/outline";
 
-export function Page({ page: { id, name } }: { page: PageType }) {
+export function Page({ page: { id } }: { page: PageType }) {
   const { data: widgets } = useEntities(["widget", { page_id: id }]);
+
+  const { mutate: submitWidget } = useSubmitEntity("widget");
+
   return (
-    <div className="bg-slate-600 p-2 flex gap-2">
-      <h2>{name}</h2>
+    <div className="flex flex-col gap-2 ite">
       {widgets?.map((w) => (
-        <div>
-          <Widget key={w.id} widget={w} />
-        </div>
+        <Widget key={w.id} widget={w} />
       ))}
+      <div
+        className="bg-slate-600 rounded-full p-1.5 w-8 self-center mt-2"
+        onClick={() => submitWidget({ id: "", name: "new widget", pageId: id })}
+      >
+        <PlusIcon className="w-5" />
+      </div>
     </div>
   );
 }
