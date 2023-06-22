@@ -14,20 +14,44 @@ function bookmarkTmpl(widgetId: string): BookmarkType {
   };
 }
 
-export function Widget({ widget: { id, name } }: { widget: WidgetType }) {
+export function Widget({ widget: { id, name, pageId } }: { widget: WidgetType }) {
   const { data: bookmarks } = useEntities(["bookmark", { widget_id: id }]);
 
   const { mutate: deleteWidget } = useDeleteEntity("widget");
+  const { mutate: submitWidget } = useSubmitEntity("widget");
   const { mutate: submitBookmark } = useSubmitEntity("bookmark");
   const { mutate: deleteBookmark } = useDeleteEntity("bookmark");
 
-  const [form, setForm] = useState(bookmarkTmpl(id));
-  const resetForm = useCallback(() => setForm(bookmarkTmpl(id)), [id]);
+  const [nameForm, setNameForm] = useState<string>();
+
+  const [bookmarkForm, setBookmarkForm] = useState(bookmarkTmpl(id));
+  const resetForm = useCallback(() => setBookmarkForm(bookmarkTmpl(id)), [id]);
 
   return (
     <div className="bg-slate-700 flex flex-col p-4 rounded-lg">
       <div className="flex flex-row justify-between">
-        <h2 className="text-3xl pb-2">{name}</h2>
+        {nameForm === undefined ? (
+          <h2
+            role="button"
+            className="text-3xl pb-2"
+            onClick={() => setNameForm(name)}
+          >
+            {name}
+          </h2>
+        ) : (
+          <input
+            className="w-full bg-slate-600 p-1 rounded text-white mb-3"
+            placeholder="Widget name"
+            value={nameForm}
+            onInput={(e) => setNameForm(e.currentTarget.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                submitWidget({ id, name: nameForm, pageId });
+                setNameForm(undefined);
+              }
+            }}
+          />
+        )}
         <XMarkIcon
           className="w-6 ml-4 mb-2"
           onClick={(e) => {
@@ -44,7 +68,7 @@ export function Widget({ widget: { id, name } }: { widget: WidgetType }) {
           <PencilSquareIcon
             className="w-6 ml-2"
             style={{ color: "white" }}
-            onClick={() => setForm(b)}
+            onClick={() => setBookmarkForm(b)}
           />
           <XMarkIcon
             className="w-6"
@@ -56,17 +80,21 @@ export function Widget({ widget: { id, name } }: { widget: WidgetType }) {
       <input
         className="self-center w-full bg-slate-600 p-1 rounded text-white mb-1 mt-2"
         placeholder="Name"
-        value={form.name}
-        onInput={(e) => setForm({ ...form, name: e.currentTarget.value })}
+        value={bookmarkForm.name}
+        onInput={(e) =>
+          setBookmarkForm({ ...bookmarkForm, name: e.currentTarget.value })
+        }
       />
       <input
         className="self-center w-full bg-slate-600 p-1 rounded text-white mb-2"
         placeholder="URL"
-        value={form.url}
-        onInput={(e) => setForm({ ...form, url: e.currentTarget.value })}
+        value={bookmarkForm.url}
+        onInput={(e) =>
+          setBookmarkForm({ ...bookmarkForm, url: e.currentTarget.value })
+        }
       />
       <div className="self-center flex gap-2">
-        {form.id && (
+        {bookmarkForm.id && (
           <button
             className="text-white bg-slate-600 w-fit rounded px-1"
             onClick={resetForm}
@@ -76,10 +104,10 @@ export function Widget({ widget: { id, name } }: { widget: WidgetType }) {
         )}
         <button
           className="text-white bg-slate-600 w-fit rounded px-1 disabled:text-gray-400"
-          disabled={!(form.name && form.url)}
-          onClick={() => submitBookmark(form, { onSuccess: resetForm })}
+          disabled={!(bookmarkForm.name && bookmarkForm.url)}
+          onClick={() => submitBookmark(bookmarkForm, { onSuccess: resetForm })}
         >
-          {!form.id ? "Add" : "Save"}
+          {!bookmarkForm.id ? "Add" : "Save"}
         </button>
       </div>
     </div>
