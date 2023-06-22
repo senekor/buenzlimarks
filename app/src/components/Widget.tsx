@@ -14,7 +14,11 @@ function bookmarkTmpl(widgetId: string): BookmarkType {
   };
 }
 
-export function Widget({ widget: { id, name, pageId } }: { widget: WidgetType }) {
+export function Widget({
+  widget: { id, name, pageId },
+}: {
+  widget: WidgetType;
+}) {
   const { data: bookmarks } = useEntities(["bookmark", { widget_id: id }]);
 
   const { mutate: deleteWidget } = useDeleteEntity("widget");
@@ -29,31 +33,32 @@ export function Widget({ widget: { id, name, pageId } }: { widget: WidgetType })
 
   return (
     <div className="bg-slate-700 flex flex-col p-4 rounded-lg">
-      <div className="flex flex-row justify-between">
+      <div className="flex flex-row  gap-1">
         {nameForm === undefined ? (
-          <h2
-            role="button"
-            className="text-3xl pb-2"
-            onClick={() => setNameForm(name)}
-          >
-            {name}
-          </h2>
+          <h2 className="text-3xl pb-2">{name}</h2>
         ) : (
           <input
-            className="w-full bg-slate-600 p-1 rounded text-white mb-3"
+            className=" bg-slate-600 p-1 rounded text-white mb-3"
             placeholder="Widget name"
             value={nameForm}
             onInput={(e) => setNameForm(e.currentTarget.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                submitWidget({ id, name: nameForm, pageId });
-                setNameForm(undefined);
+                submitWidget(
+                  { id, name: nameForm, pageId },
+                  { onSuccess: () => setNameForm(undefined) }
+                );
               }
             }}
           />
         )}
+        <FlexSpace />
+        <PencilSquareIcon
+          className="w-6 mb-2 ml-2"
+          onClick={() => setNameForm(name)}
+        />
         <XMarkIcon
-          className="w-6 ml-4 mb-2"
+          className="w-6 mb-2"
           onClick={(e) => {
             deleteWidget(id);
             e.stopPropagation();
@@ -67,14 +72,9 @@ export function Widget({ widget: { id, name, pageId } }: { widget: WidgetType })
           <FlexSpace />
           <PencilSquareIcon
             className="w-6 ml-2"
-            style={{ color: "white" }}
             onClick={() => setBookmarkForm(b)}
           />
-          <XMarkIcon
-            className="w-6"
-            style={{ color: "white" }}
-            onClick={() => deleteBookmark(b.id)}
-          />
+          <XMarkIcon className="w-6" onClick={() => deleteBookmark(b.id)} />
         </div>
       ))}
       <input
