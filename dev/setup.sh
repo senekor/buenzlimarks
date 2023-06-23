@@ -22,7 +22,12 @@ else
     exit
 fi
 
-if ! which d2 > /dev/null ; then
+if ! which pnpm &> /dev/null ; then
+    echo "installing pnpm package manager..."
+    sudo npm install -g pnpm
+fi
+
+if ! which d2 &> /dev/null ; then
     echo "installing d2 diagram renderer..."
     go install oss.terrastruct.com/d2@latest
 fi
