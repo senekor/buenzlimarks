@@ -1,8 +1,6 @@
-use buenzlimarks::{
-    db::{self, config::DbConfig, Database},
-    models::{AuthProvider, Bookmark, Id, Page, Settings, User, Widget},
-};
+use buenzlimarks_server::db::{self, config::DbConfig, Database};
 use clap::Parser;
+use models::{AuthProvider, Bookmark, Id, Page, Settings, User, Widget};
 
 type NameSeed<'a> = &'a str;
 type UrlSeed<'a> = &'a str;

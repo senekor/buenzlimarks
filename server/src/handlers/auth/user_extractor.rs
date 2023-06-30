@@ -4,8 +4,9 @@ use axum::{
     http::{request::Parts, StatusCode},
     TypedHeader,
 };
+use models::User;
 
-use crate::{models::User, state::AppState};
+use crate::state::AppState;
 
 type BearerAuth = TypedHeader<headers::Authorization<Bearer>>;
 
@@ -13,15 +14,22 @@ type BearerAuth = TypedHeader<headers::Authorization<Bearer>>;
 impl FromRequestParts<AppState> for User {
     type Rejection = StatusCode;
 
+    #[tracing::instrument]
     async fn from_request_parts(
         req: &mut Parts,
         state: &AppState,
     ) -> Result<Self, Self::Rejection> {
         let bearer = BearerAuth::from_request_parts(req, state)
             .await
-            .map_err(|_| StatusCode::UNAUTHORIZED)?;
+            .map_err(|_| {
+                tracing::debug!("missing bearer auth");
+                StatusCode::UNAUTHORIZED
+            })?;
         let token = bearer.0.token();
 
-        super::user_from(token, state).ok_or(StatusCode::UNAUTHORIZED)
+        super::user_from(token, state).ok_or_else(|| {
+            tracing::debug!("invalid token");
+            StatusCode::UNAUTHORIZED
+        })
     }
 }

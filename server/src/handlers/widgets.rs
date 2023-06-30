@@ -3,12 +3,10 @@ use axum::{
     http::StatusCode,
     Json,
 };
+use models::{Id, Page, User, Widget};
 use serde::Deserialize;
 
-use crate::{
-    db::{error::DbError, Database},
-    models::{Id, Page, User, Widget},
-};
+use crate::db::{error::DbError, Database};
 
 #[tracing::instrument(skip(db))]
 pub async fn create_widget(

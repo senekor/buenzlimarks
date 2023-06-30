@@ -1,4 +1,4 @@
-use std::{fmt::Display, marker::PhantomData};
+use std::{fmt::Display, hash::Hash, marker::PhantomData};
 
 use serde::{Deserialize, Serialize};
 
@@ -32,6 +32,12 @@ impl<T> PartialEq for Id<T> {
 }
 impl<T> Eq for Id<T> {}
 
+impl<T> Hash for Id<T> {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.id.hash(state);
+    }
+}
+
 impl<T> Id<T> {
     pub fn random() -> Self {
         Id {
@@ -42,6 +48,9 @@ impl<T> Id<T> {
             id: uuid::Uuid::new_v4().to_string(),
             _type: PhantomData,
         }
+    }
+    pub fn is_empty(&self) -> bool {
+        self.id.is_empty()
     }
 }
 

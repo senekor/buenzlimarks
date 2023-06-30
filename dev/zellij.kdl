@@ -18,14 +18,20 @@ layout {
 	compact_tab name="btop" {
 		pane command="btop" borderless=true
 	}
-	compact_tab name="buenzlimarks" {
-		pane name="app" cwd="app" {
+	compact_tab name="dashboard" focus=true {
+		pane name="app" {
 			command "j"
-			args "app-run"
+			args "app-watch"
 		}
-		pane name="server" cwd="server" {
+		pane name="server" {
 			command "j"
-			args "run"
+			args "watch"
+		}
+		pane name="db-reset" {
+			command "j"
+			args "db-reset"
+			size "10%"
 		}
 	}
+	compact_tab name="terminal"
 }

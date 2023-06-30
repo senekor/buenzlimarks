@@ -1,6 +1,6 @@
 use axum::Router;
-use buenzlimarks::{config::Config, frontend::frontend_handler, router::api_router};
 use clap::Parser;
+use buenzlimarks_server::{config::Config, frontend::frontend_handler, router::api_router};
 use std::net::SocketAddr;
 use tower_http::trace::TraceLayer;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
@@ -23,7 +23,7 @@ async fn main() {
 
     // run it
     let addr = SocketAddr::from(([127, 0, 0, 1], config.port));
-    tracing::info!("listening on {addr}");
+    tracing::info!("listening on http://{addr}");
     axum::Server::bind(&addr)
         .serve(router.into_make_service())
         .await

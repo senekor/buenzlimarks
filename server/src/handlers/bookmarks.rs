@@ -3,12 +3,10 @@ use axum::{
     http::StatusCode,
     Json,
 };
+use models::{sanitize_bookmark, Bookmark, Id, User, Widget};
 use serde::Deserialize;
 
-use crate::{
-    db::{error::DbError, Database},
-    models::{sanitize_bookmark, Bookmark, Id, User, Widget},
-};
+use crate::db::{error::DbError, Database};
 
 #[tracing::instrument(skip(db))]
 pub async fn create_bookmark(

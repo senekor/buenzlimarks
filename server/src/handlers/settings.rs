@@ -1,9 +1,7 @@
 use axum::{extract::State, http::StatusCode, Json};
+use models::{Settings, User};
 
-use crate::{
-    db::{error::DbError, Database},
-    models::{Settings, User},
-};
+use crate::db::{error::DbError, Database};
 
 #[tracing::instrument(skip(db))]
 pub async fn settings(
