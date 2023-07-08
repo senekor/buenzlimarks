@@ -32,15 +32,15 @@ fn insert_seeds(db: &Database) {
                             // bookmarks
                             (
                                 "Requirements",
-                                "https://github.com/users/remlse/projects/1/views/6",
+                                "https://github.com/users/senekor/projects/1/views/6",
                             ),
                             (
                                 "Prioritization",
-                                "https://github.com/users/remlse/projects/1/views/7",
+                                "https://github.com/users/senekor/projects/1/views/7",
                             ),
                             (
                                 "Tasks",
-                                "https://github.com/users/remlse/projects/1/views/2",
+                                "https://github.com/users/senekor/projects/1/views/2",
                             ),
                         ],
                     ),

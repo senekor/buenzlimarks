@@ -1,6 +1,6 @@
 //! This error handling is terrible. It should be improved!
 //!
-//! See the [corresponding issue](https://github.com/remlse/buenzlimarks/issues/30)
+//! See the [corresponding issue](https://github.com/senekor/buenzlimarks/issues/30)
 //! on GitHub.
 
 use std::fmt::Debug;

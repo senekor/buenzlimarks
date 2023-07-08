@@ -13,7 +13,7 @@ The following goals have been established for this system:
 ## Requirements
 
 Requirements are developed and documented as GitHub issues.
-They can be found [here](https://github.com/users/remlse/projects/1/views/6).
+They can be found [here](https://github.com/users/senekor/projects/1/views/6).
 
 ## Quality Goals
 
