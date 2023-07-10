@@ -1,7 +1,7 @@
-use std::marker::PhantomData;
+use std::{any::type_name, marker::PhantomData};
 
 use leptos::*;
-use models::{Bookmark, Entity, Page, Settings, Widget};
+use models::{Bookmark, Page, Settings, Widget};
 
 #[derive(Debug)]
 pub struct RefetchSignal<T> {
@@ -37,49 +37,16 @@ impl<T> RefetchSignal<T> {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
-pub struct RefetchAllSignal {
-    cx: Scope,
-    s: RefetchSignal<Settings>,
-    p: RefetchSignal<Page>,
-    w: RefetchSignal<Widget>,
-    b: RefetchSignal<Bookmark>,
-}
-
-impl RefetchAllSignal {
-    pub fn new(cx: Scope) -> Self {
-        Self {
-            cx,
-            s: use_refetch_settings(cx),
-            p: use_refetch_entities(cx),
-            w: use_refetch_entities(cx),
-            b: use_refetch_entities(cx),
-        }
-    }
-    pub fn broadcast(self) {
-        self.cx.batch(|| {
-            self.s.broadcast();
-            self.p.broadcast();
-            self.w.broadcast();
-            self.b.broadcast();
-        })
-    }
-}
-
 pub fn provide_refetch_context(cx: Scope) {
     provide_context(cx, RefetchSignal::<Settings>::new(cx));
     provide_context(cx, RefetchSignal::<Page>::new(cx));
     provide_context(cx, RefetchSignal::<Widget>::new(cx));
     provide_context(cx, RefetchSignal::<Bookmark>::new(cx));
-    provide_context(cx, RefetchAllSignal::new(cx));
+    // provide_context(cx, RefetchAllSignal::new(cx));
 }
 
-pub fn use_refetch_settings(cx: Scope) -> RefetchSignal<Settings> {
-    use_context(cx).expect("should find refetch settings context")
-}
-pub fn use_refetch_entities<T: Entity>(cx: Scope) -> RefetchSignal<T> {
-    use_context(cx).expect("should find refetch entities context")
-}
-pub fn use_refetch_all(cx: Scope) -> RefetchAllSignal {
-    use_context(cx).expect("should find refetch all context")
+// 'static needed for type_name. if this ever causes trouble, remove the bound
+// and simplify the error message.
+pub fn use_refetch_signal<T: 'static>(cx: Scope) -> RefetchSignal<T> {
+    use_context(cx).unwrap_or_else(|| panic!("should find refetch {} context", type_name::<T>()))
 }

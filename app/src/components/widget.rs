@@ -9,7 +9,7 @@ use crate::{
 
 fn bookmark_tmpl(widget_id: Id<WidgetType>) -> BookmarkType {
     BookmarkType {
-        id: Id::random(),
+        id: "".into(),
         name: "".into(),
         url: "".into(),
         widget_id,
@@ -44,6 +44,13 @@ pub fn Widget(cx: Scope, widget: WidgetType) -> impl IntoView {
     let (bookmark_form, set_bookmark_form) = create_signal(cx, bookmark_tmpl(id.get_untracked()));
     // const resetForm = useCallback(() => setBookmarkForm(bookmarkTmpl(id)), [id]);
     let reset_bookmark_form = move || set_bookmark_form(bookmark_tmpl(id()));
+
+    let bookmark_pending = submit_bookmark.pending();
+    create_effect(cx, move |prev| {
+        if prev.is_some() && !bookmark_pending() {
+            reset_bookmark_form();
+        }
+    });
 
     view! { cx,
         <div class="bg-slate-700 flex flex-col p-4 rounded-lg">
@@ -123,21 +130,24 @@ pub fn Widget(cx: Scope, widget: WidgetType) -> impl IntoView {
                 }
             />
             <div class="self-center flex gap-2">
-                // {bookmarkForm.id && (
-                // <button
-                //     class= bg-slate-600 w-fit rounded px-1"
-                //     onClick={resetForm}
-                // >
-                //     Cancel
-                // </button>
-                // )}
-                // <button
-                // class= bg-slate-600 w-fit rounded px-1 disabled:text-gray-400"
-                // disabled={!(bookmarkForm.name && bookmarkForm.url)}
-                // onClick={() => submitBookmark(bookmarkForm, { onSuccess: resetForm })}
-                // >
-                // {!bookmarkForm.id ? "Add" : "Save"}
-                // </button>
+                <button
+                    class="bg-slate-600 w-fit rounded px-1"
+                    hidden=move || bookmark_form().id.is_empty()
+                    on:click=move |_| reset_bookmark_form()
+                >
+                    Cancel
+                </button>
+                <button
+                    class="bg-slate-600 w-fit rounded px-1 disabled:text-gray-400"
+                    disabled=move || bookmark_form().name.is_empty() || bookmark_form().url.is_empty()
+                    on:click=move |_| submit_bookmark.dispatch(bookmark_form.get_untracked())
+                >{
+                    move || if bookmark_form().id.is_empty() {
+                        "Add"
+                    } else {
+                        "Save"
+                    }
+                }</button>
             </div>
         </div>
     }

@@ -1,5 +1,3 @@
-use std::fmt::Display;
-
 use gloo::{
     history::{BrowserHistory, History},
     net::http::Request,
@@ -8,29 +6,29 @@ use gloo::{
 use leptos::*;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Token(String);
+pub struct Token(Option<String>);
 
-impl Display for Token {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.0)
+impl Token {
+    pub fn into_inner(self) -> Option<String> {
+        self.0
     }
 }
 
 static TOKEN_STORAGE_KEY: &str = "buenzlimarks_auth";
 
-pub fn initial_token() -> Option<Token> {
+pub fn initial_token() -> Token {
     if let Ok(stored_token) = LocalStorage::get(TOKEN_STORAGE_KEY) {
-        return Some(Token(stored_token));
+        return Token(Some(stored_token));
     }
     #[cfg(debug_assertions)]
-    return Some(Token("buenzli".into()));
+    return Token(Some("buenzli".into()));
     #[allow(unreachable_code)]
-    None
+    Token(None)
 }
 
 #[derive(Debug, Clone)]
 pub struct Login {
-    set_token: WriteSignal<Option<Token>>,
+    set_token: WriteSignal<Token>,
 }
 
 impl Login {
@@ -50,20 +48,20 @@ impl Login {
         }
         let new_token = resp.text().await.unwrap();
         LocalStorage::set(TOKEN_STORAGE_KEY, new_token.clone()).unwrap();
-        (self.set_token)(Some(Token(new_token)));
+        (self.set_token)(Token(Some(new_token)));
         BrowserHistory::new().push("/");
     }
 }
 
 #[derive(Debug, Clone)]
 pub struct Logout {
-    set_token: WriteSignal<Option<Token>>,
+    set_token: WriteSignal<Token>,
 }
 
 impl Logout {
     pub fn logout(&self) {
         LocalStorage::delete(TOKEN_STORAGE_KEY);
-        (self.set_token)(None);
+        (self.set_token)(Token(None));
         BrowserHistory::new().push("/login");
     }
 }
@@ -75,7 +73,7 @@ pub fn provide_auth_context(cx: Scope) {
     provide_context(cx, Logout { set_token });
 }
 
-pub fn use_token(cx: Scope) -> ReadSignal<Option<Token>> {
+pub fn use_token(cx: Scope) -> ReadSignal<Token> {
     use_context(cx).expect("should find token context")
 }
 

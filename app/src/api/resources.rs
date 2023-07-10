@@ -3,15 +3,12 @@ use leptos::*;
 use models::{Entity, Id, Settings};
 use serde::de::DeserializeOwned;
 
-use crate::auth::{Token, use_token};
+use crate::auth::{use_token, Token};
 
-use super::{
-    refetch::{use_refetch_entities, use_refetch_settings},
-    url::get_url,
-};
+use super::{refetch::use_refetch_signal, url::get_url};
 
-async fn fetch<T: DeserializeOwned>(token: Option<Token>, url: &str) -> Option<T> {
-    let Some(token) = token else {
+async fn fetch<T: DeserializeOwned>(token: Token, url: &str) -> Option<T> {
+    let Some(token) = token.into_inner() else {
         return  None;
     };
     Request::get(url)
@@ -24,59 +21,56 @@ async fn fetch<T: DeserializeOwned>(token: Option<Token>, url: &str) -> Option<T
         .ok()
 }
 
-type Trigger = (Option<Token>, ());
-
-pub fn create_settings_resource(cx: Scope) -> Resource<Trigger, Option<Settings>> {
-    let token = use_token(cx);
-    let refetch_listener = use_refetch_settings(cx).listen();
-    create_resource(
-        cx,
-        move || (token(), refetch_listener()),
-        move |(token, _)| async move { fetch::<Settings>(token, "api/settings").await },
-    )
+trait WithRefetchEffect {
+    fn with_refetch_effect<R: 'static>(self, cx: Scope) -> Self;
+}
+impl<S: Clone, T> WithRefetchEffect for Resource<S, T> {
+    fn with_refetch_effect<R: 'static>(self, cx: Scope) -> Self {
+        let refetch_listener = use_refetch_signal::<R>(cx).listen();
+        create_effect(cx, move |prev| {
+            refetch_listener.track();
+            if prev.is_none() {
+                return;
+            }
+            self.refetch();
+        });
+        self
+    }
 }
 
-async fn fetch_entities<T: Entity>(token: Option<Token>, url: &str) -> Vec<T> {
+pub fn create_settings_resource(cx: Scope) -> Resource<Token, Option<Settings>> {
+    create_resource(cx, use_token(cx), move |token| async move {
+        fetch::<Settings>(token, "api/settings").await
+    })
+    .with_refetch_effect::<Settings>(cx)
+}
+
+async fn fetch_entities<T: Entity>(token: Token, url: &str) -> Vec<T> {
     fetch::<Vec<T>>(token, url).await.unwrap_or_default()
 }
 
-pub fn use_entities<T: Entity>(cx: Scope) -> Resource<Trigger, Vec<T>> {
-    let token = use_token(cx);
-    let refetch_listener = use_refetch_entities::<T>(cx).listen();
-    create_resource(
-        cx,
-        move || (token(), refetch_listener()),
-        move |(token, _)| async move {
-            fetch_entities::<T>(token, get_url::<T>(None, None).as_str()).await
-        },
-    )
+pub fn use_entities<T: Entity>(cx: Scope) -> Resource<Token, Vec<T>> {
+    create_resource(cx, use_token(cx), move |token| async move {
+        fetch_entities::<T>(token, get_url::<T>(None, None).as_str()).await
+    })
+    .with_refetch_effect::<T>(cx)
 }
 
 pub fn use_filtered_entities<T: Entity>(
     cx: Scope,
     parent_id: Id<T::Parent>,
-) -> Resource<Trigger, Vec<T>> {
-    let token = use_token(cx);
-    let refetch_listener = use_refetch_entities::<T>(cx).listen();
-    create_resource(
-        cx,
-        move || (token(), refetch_listener()),
-        move |(token, _)| {
-            let parent_id = parent_id.clone();
-            async move { fetch_entities::<T>(token, get_url::<T>(None, Some(parent_id)).as_str()).await }
-        },
-    )
+) -> Resource<Token, Vec<T>> {
+    create_resource(cx, use_token(cx), move |token| {
+        let parent_id = parent_id.clone();
+        async move { fetch_entities::<T>(token, get_url::<T>(None, Some(parent_id)).as_str()).await }
+    })
+    .with_refetch_effect::<T>(cx)
 }
 
-pub fn use_entity<T: Entity>(cx: Scope, id: Id<T>) -> Resource<Trigger, Option<T>> {
-    let token = use_token(cx);
-    let refetch_listener = use_refetch_entities::<T>(cx).listen();
-    create_resource(
-        cx,
-        move || (token(), refetch_listener()),
-        move |(token, _)| {
-            let id = id.clone();
-            async move { fetch::<T>(token, get_url::<T>(Some(id), None).as_str()).await }
-        },
-    )
+pub fn use_entity<T: Entity>(cx: Scope, id: Id<T>) -> Resource<Token, Option<T>> {
+    create_resource(cx, use_token(cx), move |token| {
+        let id = id.clone();
+        async move { fetch::<T>(token, get_url::<T>(Some(id), None).as_str()).await }
+    })
+    .with_refetch_effect::<T>(cx)
 }
