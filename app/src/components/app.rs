@@ -27,7 +27,7 @@ pub fn App(cx: Scope) -> impl IntoView {
         <Suspense
             fallback=move || LoadingScreen(cx)
         >
-            <div class="h-screen flex flex-col flex-wrap">
+            <div class="h-screen flex flex-col flex-wrap gap-2">
                 <div class="flex gap-2 p-2 w-full">
                     <For
                         each=move || pages.read(cx).unwrap_or_default()
@@ -39,7 +39,7 @@ pub fn App(cx: Scope) -> impl IntoView {
                             let not_selected = move || !is_selected();
                             view! { cx,
                                 <button
-                                    class="rounded-lg pl-3 pr-2 py-1 flex flex-row place-items-center gap-2"
+                                    class="rounded-lg pl-3 pr-2 flex flex-row place-items-center gap-2"
                                     class=("bg-orange-800", is_selected)
                                     class=("bg-slate-600", not_selected)
                                     on:click=move |_| set_selected_page(Some(page()))

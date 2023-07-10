@@ -47,7 +47,7 @@ pub fn Widget(cx: Scope, widget: WidgetType) -> impl IntoView {
 
     let bookmark_pending = submit_bookmark.pending();
     create_effect(cx, move |prev| {
-        if prev.is_some() && !bookmark_pending() {
+        if !bookmark_pending() && prev.is_some() {
             reset_bookmark_form();
         }
     });
@@ -89,23 +89,7 @@ pub fn Widget(cx: Scope, widget: WidgetType) -> impl IntoView {
                 view=move |cx, bookmark| {
                     let bookmark = store_value(cx, bookmark);
                     view! { cx,
-                        <div class="flex w-full gap-1">
-                            <FlexSpace />
-                            <Bookmark bookmark=bookmark() />
-                            <FlexSpace />
-                            <button
-                                class="w-6 ml-2"
-                                on:click=move |_| set_bookmark_form(bookmark())
-                            >
-                                <PencilSquareIcon />
-                            </button>
-                            <button
-                                class="w-6"
-                                on:click=move |_| delete_bookmark.dispatch(bookmark().id)
-                            >
-                                <XMarkIcon />
-                            </button>
-                        </div>
+                        <Bookmark bookmark=bookmark() set_bookmark_form delete_bookmark />
                     }
                 }
             />
