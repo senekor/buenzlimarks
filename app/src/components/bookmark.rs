@@ -14,14 +14,8 @@ pub fn Bookmark(
     set_bookmark_form: WriteSignal<BookmarkType>,
     delete_bookmark: Action<Id<BookmarkType>, bool>,
 ) -> impl IntoView {
-    let original_bookmark = store_value(cx, bookmark);
-    let id = Signal::derive(cx, move || original_bookmark().id);
-
-    let bookmark_resource = use_entity::<BookmarkType>(cx, id.get_untracked());
-    let bookmark = create_memo(cx, move |_| match bookmark_resource.read(cx).flatten() {
-        Some(b) => b,
-        None => original_bookmark(),
-    });
+    // let id = store_value(cx, bookmark.id.clone());
+    let bookmark = use_entity(cx, bookmark);
 
     view! { cx,
         <div class="flex w-full gap-1">

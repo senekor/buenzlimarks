@@ -6,7 +6,9 @@ use crate::auth::use_token;
 
 use super::{refetch::use_refetch_signal, url::get_url};
 
-pub fn create_submit_entity<T: Entity>(cx: Scope) -> Action<T, Result<T, gloo::net::Error>> {
+pub type Submit<T> = Action<T, Result<T, gloo::net::Error>>;
+
+pub fn create_submit_entity<T: Entity>(cx: Scope) -> Submit<T> {
     let token = use_token(cx);
     let refetch = use_refetch_signal::<T>(cx);
     create_action(cx, move |entity: &T| {
@@ -34,7 +36,9 @@ pub fn create_submit_entity<T: Entity>(cx: Scope) -> Action<T, Result<T, gloo::n
     })
 }
 
-pub fn create_delete_entity<T: Entity>(cx: Scope) -> Action<Id<T>, bool> {
+pub type Delete<T> = Action<Id<T>, bool>;
+
+pub fn create_delete_entity<T: Entity>(cx: Scope) -> Delete<T> {
     let token = use_token(cx);
     let refetch = use_refetch_signal::<T>(cx);
     create_action(cx, move |id: &Id<T>| {

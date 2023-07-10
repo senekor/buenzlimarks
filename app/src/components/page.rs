@@ -8,7 +8,7 @@ use crate::{
 };
 
 #[component]
-pub fn Page(cx: Scope, #[prop(into)] page: Signal<PageType>) -> impl IntoView {
+pub fn Page(cx: Scope, page: Signal<PageType>) -> impl IntoView {
     let id = Signal::derive(cx, move || page().id);
 
     let widgets = use_filtered_entities::<WidgetType>(cx, id.get_untracked());

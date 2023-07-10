@@ -4,6 +4,7 @@ mod flex_space;
 mod icon_button;
 mod loading_screen;
 mod page;
+mod page_tab;
 mod spinner;
 mod widget;
 
@@ -13,5 +14,6 @@ pub use flex_space::FlexSpace;
 pub use icon_button::IconButton;
 pub use loading_screen::LoadingScreen;
 pub use page::Page;
+pub use page_tab::PageTab;
 pub use spinner::Spinner;
 pub use widget::Widget;

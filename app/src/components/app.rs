@@ -4,8 +4,8 @@ use models::Page as PageType;
 use crate::{
     api::{create_delete_entity, create_submit_entity, use_entities},
     auth::use_logout,
-    components::{FlexSpace, IconButton, LoadingScreen, Page},
-    icons::{ArrowRightOnRectangleIcon, PlusIcon, XMarkIcon},
+    components::{FlexSpace, IconButton, LoadingScreen, Page, PageTab},
+    icons::{ArrowRightOnRectangleIcon, PlusIcon},
 };
 
 #[component]
@@ -33,36 +33,27 @@ pub fn App(cx: Scope) -> impl IntoView {
                         each=move || pages.read(cx).unwrap_or_default()
                         key=|page| page.id.clone()
                         view=move |cx, page| {
-                            let page = Signal::derive(cx, move || page.clone());
-                            let id = Signal::derive(cx, move || page().id);
-                            let is_selected = move || selected_page().is_some_and(|sp| sp.id == id());
-                            let not_selected = move || !is_selected();
-                            view! { cx,
-                                <button
-                                    class="rounded-lg pl-3 pr-2 flex flex-row place-items-center gap-2"
-                                    class=("bg-orange-800", is_selected)
-                                    class=("bg-slate-600", not_selected)
-                                    on:click=move |_| set_selected_page(Some(page()))
-                                >
-                                    { move || page().name }
-                                    // TODO edit functionality like for widget name
-                                    <XMarkIcon on:click=move |ev| {
-                                        delete_page.dispatch(id.get_untracked());
-                                        ev.stop_propagation();
-                                    } />
-                                </button>
-                            }
+                            let id = store_value(cx, page.id.clone());
+                            let is_selected = Signal::derive(cx, move || {
+                                selected_page().is_some_and(|sp| sp.id == id())
+                            });
+                            let select = SignalSetter::map(cx, move |p| set_selected_page(Some(p)));
+                            view! { cx, <PageTab
+                                page
+                                is_selected
+                                select
+                                submit_page
+                                delete_page
+                            /> }
                         }
                     />
                     <FlexSpace />
-                    <IconButton
-                        on:click=move |_| {
-                            submit_page.dispatch(PageType {
-                                id: "".into(),
-                                name: "new page".into(),
-                            })
-                        }
-                    >
+                    <IconButton on:click=move |_| {
+                        submit_page.dispatch(PageType {
+                            id: "".into(),
+                            name: "new page".into(),
+                        })
+                    }>
                         <PlusIcon />
                     </IconButton>
                     <IconButton on:click=move |_| logout().logout() >

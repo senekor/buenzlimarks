@@ -67,10 +67,21 @@ pub fn use_filtered_entities<T: Entity>(
     .with_refetch_effect::<T>(cx)
 }
 
-pub fn use_entity<T: Entity>(cx: Scope, id: Id<T>) -> Resource<Token, Option<T>> {
+fn use_entity_resource<T: Entity>(cx: Scope, id: Id<T>) -> Resource<Token, Option<T>> {
     create_resource(cx, use_token(cx), move |token| {
         let id = id.clone();
         async move { fetch::<T>(token, get_url::<T>(Some(id), None).as_str()).await }
     })
     .with_refetch_effect::<T>(cx)
+}
+
+pub fn use_entity<T: Entity>(cx: Scope, entity: T) -> Memo<T> {
+    let orig_entity = store_value(cx, entity);
+    let id = Signal::derive(cx, move || orig_entity.with_value(|w| w.get_id().clone()));
+
+    let entity_resource = use_entity_resource::<T>(cx, id.get_untracked());
+    create_memo(cx, move |_| match entity_resource.read(cx).flatten() {
+        Some(entity) => entity,
+        None => orig_entity(),
+    })
 }

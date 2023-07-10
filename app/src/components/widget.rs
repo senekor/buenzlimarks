@@ -18,31 +18,22 @@ fn bookmark_tmpl(widget_id: Id<WidgetType>) -> BookmarkType {
 
 #[component]
 pub fn Widget(cx: Scope, widget: WidgetType) -> impl IntoView {
-    let original_widget = store_value(cx, widget);
-    let id = Signal::derive(cx, move || original_widget().id);
-
-    let widget_resource = use_entity::<WidgetType>(cx, id.get_untracked());
-    let widget = create_memo(cx, move |_| match widget_resource.read(cx).flatten() {
-        Some(widget) => widget,
-        None => original_widget(),
-    });
+    let id = store_value(cx, widget.id.clone());
+    let widget = use_entity(cx, widget);
 
     let name = Signal::derive(cx, move || widget().name);
     let page_id = Signal::derive(cx, move || widget().page_id);
 
-    let bookmarks = use_filtered_entities::<BookmarkType>(cx, id.get_untracked());
+    let bookmarks = use_filtered_entities::<BookmarkType>(cx, id());
 
     let submit_widget = create_submit_entity::<WidgetType>(cx);
     let delete_widget = create_delete_entity::<WidgetType>(cx);
     let submit_bookmark = create_submit_entity::<BookmarkType>(cx);
     let delete_bookmark = create_delete_entity::<BookmarkType>(cx);
 
-    // const [nameForm, setNameForm] = useState<string>();
     let (name_form, set_name_form) = create_signal::<Option<String>>(cx, None);
 
-    // const [bookmarkForm, setBookmarkForm] = useState(bookmarkTmpl(id));
-    let (bookmark_form, set_bookmark_form) = create_signal(cx, bookmark_tmpl(id.get_untracked()));
-    // const resetForm = useCallback(() => setBookmarkForm(bookmarkTmpl(id)), [id]);
+    let (bookmark_form, set_bookmark_form) = create_signal(cx, bookmark_tmpl(id()));
     let reset_bookmark_form = move || set_bookmark_form(bookmark_tmpl(id()));
 
     let bookmark_pending = submit_bookmark.pending();
@@ -65,7 +56,7 @@ pub fn Widget(cx: Scope, widget: WidgetType) -> impl IntoView {
                     on:keydown=move |ev| {
                         if &ev.key() == "Enter" {
                             submit_widget.dispatch(WidgetType {
-                                id: id.get_untracked(),
+                                id: id(),
                                 name: name_form.get_untracked().unwrap_or_default(),
                                 page_id: page_id.get_untracked(),
                             });
