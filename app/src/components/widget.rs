@@ -48,12 +48,12 @@ pub fn Widget(cx: Scope, widget: WidgetType) -> impl IntoView {
     view! { cx,
         <div class="bg-slate-700 flex flex-col p-4 rounded-lg">
             <div class="flex flex-row gap-2 items-center pb-2">
+                <FlexSpace />
                 <h2 class="text-3xl" hidden=move || name_form().is_some() >{ name }</h2>
                 <input
                     class="bg-slate-600 p-1 px-2 rounded text-lg"
                     hidden=move || name_form().is_none()
                     prop:value=name_form
-                    focus
                     on:input=move |ev| { set_name_form(Some(event_target_value(&ev))); }
                     on:keydown=move |ev| {
                         if &ev.key() == "Enter" {
@@ -80,48 +80,59 @@ pub fn Widget(cx: Scope, widget: WidgetType) -> impl IntoView {
                 each=move || bookmarks.read(cx).unwrap_or_default()
                 key=|bookmark| bookmark.id.clone()
                 view=move |cx, bookmark| {
-                    view! { cx, <Bookmark bookmark /> }
+                    let bookmark = store_value(cx, bookmark);
+                    view! { cx,
+                        <div class="flex w-full gap-1">
+                            <FlexSpace />
+                            <Bookmark bookmark=bookmark() />
+                            <FlexSpace />
+                            <button
+                                class="w-6 ml-2"
+                                on:click=move |_| set_bookmark_form(bookmark())
+                            >
+                                <PencilSquareIcon />
+                            </button>
+                            <button
+                                class="w-6"
+                                on:click=move |_| delete_bookmark.dispatch(bookmark().id)
+                            >
+                                <XMarkIcon />
+                            </button>
+                        </div>
+                    }
                 }
             />
-            // {bookmarks?.map((b) => (
-            //     <div key={b.id} class="flex w-full gap-1">
-            //     <FlexSpace />
-            //     <Bookmark bookmark={b} />
-            //     <FlexSpace />
-            //     <PencilSquareIcon
-            //         class="w-6 ml-2"
-            //         onClick={() => setBookmarkForm(b)}
-            //     />
-            //     <XMarkIcon class="w-6" onClick={() => deleteBookmark(b.id)} />
-            //     </div>
-            // ))}
             <input
-                class="self-center w-full bg-slate-600 p-1 rounded text-white mb-1 mt-2"
+                class="self-center w-full bg-slate-600 p-1 rounded mb-1 mt-2"
                 placeholder="Name"
-                // value={bookmarkForm.name}
-                // onInput={(e) =>
-                // setBookmarkForm({ ...bookmarkForm, name: e.currentTarget.value })
-                // }
+                prop:value=move || bookmark_form().name
+                on:input=move |ev| {
+                    set_bookmark_form.update(|prev| {
+                        prev.name = event_target_value(&ev);
+                    })
+                }
             />
             <input
-                class="self-center w-full bg-slate-600 p-1 rounded text-white mb-2"
+                class="self-center w-full bg-slate-600 p-1 rounded mb-2"
                 placeholder="URL"
-                // value={bookmarkForm.url}
-                // onInput={(e) =>
-                // setBookmarkForm({ ...bookmarkForm, url: e.currentTarget.value })
-                // }
+                prop:value=move || bookmark_form().url
+                on:input=move |ev| {
+                    set_bookmark_form.update(|prev| {
+                        prev.url = event_target_value(&ev);
+                    })
+                }
             />
             <div class="self-center flex gap-2">
                 // {bookmarkForm.id && (
                 // <button
-                //     class="text-white bg-slate-600 w-fit rounded px-1"
+                //     class= bg-slate-600 w-fit rounded px-1"
                 //     onClick={resetForm}
                 // >
                 //     Cancel
                 // </button>
                 // )}
                 // <button
-                // class="text-white bg-slate-600 w-fit rounded px-1 disabled:text-gray-400"
+                // class= bg-slate-600 w-fit rounded px-1 disabled:text-gray-400"
                 // disabled={!(bookmarkForm.name && bookmarkForm.url)}
                 // onClick={() => submitBookmark(bookmarkForm, { onSuccess: resetForm })}
                 // >
