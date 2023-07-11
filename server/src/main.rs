@@ -1,6 +1,6 @@
 use axum::Router;
-use clap::Parser;
 use buenzlimarks_server::{config::Config, frontend::frontend_handler, router::api_router};
+use clap::Parser;
 use std::net::SocketAddr;
 use tower_http::trace::TraceLayer;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};

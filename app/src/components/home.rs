@@ -3,7 +3,7 @@ use models::Page as PageType;
 
 use crate::{
     api::{create_delete_entity, create_submit_entity, use_entities},
-    auth::{use_auth, create_auth_guard},
+    auth::{create_auth_guard, use_auth},
     components::{FlexSpace, IconButton, LoadingScreen, Page, PageTab},
     icons::{ArrowRightOnRectangleIcon, PlusIcon},
 };
