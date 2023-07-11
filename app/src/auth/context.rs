@@ -1,9 +1,9 @@
-use gloo::{
-    net::http::Request,
-    storage::{LocalStorage, Storage},
-};
+use gloo::net::http::Request;
 use leptos::*;
 use leptos_router::use_navigate;
+
+#[cfg(not(debug_assertions))]
+use gloo::storage::{LocalStorage, Storage};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Token(Option<String>);
@@ -14,16 +14,18 @@ impl Token {
     }
 }
 
+#[cfg(not(debug_assertions))]
 static TOKEN_STORAGE_KEY: &str = "buenzlimarks_auth";
 
 pub fn initial_token() -> Token {
-    if let Ok(stored_token) = LocalStorage::get(TOKEN_STORAGE_KEY) {
-        return Token(Some(stored_token));
-    }
     #[cfg(debug_assertions)]
-    return Token(Some("buenzli".into()));
-    #[allow(unreachable_code)]
-    Token(None)
+    {
+        Token(Some("buenzli".into()))
+    }
+    #[cfg(not(debug_assertions))]
+    {
+        LocalStorage::get(TOKEN_STORAGE_KEY).ok().map(Token)
+    }
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -49,7 +51,10 @@ impl Auth {
                 return;
             }
             let new_token = resp.text().await.unwrap();
+
+            #[cfg(not(debug_assertions))]
             LocalStorage::set(TOKEN_STORAGE_KEY, new_token.clone()).unwrap();
+
             let navigate = use_navigate(self.cx);
             self.cx.batch(|| {
                 (self.set_token)(Token(Some(new_token)));
@@ -59,7 +64,9 @@ impl Auth {
     }
 
     pub fn logout(self) {
+        #[cfg(not(debug_assertions))]
         LocalStorage::delete(TOKEN_STORAGE_KEY);
+
         let navigate = use_navigate(self.cx);
         self.cx.batch(|| {
             (self.set_token)(Token(None));
