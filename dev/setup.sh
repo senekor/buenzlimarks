@@ -34,8 +34,12 @@ if ! which cargo-watch &> /dev/null ; then
     echo "installing cargo-watch for backend auto-recompilation..."
     cargo binstall -y cargo-watch
 fi
-
-if ! which d2 &> /dev/null ; then
-    echo "installing d2 diagram renderer..."
-    go install oss.terrastruct.com/d2@latest
+if ! which zellij &> /dev/null ; then
+    echo "installing zellij for the terminal workspace..."
+    cargo binstall -y zellij
 fi
+
+# if ! which d2 &> /dev/null ; then
+#     echo "installing d2 diagram renderer..."
+#     go install oss.terrastruct.com/d2@latest
+# fi

@@ -3,7 +3,7 @@ on: [push]
 
 jobs:
   test:
-    name: test server
+    name: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -12,26 +12,11 @@ jobs:
           components: clippy, rustfmt
       - uses: Swatinem/rust-cache@v2
         with:
-          # The cargo workspaces and target directory configuration.
-          # These entries are separated by newlines and have the form
-          # `$workspace -> $target`. The `$target` part is treated as a directory
-          # relative to the `$workspace` and defaults to "target" if not explicitly given.
-          # default: ". -> target"
-          workspaces: "server -> target"
           # Additional non workspace directories to be cached, separated by newlines.
           cache-directories: ""
-      - uses: pnpm/action-setup@v2
-        with:
-          version: latest
       - name: rustfmt
-        run: |
-          cd server
-          cargo fmt --check
+        run: cargo fmt --check
       - name: clippy
-        run: |
-          cd server
-          cargo clippy -- -D warnings
+        run: cargo clippy -- -D warnings
       - name: tests
-        run: |
-          cd server
-          cargo test
+        run: cargo test
