@@ -53,7 +53,7 @@ fn ProfileDependentLogin(cx: Scope) -> impl IntoView {
     }
     #[cfg(not(debug_assertions))]
     {
-        GithubLoginLogin(cx)
+        GithubLogin(cx)
     }
 }
 

@@ -4,13 +4,11 @@ use axum::{
     response::Redirect,
 };
 use jwt::SignWithKey;
+use models::{AuthProvider, Id, Settings, User};
 use oauth2::{reqwest::async_http_client, AuthorizationCode, CsrfToken, TokenResponse};
 use serde::Deserialize;
 
-use crate::{
-    db::Database,
-    models::{AuthProvider, Id, Settings, User},
-};
+use crate::db::Database;
 
 use super::AuthState;
 

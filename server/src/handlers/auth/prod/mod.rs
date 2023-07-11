@@ -1,7 +1,8 @@
 use axum::{routing::get, Router};
 use jwt::VerifyWithKey;
+use models::User;
 
-use crate::{models::User, state::AppState};
+use crate::state::AppState;
 
 mod config;
 mod handlers;
