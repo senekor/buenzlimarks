@@ -24,7 +24,7 @@ pub fn initial_token() -> Token {
     }
     #[cfg(not(debug_assertions))]
     {
-        LocalStorage::get(TOKEN_STORAGE_KEY).ok().map(Token)
+        Token(LocalStorage::get(TOKEN_STORAGE_KEY).ok())
     }
 }
 
