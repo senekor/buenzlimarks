@@ -8,11 +8,11 @@ edition.workspace = true
 [dependencies]
 console_error_panic_hook = "0.1.7"
 gloo = { version = "0.8.1", default-features = false, features = [
-    "history",
     "net",
     "storage",
 ] }
 leptos = { version = "0.4.1", features = ["csr", "nightly"] }
+leptos_router = { version = "0.4.2", features = ["csr", "nightly"] }
 models = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }

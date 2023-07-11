@@ -7,18 +7,41 @@ use crate::auth::{use_token, Token};
 
 use super::{refetch::use_refetch_signal, url::get_url};
 
-async fn fetch<T: DeserializeOwned>(token: Token, url: &str) -> Option<T> {
+#[derive(Debug, Clone)]
+pub enum FetchError {
+    Custom(&'static str),
+    JsError(String),
+    SerdeError(String),
+    GlooError(String),
+}
+impl From<&'static str> for FetchError {
+    fn from(value: &'static str) -> Self {
+        Self::Custom(value)
+    }
+}
+impl From<gloo::net::Error> for FetchError {
+    fn from(value: gloo::net::Error) -> Self {
+        use gloo::net::Error::*;
+        match value {
+            JsError(s) => Self::JsError(s.to_string()),
+            SerdeError(s) => Self::SerdeError(s.to_string()),
+            GlooError(s) => Self::GlooError(s),
+        }
+    }
+}
+type FetchResult<T> = Result<T, FetchError>;
+
+async fn fetch<T: DeserializeOwned>(token: Token, url: &str) -> FetchResult<T> {
     let Some(token) = token.into_inner() else {
-        return  None;
+        return Err("missing token".into());
     };
-    Request::get(url)
+    let res = Request::get(url)
         .header("Authorization", format!("Bearer {token}").as_str())
         .send()
-        .await
-        .unwrap()
+        .await?
         .json::<T>()
-        .await
-        .ok()
+        .await?;
+    Ok(res)
 }
 
 trait WithRefetchEffect {
@@ -38,8 +61,8 @@ impl<S: Clone, T> WithRefetchEffect for Resource<S, T> {
     }
 }
 
-pub fn create_settings_resource(cx: Scope) -> Resource<Token, Option<Settings>> {
-    create_resource(cx, use_token(cx), move |token| async move {
+pub fn create_settings_resource(cx: Scope) -> Resource<Token, FetchResult<Settings>> {
+    create_local_resource(cx, use_token(cx), move |token| async move {
         fetch::<Settings>(token, "api/settings").await
     })
     .with_refetch_effect::<Settings>(cx)
@@ -50,7 +73,7 @@ async fn fetch_entities<T: Entity>(token: Token, url: &str) -> Vec<T> {
 }
 
 pub fn use_entities<T: Entity>(cx: Scope) -> Resource<Token, Vec<T>> {
-    create_resource(cx, use_token(cx), move |token| async move {
+    create_local_resource(cx, use_token(cx), move |token| async move {
         fetch_entities::<T>(token, get_url::<T>(None, None).as_str()).await
     })
     .with_refetch_effect::<T>(cx)
@@ -60,7 +83,7 @@ pub fn use_filtered_entities<T: Entity>(
     cx: Scope,
     parent_id: Id<T::Parent>,
 ) -> Resource<Token, Vec<T>> {
-    create_resource(cx, use_token(cx), move |token| {
+    create_local_resource(cx, use_token(cx), move |token| {
         let parent_id = parent_id.clone();
         async move { fetch_entities::<T>(token, get_url::<T>(None, Some(parent_id)).as_str()).await }
     })
@@ -68,9 +91,13 @@ pub fn use_filtered_entities<T: Entity>(
 }
 
 fn use_entity_resource<T: Entity>(cx: Scope, id: Id<T>) -> Resource<Token, Option<T>> {
-    create_resource(cx, use_token(cx), move |token| {
+    create_local_resource(cx, use_token(cx), move |token| {
         let id = id.clone();
-        async move { fetch::<T>(token, get_url::<T>(Some(id), None).as_str()).await }
+        async move {
+            fetch::<T>(token, get_url::<T>(Some(id), None).as_str())
+                .await
+                .ok()
+        }
     })
     .with_refetch_effect::<T>(cx)
 }
