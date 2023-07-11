@@ -7,8 +7,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@master
         with:
+          toolchain: nightly-2023-06-30 # duplicated in rust-toolchain.toml
+          targets: wasm32-unknown-unknown
           components: clippy, rustfmt
       - uses: Swatinem/rust-cache@v2
         with:
@@ -17,6 +19,8 @@ jobs:
       - name: rustfmt
         run: cargo fmt --check
       - name: clippy
-        run: cargo clippy -- -D warnings
+        run: |
+          mkdir app/dist
+          cargo clippy -- -D warnings
       - name: tests
         run: cargo test
