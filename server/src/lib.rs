@@ -14,10 +14,6 @@ pub mod handlers;
 /// [method]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods
 pub mod router;
 
-/// This module contains the domain models of buenzlimarks.
-/// That includes the data models and business logic.
-pub mod models;
-
 /// Contains the runtime configruation of the server,
 /// including which port to run on and the database location.
 pub mod config;

@@ -17,7 +17,7 @@ We will switch our client-side UI framework from SolidJS to React.
 
 ## Status
 
-Accepted.
+Superceded by [React Single Page Application](./005_react_spa.md).
 
 ## Consequences
 
@@ -25,3 +25,5 @@ Finding high-quality libraries we need will be easier (e.g. Radix UI).
 Performance will be worse, though likely unnoticeable.
 
 ## Experience report
+
+SolidJs or React, JavaScript is just annoying.

@@ -4,12 +4,9 @@ use axum::{
     routing::get,
     Router,
 };
+use models::{AuthProvider, Id, Settings, User};
 
-use crate::{
-    db::Database,
-    models::{AuthProvider, Id, Settings, User},
-    state::AppState,
-};
+use crate::{db::Database, state::AppState};
 
 mod config;
 mod state;

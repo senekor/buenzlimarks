@@ -2,12 +2,16 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+
+    <link data-trunk rel="icon" href="assets/logo.svg" />
+    <link data-trunk rel="tailwind-css" href="tailwind.css" />
+    <link data-trunk rel="copy-dir" href="assets"/>
+    <base data-trunk-public-url />
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>buenzlimarks</title>
   </head>
-  <body class="bg-slate-800">
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+
+  <body class="bg-slate-800 text-white"></body>
 </html>

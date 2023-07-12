@@ -3,15 +3,17 @@ _default:
 
 # run the server, watching for changes
 watch:
+    @killall buenzlimarks &> /dev/null || true
     cd server && cargo watch -x run
 
 # run the server
 run *args:
     cd server && cargo run -- {{ args }}
 
-# run the web app dev server
-app-run:
-    cd app && pnpm dev
+# run the web app dev server, watching for changes
+app-watch:
+    @killall trunk &> /dev/null || true
+    cd app && trunk serve --open
 
 # initialize a new development database
 db-reset:
@@ -23,5 +25,13 @@ render-diagram diagram:
         docs/arc42/d2/{{diagram}}.d2 \
         docs/arc42/diagrams/{{diagram}}.svg
 
+# start a terminal workspace for development
 zellij:
     zellij --layout dev/zellij.kdl
+    @killall buenzlimarks &> /dev/null || true
+    @killall trunk &> /dev/null || true
+
+# build the server plus embedded frontend in release mode
+build-release:
+    cd app && trunk build --release
+    cargo build --release --bin buenzlimarks

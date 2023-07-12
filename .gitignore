@@ -1,8 +1,15 @@
+# rust
+target/
+**/*.rs.bk
+
+# yew
+dist/
+
 # Mac OS shenanigans
 .DS_Store
 
 # development database
-dev/db
+dev/db/
 
 # thunder client vscode extension
 dev/thunder-tests/thunderActivity.json

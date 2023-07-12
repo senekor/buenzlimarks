@@ -1,18 +1,13 @@
 use std::{fmt::Debug, path::PathBuf};
 
-use crate::models::{Bookmark, Id, Page, Settings, User, Widget};
+use models::{Bookmark, Entity, Id, Page, Settings, User, Widget};
 
 pub mod config;
-
-mod entity;
 
 pub mod error;
 use error::DbResult;
 
-use self::{
-    entity::DbEntity,
-    error::{DbError, Whoopsie},
-};
+use self::error::{DbError, Whoopsie};
 
 #[derive(Debug, Clone)]
 pub struct Database {
@@ -26,7 +21,7 @@ impl Database {
         }
     }
 
-    fn contains_entity<T: DbEntity>(&self, user: &User, provided_id: &Id<T>) -> bool {
+    fn contains_entity<T: Entity>(&self, user: &User, provided_id: &Id<T>) -> bool {
         let provided_entity_path = self.get_path(user, Some(provided_id));
         std::fs::metadata(provided_entity_path).is_ok()
     }
@@ -36,7 +31,7 @@ impl Database {
         std::fs::metadata(user_path).is_ok()
     }
 
-    fn store_entity<T: DbEntity>(&self, user: &User, entity: T) -> DbResult<T> {
+    fn store_entity<T: Entity>(&self, user: &User, entity: T) -> DbResult<T> {
         let entity_path = self.get_path(user, Some(entity.get_id()));
         std::fs::write(
             entity_path,
@@ -46,14 +41,14 @@ impl Database {
         Ok(entity)
     }
 
-    fn insert_entity<T: DbEntity>(&self, user: &User, entity: T) -> DbResult<T> {
+    fn insert_entity<T: Entity>(&self, user: &User, entity: T) -> DbResult<T> {
         if self.contains_entity(user, entity.get_id()) {
             return Err(DbError::AlreadyExists);
         };
         self.store_entity(user, entity)
     }
 
-    fn update_entity<T: DbEntity>(&self, user: &User, entity: T) -> DbResult<T> {
+    fn update_entity<T: Entity>(&self, user: &User, entity: T) -> DbResult<T> {
         if !self.contains_entity(user, entity.get_id()) {
             return Err(DbError::NotFound);
         };
@@ -69,15 +64,15 @@ impl Database {
         self.get_user_path(user).join("settings.json")
     }
 
-    fn get_path<T: DbEntity>(&self, user: &User, entity_id: Option<&Id<T>>) -> PathBuf {
-        let mut path = self.get_user_path(user).join(T::plural());
+    fn get_path<T: Entity>(&self, user: &User, entity_id: Option<&Id<T>>) -> PathBuf {
+        let mut path = self.get_user_path(user).join(T::DATA.plural());
         if let Some(e) = entity_id {
             path.push(format!("{e}.json"));
         }
         path
     }
 
-    fn get_directory_content<T: DbEntity>(&self, user: &User) -> DbResult<Vec<T>> {
+    fn get_directory_content<T: Entity>(&self, user: &User) -> DbResult<Vec<T>> {
         let entity_dir = std::fs::read_dir(self.get_path::<T>(user, None));
         let entity_dir = match entity_dir {
             Ok(dir) => dir,
@@ -93,13 +88,13 @@ impl Database {
             .collect()
     }
 
-    fn get_entity_content<T: DbEntity>(&self, user: &User, entity_id: &Id<T>) -> DbResult<T> {
+    fn get_entity_content<T: Entity>(&self, user: &User, entity_id: &Id<T>) -> DbResult<T> {
         std::fs::read_to_string(self.get_path(user, Some(entity_id)))
             .whoopsie()
             .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
     }
 
-    fn remove_entity<T: DbEntity>(&self, user: &User, entity_id: &Id<T>) -> DbResult<()> {
+    fn remove_entity<T: Entity>(&self, user: &User, entity_id: &Id<T>) -> DbResult<()> {
         let path = self.get_path(user, Some(entity_id));
 
         match std::fs::remove_file(path) {
