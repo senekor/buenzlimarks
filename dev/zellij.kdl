@@ -20,15 +20,15 @@ layout {
 	}
 	compact_tab name="dashboard" focus=true {
 		pane name="app" {
-			command "j"
+			command "just"
 			args "app-watch"
 		}
 		pane name="server" {
-			command "j"
+			command "just"
 			args "watch"
 		}
 		pane name="db-reset" {
-			command "j"
+			command "just"
 			args "db-reset"
 			size "10%"
 		}
