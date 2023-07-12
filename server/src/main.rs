@@ -4,7 +4,7 @@ use buenzlimarks_server::{
 };
 use clap::Parser;
 use std::net::SocketAddr;
-use tower_http::trace::TraceLayer;
+use tower_http::{compression::CompressionLayer, trace::TraceLayer};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 #[tokio::main]
@@ -22,7 +22,8 @@ async fn main() {
             api_router(&config).layer(TraceLayer::new_for_http()),
         )
         .nest("/docs", Router::new().fallback(docs_handler))
-        .fallback(frontend_handler);
+        .fallback(frontend_handler)
+        .layer(CompressionLayer::new());
 
     // run it
     let addr = SocketAddr::from(([127, 0, 0, 1], config.port));
