@@ -33,6 +33,8 @@ jobs:
         with:
           # Additional non workspace directories to be cached, separated by newlines.
           cache-directories: ""
+      - name: install openssl
+        run: sudo apt install libssl-dev
       - name: install several build tools
         uses: taiki-e/install-action@v2
         with:
