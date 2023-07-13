@@ -6,7 +6,7 @@ cd "$(git rev-parse --show-toplevel)"
 if [[ -n "$WATCHEXEC_EVENTS_FILE" && -n "$(cat "$WATCHEXEC_EVENTS_FILE")" ]] ; then
     # echo script was called by watchexec change event
     # parse and deduplicate change events from watchexec
-    diagrams="$(sd '.*/([^/]*).d2' "\$1" "$WATCHEXEC_EVENTS_FILE" | sort -u)"
+    diagrams="$(sd -p '.*/([^/]*).d2' "\$1" "$WATCHEXEC_EVENTS_FILE" | sort -u)"
 else
     diagrams=""
     for diagram in docs/diagrams/* ; do
