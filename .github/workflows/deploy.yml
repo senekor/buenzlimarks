@@ -36,7 +36,7 @@ jobs:
       - name: install several build tools
         uses: taiki-e/install-action@v2
         with:
-          tool: mdbook,cargo-cross,cargo-binstall
+          tool: mdbook,cross,cargo-binstall
       - name: install trunk
         run: cargo binstall -y trunk
       - name: get the release version from the tag
