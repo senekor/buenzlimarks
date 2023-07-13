@@ -14,7 +14,7 @@ The following container diagram shows a decomposition of the buenzlimarks softwa
 These containers are individually deployable and interact with each other only through protocols like HTTP & websocket.
 For convenient deployment, the web app may be bundled with and served by the backend.
 
-![C4 Container Diagram](../assets/gen/c4_container.png)
+![C4 Container Diagram](../assets/gen/c4_container.svg)
 
 ### Web app
 

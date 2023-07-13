@@ -6,7 +6,7 @@ In our domain, there are users which may have a variable number of bookmarks,
 widgets and pages. Pages are collections of widgets, which in turn are
 collections of bookmarks.
 
-![Domain model](../assets/gen/domain_model.png)
+![Domain model](../assets/gen/domain_model.svg)
 
 ---
 
