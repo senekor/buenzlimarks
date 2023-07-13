@@ -40,7 +40,6 @@ zellij:
 
 # build the server plus embedded frontend and docs in release mode
 build-release:
-    ./dev/render_diagrams.sh
     cd docs && mdbook build
     cd app && trunk build --release
     cargo build --release --bin buenzlimarks
