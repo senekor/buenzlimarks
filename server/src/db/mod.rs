@@ -41,7 +41,12 @@ impl Database {
         Ok(entity)
     }
 
-    fn insert_entity<T: Entity>(&self, user: &User, entity: T) -> DbResult<T> {
+    pub fn insert_entity<T: Entity>(&self, user: &User, entity: T) -> DbResult<T> {
+        if let Some(p) = entity.get_parent_id() {
+            if !self.contains_entity(user, p) {
+                return Err(DbError::WhoopsieDoopsie);
+            }
+        }
         if self.contains_entity(user, entity.get_id()) {
             return Err(DbError::AlreadyExists);
         };
@@ -120,26 +125,6 @@ impl Database {
         )
         .whoopsie()?;
         Ok(settings)
-    }
-
-    pub fn insert_page(&self, user: &User, page: Page) -> DbResult<Page> {
-        self.insert_entity(user, page)
-    }
-
-    pub fn insert_widget(&self, user: &User, widget: Widget) -> DbResult<Widget> {
-        if self.contains_entity(user, &widget.page_id) {
-            self.insert_entity(user, widget)
-        } else {
-            Err(DbError::WhoopsieDoopsie)
-        }
-    }
-
-    pub fn insert_bookmark(&self, user: &User, bookmark: Bookmark) -> DbResult<Bookmark> {
-        if self.contains_entity(user, &bookmark.widget_id) {
-            self.insert_entity(user, bookmark)
-        } else {
-            Err(DbError::WhoopsieDoopsie)
-        }
     }
 
     // GET - one

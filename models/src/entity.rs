@@ -1,4 +1,4 @@
-use std::{convert::Infallible, fmt::Debug};
+use std::fmt::Debug;
 
 use serde::{Deserialize, Serialize};
 
@@ -7,16 +7,21 @@ use super::{Bookmark, Id, Page, Widget};
 pub trait Entity:
     Debug + Clone + PartialEq + 'static + Serialize + for<'a> Deserialize<'a>
 {
-    type Parent: Debug;
+    type Parent: Debug + Entity;
     const DATA: EntityData;
     fn get_id(&self) -> &Id<Self>;
+    fn get_parent_id(&self) -> Option<&Id<Self::Parent>>;
 }
 
 impl Entity for Page {
-    type Parent = Infallible;
+    type Parent = Page;
     const DATA: EntityData = EntityData::Page;
     fn get_id(&self) -> &Id<Self> {
         &self.id
+    }
+
+    fn get_parent_id(&self) -> Option<&Id<Self::Parent>> {
+        None
     }
 }
 
@@ -26,6 +31,10 @@ impl Entity for Widget {
     fn get_id(&self) -> &Id<Self> {
         &self.id
     }
+
+    fn get_parent_id(&self) -> Option<&Id<Self::Parent>> {
+        Some(&self.page_id)
+    }
 }
 
 impl Entity for Bookmark {
@@ -33,6 +42,10 @@ impl Entity for Bookmark {
     const DATA: EntityData = EntityData::Bookmark;
     fn get_id(&self) -> &Id<Self> {
         &self.id
+    }
+
+    fn get_parent_id(&self) -> Option<&Id<Self::Parent>> {
+        Some(&self.widget_id)
     }
 }
 

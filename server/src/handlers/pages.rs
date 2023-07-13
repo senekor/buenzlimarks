@@ -14,7 +14,7 @@ pub async fn create_page(
     Json(mut page): Json<Page>,
 ) -> Result<Json<Page>, StatusCode> {
     page.id = Id::random();
-    db.insert_page(&user, page).map(Json).map_err(|e| match e {
+    db.insert_entity(&user, page).map(Json).map_err(|e| match e {
         DbError::NotFound => StatusCode::NOT_FOUND,
         DbError::WhoopsieDoopsie => StatusCode::INTERNAL_SERVER_ERROR,
         DbError::AlreadyExists => StatusCode::INTERNAL_SERVER_ERROR,

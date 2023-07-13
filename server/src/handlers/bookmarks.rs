@@ -17,7 +17,7 @@ pub async fn create_bookmark(
     tracing::debug!("create bookmark");
     bookmark.id = Id::random();
     sanitize_bookmark(&mut bookmark);
-    db.insert_bookmark(&user, bookmark)
+    db.insert_entity(&user, bookmark)
         .map(Json)
         .map_err(|e| match e {
             DbError::NotFound => StatusCode::NOT_FOUND,

@@ -15,7 +15,7 @@ pub async fn create_widget(
     Json(mut widget): Json<Widget>,
 ) -> Result<Json<Widget>, StatusCode> {
     widget.id = Id::random();
-    db.insert_widget(&user, widget)
+    db.insert_entity(&user, widget)
         .map(Json)
         .map_err(|e| match e {
             DbError::NotFound => StatusCode::NOT_FOUND,
