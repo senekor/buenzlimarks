@@ -19,19 +19,28 @@ app-watch:
 db-reset:
     cd server && cargo run --bin db_reset
 
-# render the given diagram
-render-diagram diagram:
-    d2 --watch --layout=elk --pad=32 \
-        docs/arc42/d2/{{diagram}}.d2 \
-        docs/arc42/diagrams/{{diagram}}.svg
+# render the documentation book, watching for changes
+book-watch:
+    @killall mdbook &> /dev/null || true
+    cd docs && mdbook serve --port 5000
+
+# render d2 diagrams, watching for changes
+diagrams-watch:
+    watchexec --debounce 1000 \
+        --emit-events-to stdin \
+        --watch docs/diagrams \
+        --restart ./dev/render_diagrams.sh
 
 # start a terminal workspace for development
 zellij:
     zellij --layout dev/zellij.kdl
     @killall buenzlimarks &> /dev/null || true
     @killall trunk &> /dev/null || true
+    @killall mdbook &> /dev/null || true
 
-# build the server plus embedded frontend in release mode
+# build the server plus embedded frontend and docs in release mode
 build-release:
+    ./dev/render_diagrams.rh
+    cd docs && mdbook build
     cd app && trunk build --release
     cargo build --release --bin buenzlimarks

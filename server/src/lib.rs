@@ -23,3 +23,6 @@ pub mod state;
 
 /// This module contains the routes to the graphical user interface.
 pub mod frontend;
+
+/// This module contains the routes to the documentation.
+pub mod docs;

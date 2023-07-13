@@ -1,15 +1,20 @@
 # rust
-target/
+target
 **/*.rs.bk
 
-# yew
-dist/
+# leptos
+app/dist
+
+# mdbook
+docs/book
+# generated d2 diagrams
+docs/src/assets/gen
 
 # Mac OS shenanigans
 .DS_Store
 
 # development database
-dev/db/
+dev/db
 
 # thunder client vscode extension
 dev/thunder-tests/thunderActivity.json

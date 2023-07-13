@@ -18,6 +18,16 @@ layout {
 	compact_tab name="btop" {
 		pane command="btop" borderless=true
 	}
+	compact_tab name="docs" {
+		pane name="book" {
+			command "just"
+			args "book-watch"
+		}
+		pane name="diagrams" {
+			command "just"
+			args "diagrams-watch"
+		}
+	}
 	compact_tab name="dashboard" focus=true {
 		pane name="app" {
 			command "just"

@@ -2,7 +2,7 @@
 
 ## Level 1 - Containers
 
-Buenzlimarks is mostly a standalone application.
+buenzlimarks is mostly a standalone application.
 Users interact with it through the web app built with React.
 The web app installs itself with a service worker for offline use upon first visit.
 Additionally, users may manually install a browser extension to interact with.
@@ -14,10 +14,7 @@ The following container diagram shows a decomposition of the buenzlimarks softwa
 These containers are individually deployable and interact with each other only through protocols like HTTP & websocket.
 For convenient deployment, the web app may be bundled with and served by the backend.
 
-<div style="border: solid; display: flex; flex-direction: column">
-  <h2 style="align-self: center">C4 Container Diagram</h2>
-  <img src="./diagrams/container.svg" />
-</div>
+![C4 Container Diagram](../assets/gen/c4_container.png)
 
 ### Web app
 

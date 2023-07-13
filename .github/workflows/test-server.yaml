@@ -19,8 +19,10 @@ jobs:
       - name: rustfmt
         run: cargo fmt --check
       - name: clippy
+        # empty directories for rust-embed
         run: |
           mkdir app/dist
+          mkdir docs/book
           cargo clippy -- -D warnings
       - name: tests
         run: cargo test
