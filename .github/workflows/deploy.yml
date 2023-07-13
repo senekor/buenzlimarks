@@ -51,7 +51,7 @@ jobs:
         with:
           use-cross: true
           command: build
-          args: --release --target $\{\{ matrix.target \}\} --bin buenzlimarks
+          args: --release --target ${{ matrix.target }} --bin buenzlimarks
       - name: build archive
         shell: bash
         run: |
