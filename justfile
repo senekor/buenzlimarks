@@ -27,7 +27,7 @@ book-watch:
 # render d2 diagrams, watching for changes
 diagrams-watch:
     watchexec --debounce 1000 \
-        --emit-events-to stdin \
+        --emit-events-to file \
         --watch docs/diagrams \
         --restart ./dev/render_diagrams.sh
 
@@ -40,7 +40,7 @@ zellij:
 
 # build the server plus embedded frontend and docs in release mode
 build-release:
-    ./dev/render_diagrams.rh
+    ./dev/render_diagrams.sh
     cd docs && mdbook build
     cd app && trunk build --release
     cargo build --release --bin buenzlimarks
