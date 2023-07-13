@@ -5,8 +5,13 @@ use crate::{
     api::{create_delete_entity, create_submit_entity, use_entities},
     auth::{create_auth_guard, use_auth},
     components::{FlexSpace, IconButton, Page, PageTab},
-    icons::{ArrowRightOnRectangleIcon, PlusIcon},
+    icons::{ArrowRightOnRectangleIcon, PlusIcon, QuestionMarkCircleIcon},
 };
+
+#[cfg(debug_assertions)]
+static DOCS_HREF: &str = "http://localhost:5000";
+#[cfg(not(debug_assertions))]
+static DOCS_HREF: &str = "/docs";
 
 #[component]
 pub fn Home(cx: Scope) -> impl IntoView {
@@ -54,6 +59,13 @@ pub fn Home(cx: Scope) -> impl IntoView {
                 }>
                     <PlusIcon />
                 </IconButton>
+                <a
+                    class="bg-slate-600 rounded-full p-2 w-min"
+                    href=DOCS_HREF
+                    rel="external" // make sure leptos doesn't use client-side routing
+                >
+                    <QuestionMarkCircleIcon />
+                </a>
                 <IconButton on:click=move |_| auth.logout() >
                     <ArrowRightOnRectangleIcon />
                 </IconButton>

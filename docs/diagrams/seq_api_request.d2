@@ -9,9 +9,9 @@ models
 HTTP request: {
   user -> router: sends request
 
-  router.routing: "determines which handler to call,\nbased on route (e.g. '/bookmarks/bookmark_id')\nand HTTP method (GET, POST, ...)"
+  router.routing: "determines which handler to call,\nbased on route\n(e.g. '/bookmarks/bookmark_id')\nand HTTP method (GET, POST, ...)"
 
-  router -> handler: calls responsible handler function
+  router -> handler: "calls responsible\nhandler function"
 
   database transaction: {
     handler -> db: |md
