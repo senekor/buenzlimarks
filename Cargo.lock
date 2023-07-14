@@ -326,7 +326,7 @@ dependencies = [
 
 [[package]]
 name = "buenzlimarks_app"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "buenzlimarks_models",
  "console_error_panic_hook",
@@ -339,7 +339,7 @@ dependencies = [
 
 [[package]]
 name = "buenzlimarks_models"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "serde",
  "strum",
@@ -349,7 +349,7 @@ dependencies = [
 
 [[package]]
 name = "buenzlimarks_server"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "axum",
  "buenzlimarks_models",
