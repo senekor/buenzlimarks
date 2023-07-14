@@ -8,7 +8,7 @@ watch:
 
 # run the server
 run *args:
-    cd server && cargo run -- {{ args }}
+    @cd server && cargo run -q -- {{ args }}
 
 # run the web app dev server, watching for changes
 app-watch:
