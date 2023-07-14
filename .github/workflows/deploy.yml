@@ -45,7 +45,7 @@ jobs:
       - name: build docs
         run: cd docs && mdbook build
       - name: build app
-        run: cd app && trunk build
+        run: cd app && trunk build --release
       - name: build server
         uses: actions-rs/cargo@v1
         with:

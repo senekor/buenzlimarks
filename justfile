@@ -37,9 +37,3 @@ zellij:
     @killall buenzlimarks &> /dev/null || true
     @killall trunk &> /dev/null || true
     @killall mdbook &> /dev/null || true
-
-# build the server plus embedded frontend and docs in release mode
-build-release:
-    cd docs && mdbook build
-    cd app && trunk build --release
-    cargo build --release --bin buenzlimarks
