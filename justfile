@@ -8,7 +8,7 @@ watch:
 
 # run the server
 run *args:
-    cd server && cargo run -- {{ args }}
+    @cd server && cargo run -q -- {{ args }}
 
 # run the web app dev server, watching for changes
 app-watch:
@@ -37,9 +37,3 @@ zellij:
     @killall buenzlimarks &> /dev/null || true
     @killall trunk &> /dev/null || true
     @killall mdbook &> /dev/null || true
-
-# build the server plus embedded frontend and docs in release mode
-build-release:
-    cd docs && mdbook build
-    cd app && trunk build --release
-    cargo build --release --bin buenzlimarks
