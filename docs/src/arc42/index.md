@@ -8,7 +8,7 @@
 1. [Runtime View](./06_runtime_view.md)
 1. [Deployment View](./07_deployment_view.md)
 1. [TODO Cross-cutting Concepts](./08_concepts.md)
-1. [Architecture Decisions](./09_architecture_decsisions/index.md)
+1. [Architecture Decisions](./architecture_decsisions/index.md)
 1. [TODO Quality Requirements](./10_quality_requirements.md)
 1. [TODO Technical Risks](./11_technical_risks.md)
 1. [Glossary](./12_glossary.md)
