@@ -52,7 +52,7 @@ pub async fn get_bookmarks(
     State(db): State<Database>,
     query: Query<BookmarkFilter>,
 ) -> Result<Json<Vec<Bookmark>>, StatusCode> {
-    db.get_bookmarks(&user)
+    db.get_entities::<Bookmark>(&user)
         .map(|mut v| {
             if let Some(widget_id) = &query.widget_id {
                 v.retain(|b| b.widget_id == *widget_id);

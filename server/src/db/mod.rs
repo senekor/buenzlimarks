@@ -77,7 +77,7 @@ impl Database {
         path
     }
 
-    fn get_directory_content<T: Entity>(&self, user: &User) -> DbResult<Vec<T>> {
+    pub fn get_entities<T: Entity>(&self, user: &User) -> DbResult<Vec<T>> {
         let entity_dir = std::fs::read_dir(self.get_path::<T>(user, None));
         let entity_dir = match entity_dir {
             Ok(dir) => dir,
@@ -137,23 +137,10 @@ impl Database {
             .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
     }
 
-    // GET - all
-    pub fn get_pages(&self, user: &User) -> DbResult<Vec<Page>> {
-        self.get_directory_content(user)
-    }
-
-    pub fn get_widgets(&self, user: &User) -> DbResult<Vec<Widget>> {
-        self.get_directory_content(user)
-    }
-
-    pub fn get_bookmarks(&self, user: &User) -> DbResult<Vec<Bookmark>> {
-        self.get_directory_content(user)
-    }
-
     // DELETE
     pub fn delete_page(&self, user: &User, page_id: &Id<Page>) -> DbResult {
-        let mut widgets = self.get_widgets(user)?;
-        widgets.retain(|b| &b.page_id == page_id);
+        let mut widgets = self.get_entities::<Widget>(user)?;
+        widgets.retain(|w| &w.page_id == page_id);
         for w in widgets {
             self.delete_widget(user, &w.id)?;
         }
@@ -161,7 +148,7 @@ impl Database {
     }
 
     pub fn delete_widget(&self, user: &User, widget_id: &Id<Widget>) -> DbResult {
-        let mut bookmarks = self.get_bookmarks(user)?;
+        let mut bookmarks = self.get_entities::<Bookmark>(user)?;
         bookmarks.retain(|b| &b.widget_id == widget_id);
         for b in bookmarks {
             self.delete_bookmark(user, &b.id)?;

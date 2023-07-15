@@ -39,7 +39,7 @@ pub async fn get_pages(
     user: User,
     State(db): State<Database>,
 ) -> Result<Json<Vec<Page>>, StatusCode> {
-    db.get_pages(&user).map(Json).map_err(|e| match e {
+    db.get_entities(&user).map(Json).map_err(|e| match e {
         DbError::NotFound => StatusCode::NOT_FOUND,
         DbError::WhoopsieDoopsie => StatusCode::INTERNAL_SERVER_ERROR,
         DbError::AlreadyExists => StatusCode::INTERNAL_SERVER_ERROR,

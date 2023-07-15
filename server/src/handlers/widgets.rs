@@ -50,7 +50,7 @@ pub async fn get_widgets(
     State(db): State<Database>,
     query: Query<WidgetFilter>,
 ) -> Result<Json<Vec<Widget>>, StatusCode> {
-    db.get_widgets(&user)
+    db.get_entities::<Widget>(&user)
         .map(|mut v| {
             if let Some(page_id) = &query.page_id {
                 v.retain(|w| w.page_id == *page_id);
