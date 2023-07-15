@@ -30,7 +30,7 @@ pub async fn get_widget(
     Path(widget_id): Path<Id<Widget>>,
     State(db): State<Database>,
 ) -> Result<Json<Widget>, StatusCode> {
-    db.get_widget(&user, &widget_id)
+    db.get_entity(&user, &widget_id)
         .map(Json)
         .map_err(|e| match e {
             DbError::NotFound => StatusCode::NOT_FOUND,

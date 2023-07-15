@@ -27,7 +27,7 @@ pub async fn get_page(
     Path(page_id): Path<Id<Page>>,
     State(db): State<Database>,
 ) -> Result<Json<Page>, StatusCode> {
-    db.get_page(&user, &page_id).map(Json).map_err(|e| match e {
+    db.get_entity(&user, &page_id).map(Json).map_err(|e| match e {
         DbError::NotFound => StatusCode::NOT_FOUND,
         DbError::WhoopsieDoopsie => StatusCode::INTERNAL_SERVER_ERROR,
         DbError::AlreadyExists => StatusCode::INTERNAL_SERVER_ERROR,

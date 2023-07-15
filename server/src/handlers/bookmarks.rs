@@ -32,7 +32,7 @@ pub async fn get_bookmark(
     Path(bookmark_id): Path<Id<Bookmark>>,
     State(db): State<Database>,
 ) -> Result<Json<Bookmark>, StatusCode> {
-    db.get_bookmark(&user, &bookmark_id)
+    db.get_entity(&user, &bookmark_id)
         .map(Json)
         .map_err(|e| match e {
             DbError::NotFound => StatusCode::NOT_FOUND,

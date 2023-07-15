@@ -93,7 +93,7 @@ impl Database {
             .collect()
     }
 
-    fn get_entity_content<T: Entity>(&self, user: &User, entity_id: &Id<T>) -> DbResult<T> {
+    pub fn get_entity<T: Entity>(&self, user: &User, entity_id: &Id<T>) -> DbResult<T> {
         std::fs::read_to_string(self.get_path(user, Some(entity_id)))
             .whoopsie()
             .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
@@ -135,18 +135,6 @@ impl Database {
                 _ => DbError::WhoopsieDoopsie,
             })
             .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
-    }
-
-    pub fn get_page(&self, user: &User, page_id: &Id<Page>) -> DbResult<Page> {
-        self.get_entity_content(user, page_id)
-    }
-
-    pub fn get_widget(&self, user: &User, widget_id: &Id<Widget>) -> DbResult<Widget> {
-        self.get_entity_content(user, widget_id)
-    }
-
-    pub fn get_bookmark(&self, user: &User, bookmark_id: &Id<Bookmark>) -> DbResult<Bookmark> {
-        self.get_entity_content(user, bookmark_id)
     }
 
     // GET - all
