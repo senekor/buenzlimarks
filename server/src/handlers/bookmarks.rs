@@ -88,7 +88,7 @@ pub async fn delete_bookmark(
     Path(bookmark_id): Path<Id<Bookmark>>,
     State(db): State<Database>,
 ) -> Result<(), StatusCode> {
-    match db.delete_bookmark(&user, &bookmark_id) {
+    match db.delete_entity(&user, &bookmark_id) {
         Ok(_) => Ok(()),
         Err(DbError::NotFound) => Err(StatusCode::NOT_FOUND),
         Err(DbError::WhoopsieDoopsie) => Err(StatusCode::INTERNAL_SERVER_ERROR),

@@ -99,7 +99,15 @@ impl Database {
             .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
     }
 
-    fn remove_entity<T: Entity>(&self, user: &User, entity_id: &Id<T>) -> DbResult<()> {
+    pub fn delete_entity<T: Entity>(&self, user: &User, entity_id: &Id<T>) -> DbResult<()> {
+        if let Some(eq_child) = T::eq_child() {
+            let mut children = self.get_entities::<T::Child>(user)?;
+            children.retain(|child| eq_child(entity_id, child));
+            for child in children {
+                self.delete_entity(user, child.get_id())?;
+            }
+        }
+
         let path = self.get_path(user, Some(entity_id));
 
         match std::fs::remove_file(path) {
@@ -135,29 +143,6 @@ impl Database {
                 _ => DbError::WhoopsieDoopsie,
             })
             .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
-    }
-
-    // DELETE
-    pub fn delete_page(&self, user: &User, page_id: &Id<Page>) -> DbResult {
-        let mut widgets = self.get_entities::<Widget>(user)?;
-        widgets.retain(|w| &w.page_id == page_id);
-        for w in widgets {
-            self.delete_widget(user, &w.id)?;
-        }
-        self.remove_entity(user, page_id)
-    }
-
-    pub fn delete_widget(&self, user: &User, widget_id: &Id<Widget>) -> DbResult {
-        let mut bookmarks = self.get_entities::<Bookmark>(user)?;
-        bookmarks.retain(|b| &b.widget_id == widget_id);
-        for b in bookmarks {
-            self.delete_bookmark(user, &b.id)?;
-        }
-        self.remove_entity(user, widget_id)
-    }
-
-    pub fn delete_bookmark(&self, user: &User, bookmark_id: &Id<Bookmark>) -> DbResult {
-        self.remove_entity(user, bookmark_id)
     }
 }
 

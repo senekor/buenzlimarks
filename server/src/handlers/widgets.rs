@@ -83,7 +83,7 @@ pub async fn delete_widget(
     Path(widget_id): Path<Id<Widget>>,
     State(db): State<Database>,
 ) -> Result<(), StatusCode> {
-    db.delete_widget(&user, &widget_id).map_err(|e| match e {
+    db.delete_entity(&user, &widget_id).map_err(|e| match e {
         DbError::NotFound => StatusCode::NOT_FOUND,
         DbError::WhoopsieDoopsie => StatusCode::INTERNAL_SERVER_ERROR,
         DbError::AlreadyExists => StatusCode::INTERNAL_SERVER_ERROR,
