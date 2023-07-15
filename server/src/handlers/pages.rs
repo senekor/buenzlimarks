@@ -51,7 +51,7 @@ pub async fn update_page(
     State(db): State<Database>,
     Json(page): Json<Page>,
 ) -> Result<Json<Page>, StatusCode> {
-    db.update_page(&user, page).map(Json).map_err(|e| match e {
+    db.update_entity(&user, page).map(Json).map_err(|e| match e {
         DbError::NotFound => StatusCode::NOT_FOUND,
         DbError::WhoopsieDoopsie => StatusCode::INTERNAL_SERVER_ERROR,
         DbError::AlreadyExists => StatusCode::INTERNAL_SERVER_ERROR,

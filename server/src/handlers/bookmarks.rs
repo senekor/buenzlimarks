@@ -73,7 +73,7 @@ pub async fn update_bookmark(
     Json(mut bookmark): Json<Bookmark>,
 ) -> Result<Json<Bookmark>, StatusCode> {
     sanitize_bookmark(&mut bookmark);
-    db.update_bookmark(&user, bookmark)
+    db.update_entity(&user, bookmark)
         .map(Json)
         .map_err(|e| match e {
             DbError::NotFound => StatusCode::NOT_FOUND,

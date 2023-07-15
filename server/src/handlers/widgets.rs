@@ -69,7 +69,7 @@ pub async fn update_widget(
     State(db): State<Database>,
     Json(widget): Json<Widget>,
 ) -> Result<Json<Widget>, StatusCode> {
-    db.update_widget(&user, widget)
+    db.update_entity(&user, widget)
         .map(Json)
         .map_err(|e| match e {
             DbError::NotFound => StatusCode::NOT_FOUND,

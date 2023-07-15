@@ -53,7 +53,7 @@ impl Database {
         self.store_entity(user, entity)
     }
 
-    fn update_entity<T: Entity>(&self, user: &User, entity: T) -> DbResult<T> {
+    pub fn update_entity<T: Entity>(&self, user: &User, entity: T) -> DbResult<T> {
         if !self.contains_entity(user, entity.get_id()) {
             return Err(DbError::NotFound);
         };
@@ -160,19 +160,6 @@ impl Database {
 
     pub fn get_bookmarks(&self, user: &User) -> DbResult<Vec<Bookmark>> {
         self.get_directory_content(user)
-    }
-
-    // PUT
-    pub fn update_page(&self, user: &User, page: Page) -> DbResult<Page> {
-        self.update_entity(user, page)
-    }
-
-    pub fn update_widget(&self, user: &User, widget: Widget) -> DbResult<Widget> {
-        self.update_entity(user, widget)
-    }
-
-    pub fn update_bookmark(&self, user: &User, bookmark: Bookmark) -> DbResult<Bookmark> {
-        self.update_entity(user, bookmark)
     }
 
     // DELETE
