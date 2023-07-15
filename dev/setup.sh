@@ -34,5 +34,5 @@ if ! which d2 &> /dev/null ; then
 fi
 if ! which watchexec &> /dev/null ; then
     echo "installing watchexec to watch for diagram changes..."
-    cargo binstall -y mdbook
+    cargo binstall -y watchexec-cli
 fi
