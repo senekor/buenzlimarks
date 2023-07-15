@@ -2,10 +2,11 @@
 name = "buenzlimarks_server"
 version.workspace = true
 edition.workspace = true
+description.workspace = true
+license.workspace = true
+repository.workspace = true
 
 default-run = "buenzlimarks"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
 path = "src/lib.rs"
