@@ -15,7 +15,7 @@ pub async fn create_widget(
     Json(mut widget): Json<Widget>,
 ) -> Result<Json<Widget>, StatusCode> {
     widget.id = Id::random();
-    db.insert_widget(&user, widget)
+    db.insert_entity(&user, widget)
         .map(Json)
         .map_err(|e| match e {
             DbError::NotFound => StatusCode::NOT_FOUND,
@@ -30,7 +30,7 @@ pub async fn get_widget(
     Path(widget_id): Path<Id<Widget>>,
     State(db): State<Database>,
 ) -> Result<Json<Widget>, StatusCode> {
-    db.get_widget(&user, &widget_id)
+    db.get_entity(&user, &widget_id)
         .map(Json)
         .map_err(|e| match e {
             DbError::NotFound => StatusCode::NOT_FOUND,
@@ -50,7 +50,7 @@ pub async fn get_widgets(
     State(db): State<Database>,
     query: Query<WidgetFilter>,
 ) -> Result<Json<Vec<Widget>>, StatusCode> {
-    db.get_widgets(&user)
+    db.get_entities::<Widget>(&user)
         .map(|mut v| {
             if let Some(page_id) = &query.page_id {
                 v.retain(|w| w.page_id == *page_id);
@@ -69,7 +69,7 @@ pub async fn update_widget(
     State(db): State<Database>,
     Json(widget): Json<Widget>,
 ) -> Result<Json<Widget>, StatusCode> {
-    db.update_widget(&user, widget)
+    db.update_entity(&user, widget)
         .map(Json)
         .map_err(|e| match e {
             DbError::NotFound => StatusCode::NOT_FOUND,
@@ -83,7 +83,7 @@ pub async fn delete_widget(
     Path(widget_id): Path<Id<Widget>>,
     State(db): State<Database>,
 ) -> Result<(), StatusCode> {
-    db.delete_widget(&user, &widget_id).map_err(|e| match e {
+    db.delete_entity(&user, &widget_id).map_err(|e| match e {
         DbError::NotFound => StatusCode::NOT_FOUND,
         DbError::WhoopsieDoopsie => StatusCode::INTERNAL_SERVER_ERROR,
         DbError::AlreadyExists => StatusCode::INTERNAL_SERVER_ERROR,

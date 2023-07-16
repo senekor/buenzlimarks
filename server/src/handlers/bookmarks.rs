@@ -17,7 +17,7 @@ pub async fn create_bookmark(
     tracing::debug!("create bookmark");
     bookmark.id = Id::random();
     sanitize_bookmark(&mut bookmark);
-    db.insert_bookmark(&user, bookmark)
+    db.insert_entity(&user, bookmark)
         .map(Json)
         .map_err(|e| match e {
             DbError::NotFound => StatusCode::NOT_FOUND,
@@ -32,7 +32,7 @@ pub async fn get_bookmark(
     Path(bookmark_id): Path<Id<Bookmark>>,
     State(db): State<Database>,
 ) -> Result<Json<Bookmark>, StatusCode> {
-    db.get_bookmark(&user, &bookmark_id)
+    db.get_entity(&user, &bookmark_id)
         .map(Json)
         .map_err(|e| match e {
             DbError::NotFound => StatusCode::NOT_FOUND,
@@ -52,7 +52,7 @@ pub async fn get_bookmarks(
     State(db): State<Database>,
     query: Query<BookmarkFilter>,
 ) -> Result<Json<Vec<Bookmark>>, StatusCode> {
-    db.get_bookmarks(&user)
+    db.get_entities::<Bookmark>(&user)
         .map(|mut v| {
             if let Some(widget_id) = &query.widget_id {
                 v.retain(|b| b.widget_id == *widget_id);
@@ -73,7 +73,7 @@ pub async fn update_bookmark(
     Json(mut bookmark): Json<Bookmark>,
 ) -> Result<Json<Bookmark>, StatusCode> {
     sanitize_bookmark(&mut bookmark);
-    db.update_bookmark(&user, bookmark)
+    db.update_entity(&user, bookmark)
         .map(Json)
         .map_err(|e| match e {
             DbError::NotFound => StatusCode::NOT_FOUND,
@@ -88,7 +88,7 @@ pub async fn delete_bookmark(
     Path(bookmark_id): Path<Id<Bookmark>>,
     State(db): State<Database>,
 ) -> Result<(), StatusCode> {
-    match db.delete_bookmark(&user, &bookmark_id) {
+    match db.delete_entity(&user, &bookmark_id) {
         Ok(_) => Ok(()),
         Err(DbError::NotFound) => Err(StatusCode::NOT_FOUND),
         Err(DbError::WhoopsieDoopsie) => Err(StatusCode::INTERNAL_SERVER_ERROR),

@@ -11,7 +11,7 @@ pub struct AppState {
 impl AppState {
     pub fn new(config: &crate::config::Config) -> Self {
         Self {
-            db: crate::db::get(&config.db),
+            db: crate::db::Database::get(&config.db),
             auth: AuthState::new(&config.auth),
         }
     }

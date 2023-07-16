@@ -69,7 +69,7 @@ fn insert_seeds(db: &Database) {
         db.insert_user(&user, settings).unwrap();
         for (page_name, widgets) in pages {
             let p_id = Id::random();
-            db.insert_page(
+            db.insert_entity(
                 &user,
                 Page {
                     id: p_id.clone(),
@@ -79,7 +79,7 @@ fn insert_seeds(db: &Database) {
             .unwrap();
             for (widget_name, bookmarks) in widgets {
                 let w_id = Id::random();
-                db.insert_widget(
+                db.insert_entity(
                     &user,
                     Widget {
                         id: w_id.clone(),
@@ -96,7 +96,7 @@ fn insert_seeds(db: &Database) {
                         url: url.into(),
                         widget_id: w_id.clone(),
                     };
-                    db.insert_bookmark(&user, bookmark).unwrap();
+                    db.insert_entity(&user, bookmark).unwrap();
                 }
             }
         }
@@ -108,6 +108,6 @@ fn main() {
 
     std::fs::remove_dir_all(&config.db_dir).ok();
 
-    let db = db::get(&config);
+    let db = db::Database::get(&config);
     insert_seeds(&db);
 }
