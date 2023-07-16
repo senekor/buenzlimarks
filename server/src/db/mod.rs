@@ -1,13 +1,9 @@
-use std::{fmt::Debug, path::PathBuf};
-
-use models::{Bookmark, Entity, Id, Page, Settings, User, Widget};
-
-pub mod config;
-
-pub mod error;
-use error::DbResult;
-
 use self::error::{DbError, Whoopsie};
+use error::DbResult;
+use models::{Bookmark, Entity, Id, Page, Settings, User, Widget};
+use std::{fmt::Debug, path::PathBuf};
+pub mod config;
+pub mod error;
 
 #[derive(Debug, Clone)]
 pub struct Database {
@@ -15,51 +11,18 @@ pub struct Database {
 }
 
 impl Database {
-    pub fn new<T: Into<PathBuf>>(root_dir: T) -> Self {
+    // data
+    pub fn get(config: &config::DbConfig) -> Database {
+        Database::new(&config.db_dir)
+    }
+
+    fn new<T: Into<PathBuf>>(root_dir: T) -> Self {
         Self {
             root_dir: root_dir.into(),
         }
     }
 
-    fn contains_entity<T: Entity>(&self, user: &User, provided_id: &Id<T>) -> bool {
-        let provided_entity_path = self.get_path(user, Some(provided_id));
-        std::fs::metadata(provided_entity_path).is_ok()
-    }
-
-    pub fn contains_user(&self, user: &User) -> bool {
-        let user_path = self.get_user_path(user);
-        std::fs::metadata(user_path).is_ok()
-    }
-
-    fn store_entity<T: Entity>(&self, user: &User, entity: T) -> DbResult<T> {
-        let entity_path = self.get_path(user, Some(entity.get_id()));
-        std::fs::write(
-            entity_path,
-            serde_json::to_string_pretty(&entity).whoopsie()?,
-        )
-        .whoopsie()?;
-        Ok(entity)
-    }
-
-    pub fn insert_entity<T: Entity>(&self, user: &User, entity: T) -> DbResult<T> {
-        if let Some(p) = entity.get_parent_id() {
-            if !self.contains_entity(user, p) {
-                return Err(DbError::WhoopsieDoopsie);
-            }
-        }
-        if self.contains_entity(user, entity.get_id()) {
-            return Err(DbError::AlreadyExists);
-        };
-        self.store_entity(user, entity)
-    }
-
-    pub fn update_entity<T: Entity>(&self, user: &User, entity: T) -> DbResult<T> {
-        if !self.contains_entity(user, entity.get_id()) {
-            return Err(DbError::NotFound);
-        };
-        self.store_entity(user, entity)
-    }
-
+    // path
     fn get_user_path(&self, user: &User) -> PathBuf {
         self.root_dir
             .join(format!("users/{}/{}", user.provider, user.id))
@@ -75,6 +38,54 @@ impl Database {
             path.push(format!("{e}.json"));
         }
         path
+    }
+
+    // user
+    pub fn contains_user(&self, user: &User) -> bool {
+        let user_path = self.get_user_path(user);
+        std::fs::metadata(user_path).is_ok()
+    }
+
+    pub fn insert_user(&self, user: &User, settings: Settings) -> DbResult<Settings> {
+        std::fs::create_dir_all(self.get_path::<Page>(user, None)).whoopsie()?;
+        std::fs::create_dir_all(self.get_path::<Widget>(user, None)).whoopsie()?;
+        std::fs::create_dir_all(self.get_path::<Bookmark>(user, None)).whoopsie()?;
+
+        let user_data_path = self.get_user_settings_path(user);
+        std::fs::write(
+            user_data_path,
+            serde_json::to_string_pretty(&settings).whoopsie()?,
+        )
+        .whoopsie()?;
+        Ok(settings)
+    }
+
+    pub fn get_settings(&self, user: &User) -> DbResult<Settings> {
+        std::fs::read_to_string(self.get_user_settings_path(user))
+            .map_err(|e| match e.kind() {
+                std::io::ErrorKind::NotFound => DbError::NotFound,
+                _ => DbError::WhoopsieDoopsie,
+            })
+            .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
+    }
+
+    // entities
+    pub fn insert_entity<T: Entity>(&self, user: &User, entity: T) -> DbResult<T> {
+        if let Some(p) = entity.get_parent_id() {
+            if !self.contains_entity(user, p) {
+                return Err(DbError::WhoopsieDoopsie);
+            }
+        }
+        if self.contains_entity(user, entity.get_id()) {
+            return Err(DbError::AlreadyExists);
+        };
+        self.store_entity(user, entity)
+    }
+
+    pub fn get_entity<T: Entity>(&self, user: &User, entity_id: &Id<T>) -> DbResult<T> {
+        std::fs::read_to_string(self.get_path(user, Some(entity_id)))
+            .whoopsie()
+            .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
     }
 
     pub fn get_entities<T: Entity>(&self, user: &User) -> DbResult<Vec<T>> {
@@ -93,10 +104,15 @@ impl Database {
             .collect()
     }
 
-    pub fn get_entity<T: Entity>(&self, user: &User, entity_id: &Id<T>) -> DbResult<T> {
-        std::fs::read_to_string(self.get_path(user, Some(entity_id)))
-            .whoopsie()
-            .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
+    pub fn update_entity<T: Entity>(&self, user: &User, entity: T) -> DbResult<T> {
+        if !self.contains_entity(user, entity.get_id()) {
+            return Err(DbError::NotFound);
+        };
+        self.store_entity(user, entity)
+    }
+    fn contains_entity<T: Entity>(&self, user: &User, provided_id: &Id<T>) -> bool {
+        let provided_entity_path = self.get_path(user, Some(provided_id));
+        std::fs::metadata(provided_entity_path).is_ok()
     }
 
     pub fn delete_entity<T: Entity>(&self, user: &User, entity_id: &Id<T>) -> DbResult<()> {
@@ -119,33 +135,13 @@ impl Database {
         }
     }
 
-    // POST
-
-    pub fn insert_user(&self, user: &User, settings: Settings) -> DbResult<Settings> {
-        std::fs::create_dir_all(self.get_path::<Page>(user, None)).whoopsie()?;
-        std::fs::create_dir_all(self.get_path::<Widget>(user, None)).whoopsie()?;
-        std::fs::create_dir_all(self.get_path::<Bookmark>(user, None)).whoopsie()?;
-
-        let user_data_path = self.get_user_settings_path(user);
+    fn store_entity<T: Entity>(&self, user: &User, entity: T) -> DbResult<T> {
+        let entity_path = self.get_path(user, Some(entity.get_id()));
         std::fs::write(
-            user_data_path,
-            serde_json::to_string_pretty(&settings).whoopsie()?,
+            entity_path,
+            serde_json::to_string_pretty(&entity).whoopsie()?,
         )
         .whoopsie()?;
-        Ok(settings)
+        Ok(entity)
     }
-
-    // GET - one
-    pub fn get_settings(&self, user: &User) -> DbResult<Settings> {
-        std::fs::read_to_string(self.get_user_settings_path(user))
-            .map_err(|e| match e.kind() {
-                std::io::ErrorKind::NotFound => DbError::NotFound,
-                _ => DbError::WhoopsieDoopsie,
-            })
-            .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
-    }
-}
-
-pub fn get(config: &config::DbConfig) -> Database {
-    Database::new(&config.db_dir)
 }

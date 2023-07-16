@@ -108,6 +108,6 @@ fn main() {
 
     std::fs::remove_dir_all(&config.db_dir).ok();
 
-    let db = db::get(&config);
+    let db = db::Database::get(&config);
     insert_seeds(&db);
 }
