@@ -3,7 +3,7 @@ use models::Page as PageType;
 
 use crate::{
     api::{use_entity, Delete, Submit},
-    icons::{PencilSquareIcon, XMarkIcon},
+    icons::{PencilSquareIcon, XMarkIcon}, edit_mode::use_edit_mode,
 };
 
 #[component]
@@ -23,9 +23,12 @@ pub fn PageTab(
 
     let (name_form, set_name_form) = create_signal::<Option<String>>(cx, None);
 
+    let edit_mode = use_edit_mode(cx).read();
+    let no_edit_mode = Signal::derive(cx, move || !edit_mode());
+
     view! { cx,
         <button
-            class="rounded-lg pl-3 pr-2 flex flex-row place-items-center gap-2"
+            class="rounded-lg px-3 flex flex-row place-items-center gap-1"
             class=("bg-orange-800", is_selected)
             class=("bg-slate-600", not_selected)
             on:click=move |_| select(page())
@@ -49,14 +52,18 @@ pub fn PageTab(
                 }
                 on:click=move |ev| ev.stop_propagation()
             />
-            <PencilSquareIcon on:click=move |ev| {
+            <button class="pl-2" hidden=no_edit_mode on:click=move |ev| {
                 set_name_form(Some(page.get_untracked().name));
                 ev.stop_propagation();
-            } />
-            <XMarkIcon on:click=move |ev| {
+            }>
+                <PencilSquareIcon />
+            </button>
+            <button hidden=no_edit_mode on:click=move |ev| {
                 delete_page.dispatch(id());
                 ev.stop_propagation();
-            } />
+            }>
+                <XMarkIcon />
+            </button>
         </button>
     }
 }

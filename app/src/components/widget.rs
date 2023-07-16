@@ -4,7 +4,7 @@ use models::{Bookmark as BookmarkType, Id, Widget as WidgetType};
 use crate::{
     api::{create_delete_entity, create_submit_entity, use_entity, use_filtered_entities},
     components::{Bookmark, FlexSpace},
-    icons::{PencilSquareIcon, XMarkIcon},
+    icons::{PencilSquareIcon, XMarkIcon}, edit_mode::use_edit_mode,
 };
 
 fn bookmark_tmpl(widget_id: Id<WidgetType>) -> BookmarkType {
@@ -43,6 +43,8 @@ pub fn Widget(cx: Scope, widget: WidgetType) -> impl IntoView {
         }
     });
 
+    let edit_mode = use_edit_mode(cx).read();
+
     view! { cx,
         <div class="bg-slate-700 flex flex-col p-4 rounded-lg">
             <div class="flex flex-row gap-2 items-center pb-2">
@@ -65,14 +67,19 @@ pub fn Widget(cx: Scope, widget: WidgetType) -> impl IntoView {
                     }
                 />
                 <FlexSpace />
-                <div class="flex flex-row gap-1 items-center">
-                    <button on:click=move |_| set_name_form(Some(name()))>
-                        <PencilSquareIcon />
-                    </button>
-                    <button on:click=move |_| delete_widget.dispatch(id())>
-                        <XMarkIcon />
-                    </button>
-                </div>
+                <Show
+                    when=edit_mode
+                    fallback=|_| ()
+                >
+                    <div class="flex flex-row gap-1 items-center">
+                        <button on:click=move |_| set_name_form(Some(name()))>
+                            <PencilSquareIcon />
+                        </button>
+                        <button on:click=move |_| delete_widget.dispatch(id())>
+                            <XMarkIcon />
+                        </button>
+                    </div>
+                </Show>
             </div>
             <For
                 each=move || bookmarks.read(cx).unwrap_or_default()
@@ -84,46 +91,46 @@ pub fn Widget(cx: Scope, widget: WidgetType) -> impl IntoView {
                     }
                 }
             />
-            <input
-                class="self-center w-full bg-slate-600 p-1 rounded mb-1 mt-2"
-                placeholder="Name"
-                prop:value=move || bookmark_form().name
-                on:input=move |ev| {
-                    set_bookmark_form.update(|prev| {
-                        prev.name = event_target_value(&ev);
-                    })
-                }
-            />
-            <input
-                class="self-center w-full bg-slate-600 p-1 rounded mb-2"
-                placeholder="URL"
-                prop:value=move || bookmark_form().url
-                on:input=move |ev| {
-                    set_bookmark_form.update(|prev| {
-                        prev.url = event_target_value(&ev);
-                    })
-                }
-            />
-            <div class="self-center flex gap-2">
-                <button
-                    class="bg-slate-600 w-fit rounded px-1"
-                    hidden=move || bookmark_form().id.is_empty()
-                    on:click=move |_| reset_bookmark_form()
-                >
-                    Cancel
-                </button>
-                <button
-                    class="bg-slate-600 w-fit rounded px-1 disabled:text-gray-400"
-                    disabled=move || bookmark_form().name.is_empty() || bookmark_form().url.is_empty()
-                    on:click=move |_| submit_bookmark.dispatch(bookmark_form.get_untracked())
-                >{
-                    move || if bookmark_form().id.is_empty() {
-                        "Add"
-                    } else {
-                        "Save"
-                    }
-                }</button>
-            </div>
+            // <input
+            //     class="self-center w-full bg-slate-600 p-1 rounded mb-1 mt-2"
+            //     placeholder="Name"
+            //     prop:value=move || bookmark_form().name
+            //     on:input=move |ev| {
+            //         set_bookmark_form.update(|prev| {
+            //             prev.name = event_target_value(&ev);
+            //         })
+            //     }
+            // />
+            // <input
+            //     class="self-center w-full bg-slate-600 p-1 rounded mb-2"
+            //     placeholder="URL"
+            //     prop:value=move || bookmark_form().url
+            //     on:input=move |ev| {
+            //         set_bookmark_form.update(|prev| {
+            //             prev.url = event_target_value(&ev);
+            //         })
+            //     }
+            // />
+            // <div class="self-center flex gap-2">
+            //     <button
+            //         class="bg-slate-600 w-fit rounded px-1"
+            //         hidden=move || bookmark_form().id.is_empty()
+            //         on:click=move |_| reset_bookmark_form()
+            //     >
+            //         Cancel
+            //     </button>
+            //     <button
+            //         class="bg-slate-600 w-fit rounded px-1 disabled:text-gray-400"
+            //         disabled=move || bookmark_form().name.is_empty() || bookmark_form().url.is_empty()
+            //         on:click=move |_| submit_bookmark.dispatch(bookmark_form.get_untracked())
+            //     >{
+            //         move || if bookmark_form().id.is_empty() {
+            //             "Add"
+            //         } else {
+            //             "Save"
+            //         }
+            //     }</button>
+            // </div>
         </div>
     }
 }

@@ -1,3 +1,4 @@
+mod add_button;
 mod app;
 mod bookmark;
 mod flex_space;
@@ -9,6 +10,7 @@ mod page_tab;
 mod spinner;
 mod widget;
 
+pub use add_button::AddButton;
 pub use app::App;
 pub use bookmark::Bookmark;
 pub use flex_space::FlexSpace;

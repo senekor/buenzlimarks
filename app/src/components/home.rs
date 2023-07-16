@@ -4,8 +4,9 @@ use models::Page as PageType;
 use crate::{
     api::{create_delete_entity, create_submit_entity, use_entities},
     auth::{create_auth_guard, use_auth},
-    components::{FlexSpace, IconButton, Page, PageTab},
-    icons::{ArrowRightOnRectangleIcon, PlusIcon, QuestionMarkCircleIcon},
+    components::{FlexSpace, IconButton, Page, PageTab, AddButton},
+    edit_mode::use_edit_mode,
+    icons::{ArrowRightOnRectangleIcon, PencilSquareIcon, QuestionMarkCircleIcon},
 };
 
 #[cfg(debug_assertions)]
@@ -29,6 +30,8 @@ pub fn Home(cx: Scope) -> impl IntoView {
         set_selected_page(pages.read(cx).and_then(|pages| pages.into_iter().next()))
     });
 
+    let set_edit_mode = use_edit_mode(cx).write();
+
     view! { cx,
         <div class="h-screen flex flex-col flex-wrap gap-2">
             <div class="flex gap-2 p-2 w-full">
@@ -51,13 +54,19 @@ pub fn Home(cx: Scope) -> impl IntoView {
                     }
                 />
                 <FlexSpace />
-                <IconButton on:click=move |_| {
-                    submit_page.dispatch(PageType {
-                        id: "".into(),
-                        name: "new page".into(),
-                    })
-                }>
-                    <PlusIcon />
+                // <IconButton on:click=move |_| {
+                //     submit_page.dispatch(PageType {
+                //         id: "".into(),
+                //         name: "new page".into(),
+                //     })
+                // }>
+                //     <PlusIcon />
+                // </IconButton>
+                <IconButton on:click=move |_| set_edit_mode.update(|prev| *prev = !*prev) >
+                    <PencilSquareIcon />
+                </IconButton>
+                <IconButton on:click=move |_| auth.logout() >
+                    <ArrowRightOnRectangleIcon />
                 </IconButton>
                 <a
                     class="bg-slate-600 rounded-full p-2 w-min"
@@ -66,15 +75,13 @@ pub fn Home(cx: Scope) -> impl IntoView {
                 >
                     <QuestionMarkCircleIcon />
                 </a>
-                <IconButton on:click=move |_| auth.logout() >
-                    <ArrowRightOnRectangleIcon />
-                </IconButton>
             </div>
             <Suspense fallback=move || "">{ move || {
                 let sp = selected_page()?;
                 let page = Signal::derive(cx, move || sp.clone());
                 Some(view! { cx, <Page page /> })
             }}</Suspense>
+            <AddButton />
         </div>
     }
 }
