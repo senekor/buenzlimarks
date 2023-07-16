@@ -131,11 +131,11 @@
             "colId": "6771bdef-36bc-49e3-a53c-1ae789e62c17",
             "containerId": "",
             "name": "get widget",
-            "url": "http://localhost:4000/api/widgets/8c54b23c-864d-4d7b-92cc-4251a19e02b9",
+            "url": "http://localhost:4000/api/widgets/028cf2a4-fffd-478-862d-ae66a1c4f29",
             "method": "GET",
             "sortNum": 46250,
             "created": "2023-03-12T11:30:16.265Z",
-            "modified": "2023-03-12T11:31:16.901Z",
+            "modified": "2023-07-16T12:16:06.518Z",
             "headers": [],
             "params": [],
             "tests": []

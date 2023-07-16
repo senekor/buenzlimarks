@@ -84,7 +84,10 @@ impl Database {
 
     pub fn get_entity<T: Entity>(&self, user: &User, entity_id: &Id<T>) -> DbResult<T> {
         std::fs::read_to_string(self.get_path(user, Some(entity_id)))
-            .whoopsie()
+            .map_err(|e| match e.kind() {
+                std::io::ErrorKind::NotFound => DbError::NotFound,
+                _ => DbError::WhoopsieDoopsie,
+            })
             .and_then(|file_content| serde_json::from_str(&file_content).whoopsie())
     }
 
