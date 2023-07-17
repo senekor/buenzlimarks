@@ -15,7 +15,7 @@ layout {
 		children
 	}
 
-	compact_tab name="btop" {
+	compact_tab name="top" {
 		pane command="btop" borderless=true
 	}
 	compact_tab name="docs" {
@@ -28,7 +28,7 @@ layout {
 			args "diagrams-watch"
 		}
 	}
-	compact_tab name="dashboard" focus=true {
+	compact_tab name="main" focus=true {
 		pane name="app" {
 			command "just"
 			args "app-watch"
@@ -43,5 +43,5 @@ layout {
 			size "10%"
 		}
 	}
-	compact_tab name="terminal"
+	compact_tab name="term"
 }
