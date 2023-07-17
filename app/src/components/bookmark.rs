@@ -11,7 +11,6 @@ use crate::{
 pub fn Bookmark(
     cx: Scope,
     bookmark: BookmarkType,
-    set_bookmark_form: WriteSignal<BookmarkType>,
     delete_bookmark: Action<Id<BookmarkType>, bool>,
 ) -> impl IntoView {
     // let id = store_value(cx, bookmark.id.clone());
@@ -33,7 +32,7 @@ pub fn Bookmark(
             <button
                 hidden=no_edit_mode
                 class="w-6 ml-2"
-                on:click=move |_| set_bookmark_form(bookmark())
+                // TODO on:click=move |_| set_bookmark_form(bookmark())
             >
                 <PencilSquareIcon />
             </button>

@@ -1,20 +1,12 @@
 use leptos::*;
-use models::{Bookmark as BookmarkType, Id, Widget as WidgetType};
+use models::{Bookmark as BookmarkType, Widget as WidgetType};
 
 use crate::{
     api::{create_delete_entity, create_submit_entity, use_entity, use_filtered_entities},
     components::{Bookmark, FlexSpace},
-    icons::{PencilSquareIcon, XMarkIcon}, edit_mode::use_edit_mode,
+    edit_mode::use_edit_mode,
+    icons::{PencilSquareIcon, XMarkIcon},
 };
-
-fn bookmark_tmpl(widget_id: Id<WidgetType>) -> BookmarkType {
-    BookmarkType {
-        id: "".into(),
-        name: "".into(),
-        url: "".into(),
-        widget_id,
-    }
-}
 
 #[component]
 pub fn Widget(cx: Scope, widget: WidgetType) -> impl IntoView {
@@ -28,20 +20,9 @@ pub fn Widget(cx: Scope, widget: WidgetType) -> impl IntoView {
 
     let submit_widget = create_submit_entity::<WidgetType>(cx);
     let delete_widget = create_delete_entity::<WidgetType>(cx);
-    let submit_bookmark = create_submit_entity::<BookmarkType>(cx);
     let delete_bookmark = create_delete_entity::<BookmarkType>(cx);
 
     let (name_form, set_name_form) = create_signal::<Option<String>>(cx, None);
-
-    let (bookmark_form, set_bookmark_form) = create_signal(cx, bookmark_tmpl(id()));
-    let reset_bookmark_form = move || set_bookmark_form(bookmark_tmpl(id()));
-
-    let bookmark_pending = submit_bookmark.pending();
-    create_effect(cx, move |prev| {
-        if !bookmark_pending() && prev.is_some() {
-            reset_bookmark_form();
-        }
-    });
 
     let edit_mode = use_edit_mode(cx).read();
 
@@ -87,50 +68,10 @@ pub fn Widget(cx: Scope, widget: WidgetType) -> impl IntoView {
                 view=move |cx, bookmark| {
                     let bookmark = store_value(cx, bookmark);
                     view! { cx,
-                        <Bookmark bookmark=bookmark() set_bookmark_form delete_bookmark />
+                        <Bookmark bookmark=bookmark() delete_bookmark />
                     }
                 }
             />
-            // <input
-            //     class="self-center w-full bg-slate-600 p-1 rounded mb-1 mt-2"
-            //     placeholder="Name"
-            //     prop:value=move || bookmark_form().name
-            //     on:input=move |ev| {
-            //         set_bookmark_form.update(|prev| {
-            //             prev.name = event_target_value(&ev);
-            //         })
-            //     }
-            // />
-            // <input
-            //     class="self-center w-full bg-slate-600 p-1 rounded mb-2"
-            //     placeholder="URL"
-            //     prop:value=move || bookmark_form().url
-            //     on:input=move |ev| {
-            //         set_bookmark_form.update(|prev| {
-            //             prev.url = event_target_value(&ev);
-            //         })
-            //     }
-            // />
-            // <div class="self-center flex gap-2">
-            //     <button
-            //         class="bg-slate-600 w-fit rounded px-1"
-            //         hidden=move || bookmark_form().id.is_empty()
-            //         on:click=move |_| reset_bookmark_form()
-            //     >
-            //         Cancel
-            //     </button>
-            //     <button
-            //         class="bg-slate-600 w-fit rounded px-1 disabled:text-gray-400"
-            //         disabled=move || bookmark_form().name.is_empty() || bookmark_form().url.is_empty()
-            //         on:click=move |_| submit_bookmark.dispatch(bookmark_form.get_untracked())
-            //     >{
-            //         move || if bookmark_form().id.is_empty() {
-            //             "Add"
-            //         } else {
-            //             "Save"
-            //         }
-            //     }</button>
-            // </div>
         </div>
     }
 }
