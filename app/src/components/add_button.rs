@@ -1,7 +1,7 @@
 use leptos::*;
 
 use crate::{
-    components::{BookmarkForm, IconButton, PageForm, WidgetForm, Dialog},
+    components::{BookmarkForm, Dialog, IconButton, PageForm, WidgetForm},
     edit_mode::use_edit_mode,
     icons::PlusIcon,
 };

@@ -3,8 +3,9 @@ use models::{Bookmark as BookmarkType, Id};
 
 use crate::{
     api::use_entity,
-    components::{FlexSpace, Dialog, BookmarkForm},
-    icons::{PencilSquareIcon, XMarkIcon}, edit_mode::use_edit_mode,
+    components::{BookmarkForm, Dialog, FlexSpace},
+    edit_mode::use_edit_mode,
+    icons::{PencilSquareIcon, XMarkIcon},
 };
 
 #[component]

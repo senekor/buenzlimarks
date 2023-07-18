@@ -4,7 +4,8 @@ use leptos_router::*;
 use crate::{
     api::provide_api_context,
     auth::{provide_auth_context, GithubCallback, Login},
-    components::Home, edit_mode::provide_edit_mode,
+    components::Home,
+    edit_mode::provide_edit_mode,
 };
 
 #[component]
