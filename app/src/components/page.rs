@@ -20,17 +20,6 @@ pub fn Page(cx: Scope, page: Signal<PageType>) -> impl IntoView {
                     }
                 />
             </div>
-            // <IconButton
-            //     on:click=move |_| {
-            //         submit_widget.dispatch(WidgetType {
-            //             id: "".into(),
-            //             name: "new widget".into(),
-            //             page_id: id.get_untracked(),
-            //         })
-            //     }
-            // >
-            //     <PlusIcon />
-            // </IconButton>
         </div>
     }
 }

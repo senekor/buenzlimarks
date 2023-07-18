@@ -2,8 +2,10 @@ use leptos::*;
 use models::Page as PageType;
 
 use crate::{
-    api::{use_entity, Delete, Submit},
-    icons::{PencilSquareIcon, XMarkIcon}, edit_mode::use_edit_mode,
+    api::{use_entity, Delete},
+    components::{Dialog, PageForm},
+    edit_mode::use_edit_mode,
+    icons::{PencilSquareIcon, XMarkIcon},
 };
 
 #[component]
@@ -12,7 +14,6 @@ pub fn PageTab(
     page: PageType,
     is_selected: Signal<bool>,
     select: SignalSetter<PageType>,
-    submit_page: Submit<PageType>,
     delete_page: Delete<PageType>,
 ) -> impl IntoView {
     let id = store_value(cx, page.id.clone());
@@ -21,10 +22,11 @@ pub fn PageTab(
     let name = move || page().name;
     let not_selected = move || !is_selected();
 
-    let (name_form, set_name_form) = create_signal::<Option<String>>(cx, None);
-
     let edit_mode = use_edit_mode(cx).read();
     let no_edit_mode = Signal::derive(cx, move || !edit_mode());
+
+    let (form_open, set_form_open) = create_signal(cx, false);
+    let on_close = move || set_form_open(false);
 
     view! { cx,
         <button
@@ -33,27 +35,9 @@ pub fn PageTab(
             class=("bg-slate-600", not_selected)
             on:click=move |_| select(page())
         >
-            <p hidden=move || name_form().is_some() >{ name }</p>
-            <input
-                class="bg-inherit p-1 px-2 rounded"
-                class=("bg-orange-700", is_selected)
-                class=("bg-slate-500", not_selected)
-                hidden=move || name_form().is_none()
-                prop:value=name_form
-                on:input=move |ev| { set_name_form(Some(event_target_value(&ev))); }
-                on:keydown=move |ev| {
-                    if &ev.key() == "Enter" {
-                        submit_page.dispatch(PageType {
-                            id: id(),
-                            name: name_form.get_untracked().unwrap_or_default(),
-                        });
-                        set_name_form(None);
-                    }
-                }
-                on:click=move |ev| ev.stop_propagation()
-            />
+            { name }
             <button class="pl-2" hidden=no_edit_mode on:click=move |ev| {
-                set_name_form(Some(page.get_untracked().name));
+                set_form_open(true);
                 ev.stop_propagation();
             }>
                 <PencilSquareIcon />
@@ -65,5 +49,10 @@ pub fn PageTab(
                 <XMarkIcon />
             </button>
         </button>
+        <Show when=form_open fallback=|_| () >
+            <Dialog on_close >
+                <PageForm on_close prev_page=page.get_untracked() />
+            </Dialog>
+        </Show>
     }
 }

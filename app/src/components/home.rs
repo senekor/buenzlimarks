@@ -2,9 +2,9 @@ use leptos::*;
 use models::Page as PageType;
 
 use crate::{
-    api::{create_delete_entity, create_submit_entity, use_entities},
+    api::{create_delete_entity, use_entities},
     auth::{create_auth_guard, use_auth},
-    components::{FlexSpace, IconButton, Page, PageTab, AddButton},
+    components::{AddButton, FlexSpace, IconButton, Page, PageTab},
     edit_mode::use_edit_mode,
     icons::{ArrowRightOnRectangleIcon, PencilSquareIcon, QuestionMarkCircleIcon},
 };
@@ -22,7 +22,6 @@ pub fn Home(cx: Scope) -> impl IntoView {
 
     let pages = use_entities::<PageType>(cx);
 
-    let submit_page = create_submit_entity::<PageType>(cx);
     let delete_page = create_delete_entity::<PageType>(cx);
 
     let (selected_page, set_selected_page) = create_signal(cx, None);
@@ -48,20 +47,11 @@ pub fn Home(cx: Scope) -> impl IntoView {
                             page
                             is_selected
                             select
-                            submit_page
                             delete_page
                         /> }
                     }
                 />
                 <FlexSpace />
-                // <IconButton on:click=move |_| {
-                //     submit_page.dispatch(PageType {
-                //         id: "".into(),
-                //         name: "new page".into(),
-                //     })
-                // }>
-                //     <PlusIcon />
-                // </IconButton>
                 <IconButton on:click=move |_| set_edit_mode.update(|prev| *prev = !*prev) >
                     <PencilSquareIcon />
                 </IconButton>
