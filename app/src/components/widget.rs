@@ -2,8 +2,8 @@ use leptos::*;
 use models::{Bookmark as BookmarkType, Widget as WidgetType};
 
 use crate::{
-    api::{create_delete_entity, create_submit_entity, use_entity, use_filtered_entities},
-    components::{Bookmark, FlexSpace},
+    api::{create_delete_entity, use_entity, use_filtered_entities},
+    components::{Bookmark, Dialog, FlexSpace, WidgetForm},
     edit_mode::use_edit_mode,
     icons::{PencilSquareIcon, XMarkIcon},
 };
@@ -14,46 +14,29 @@ pub fn Widget(cx: Scope, widget: WidgetType) -> impl IntoView {
     let widget = use_entity(cx, widget);
 
     let name = Signal::derive(cx, move || widget().name);
-    let page_id = Signal::derive(cx, move || widget().page_id);
 
     let bookmarks = use_filtered_entities::<BookmarkType>(cx, id());
 
-    let submit_widget = create_submit_entity::<WidgetType>(cx);
     let delete_widget = create_delete_entity::<WidgetType>(cx);
     let delete_bookmark = create_delete_entity::<BookmarkType>(cx);
 
-    let (name_form, set_name_form) = create_signal::<Option<String>>(cx, None);
-
     let edit_mode = use_edit_mode(cx).read();
+
+    let (form_open, set_form_open) = create_signal(cx, false);
+    let on_close = move || set_form_open(false);
 
     view! { cx,
         <div class="bg-slate-700 flex flex-col p-4 rounded-lg">
             <div class="flex flex-row gap-2 items-center pb-2">
                 <FlexSpace />
-                <h2 class="text-3xl" hidden=move || name_form().is_some() >{ name }</h2>
-                <input
-                    class="bg-slate-600 p-1 px-2 rounded text-lg"
-                    hidden=move || name_form().is_none()
-                    prop:value=name_form
-                    on:input=move |ev| { set_name_form(Some(event_target_value(&ev))); }
-                    on:keydown=move |ev| {
-                        if &ev.key() == "Enter" {
-                            submit_widget.dispatch(WidgetType {
-                                id: id(),
-                                name: name_form.get_untracked().unwrap_or_default(),
-                                page_id: page_id.get_untracked(),
-                            });
-                            set_name_form(None);
-                        }
-                    }
-                />
+                <h2 class="text-3xl">{ name }</h2>
                 <FlexSpace />
                 <Show
                     when=edit_mode
                     fallback=|_| ()
                 >
                     <div class="flex flex-row gap-1 items-center">
-                        <button on:click=move |_| set_name_form(Some(name()))>
+                        <button on:click=move |_| set_form_open(true)>
                             <PencilSquareIcon />
                         </button>
                         <button on:click=move |_| delete_widget.dispatch(id())>
@@ -73,5 +56,10 @@ pub fn Widget(cx: Scope, widget: WidgetType) -> impl IntoView {
                 }
             />
         </div>
+        <Show when=form_open fallback=|_| () >
+            <Dialog on_close >
+                <WidgetForm on_close prev_widget=widget.get_untracked() />
+            </Dialog>
+        </Show>
     }
 }
