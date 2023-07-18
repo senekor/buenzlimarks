@@ -25,6 +25,7 @@
       "*.rs": "html"
   },
   "css.validate": false,
+  "tailwindCSS.colorDecorators": false,
   //
   // hypothetical setting for auto-complete with an
   // imaginary tailwind-merge-rs

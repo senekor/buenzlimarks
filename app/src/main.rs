@@ -3,6 +3,7 @@ use leptos::mount_to_body;
 mod api;
 mod auth;
 mod components;
+mod edit_mode;
 mod icons;
 
 fn main() {
