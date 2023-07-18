@@ -24,9 +24,20 @@ pub fn Home(cx: Scope) -> impl IntoView {
 
     let delete_page = create_delete_entity::<PageType>(cx);
 
-    let (selected_page, set_selected_page) = create_signal(cx, None);
+    let (selected_page, set_selected_page) = create_signal::<Option<PageType>>(cx, None);
     create_effect(cx, move |_| {
-        set_selected_page(pages.read(cx).and_then(|pages| pages.into_iter().next()))
+        pages.with(cx, move |pages| {
+            if let Some(sel) = selected_page.get_untracked() {
+                if !pages.iter().any(|p| p.id == sel.id) {
+                    // selected page doesn't exist anymore, was probably deleted.
+                    // set it to the first page (or none).
+                    set_selected_page(pages.iter().next().cloned());
+                };
+            } else if let Some(first_page) = pages.iter().next() {
+                // no page was selected, but a page exists. select it.
+                set_selected_page(Some(first_page.clone()));
+            }
+        });
     });
 
     let set_edit_mode = use_edit_mode(cx).write();
