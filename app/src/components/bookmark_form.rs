@@ -1,5 +1,5 @@
 use leptos::*;
-use models::{Bookmark as BookmarkType, Id, Page, Widget};
+use models::{Bookmark, Id, Page, Widget};
 
 use crate::api::{create_submit_entity, use_entities, use_filtered_entities};
 
@@ -7,14 +7,15 @@ use crate::api::{create_submit_entity, use_entities, use_filtered_entities};
 pub fn BookmarkForm<F: Fn() + Copy + 'static>(
     cx: Scope,
     on_close: F,
-    #[prop(optional)] prev_bookmark: Option<BookmarkType>,
+    #[prop(optional)] prev_bookmark: Option<Bookmark>,
 ) -> impl IntoView {
     let is_add = prev_bookmark.is_none();
+    let prev_bookmark = store_value(cx, prev_bookmark);
 
     let (page_id, set_page_id) = create_signal::<Option<Id<Page>>>(cx, None);
     let pages = use_entities::<Page>(cx);
 
-    if let Some(bookmark) = prev_bookmark {
+    if let Some(bookmark) = prev_bookmark() {
         let all_widgets = use_entities::<Widget>(cx);
         create_effect(cx, move |_| {
             let p_id = all_widgets
@@ -27,7 +28,8 @@ pub fn BookmarkForm<F: Fn() + Copy + 'static>(
         })
     };
 
-    let (widget_id, set_widget_id) = create_signal::<Option<Id<Widget>>>(cx, None);
+    let (widget_id, set_widget_id) =
+        create_signal::<Option<Id<Widget>>>(cx, prev_bookmark().map(|b| b.widget_id));
     let widget_resource = create_memo(cx, move |_| {
         page_id().map(|p_id| use_filtered_entities::<Widget>(cx, p_id))
     });
@@ -37,17 +39,32 @@ pub fn BookmarkForm<F: Fn() + Copy + 'static>(
             .unwrap_or_default()
     });
 
-    let (name, set_name) = create_signal::<String>(cx, String::new());
-    let (url, set_url) = create_signal::<String>(cx, String::new());
+    // So, this is a bit of a hack. When the page_widgets are updated
+    // *after* widget_id has been updated, the DOM does not pick up on
+    // this and doesn't display the name corresponding to widget_id
+    // correctly. By forcing a pseudo-update on the widget_id signal,
+    // the DOM is updated and shows the correct widget name, once
+    // page_widgets are updated.
+    create_effect(cx, move |prev| {
+        page_widgets.track();
+        if prev.is_some() {
+            set_widget_id.update(|_| {});
+        }
+    });
 
-    let bookmark = Signal::derive(cx, move || BookmarkType {
-        id: "".into(),
+    let (name, set_name) =
+        create_signal::<String>(cx, prev_bookmark().map(|b| b.name).unwrap_or_default());
+    let (url, set_url) =
+        create_signal::<String>(cx, prev_bookmark().map(|b| b.url).unwrap_or_default());
+
+    let bookmark = Signal::derive(cx, move || Bookmark {
+        id: prev_bookmark().map(|b| b.id).unwrap_or_else(|| "".into()),
         name: name(),
         url: url(),
         widget_id: widget_id().unwrap_or_else(|| "".into()),
     });
 
-    let submit_bookmark = create_submit_entity::<BookmarkType>(cx);
+    let submit_bookmark = create_submit_entity::<Bookmark>(cx);
 
     view! { cx,
         <select

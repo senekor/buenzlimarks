@@ -1,7 +1,7 @@
 use leptos::*;
 
 use crate::{
-    components::{BookmarkForm, IconButton, PageForm, WidgetForm},
+    components::{BookmarkForm, IconButton, PageForm, WidgetForm, Dialog},
     edit_mode::use_edit_mode,
     icons::PlusIcon,
 };
@@ -61,12 +61,7 @@ pub fn AddButton(cx: Scope) -> impl IntoView {
                     </div>
                 </Show>
                 <Show when=move || state().is_entity() fallback=|_| ()>
-                    <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
-                                bg-slate-700 rounded p-8 border-2 border-white
-                                flex flex-col gap-2
-                                shadow-2x shadow-slate-900
-                                z-20"
-                    >
+                    <Dialog on_close>
                         <Show when=move || state() == State::Page fallback=|_| ()>
                             <PageForm on_close />
                         </Show>
@@ -76,11 +71,7 @@ pub fn AddButton(cx: Scope) -> impl IntoView {
                         <Show when=move || state() == State::Bookmark fallback=|_| ()>
                             <BookmarkForm on_close />
                         </Show>
-                    </div>
-                    <div
-                        class="fixed top-0 left-0 h-screen w-screen backdrop-brightness-75"
-                        on:click=move |_| set_state(State::None)
-                    />
+                    </Dialog>
                 </Show>
             </div>
         </Show>

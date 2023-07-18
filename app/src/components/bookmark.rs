@@ -3,7 +3,7 @@ use models::{Bookmark as BookmarkType, Id};
 
 use crate::{
     api::use_entity,
-    components::FlexSpace,
+    components::{FlexSpace, Dialog, BookmarkForm},
     icons::{PencilSquareIcon, XMarkIcon}, edit_mode::use_edit_mode,
 };
 
@@ -19,6 +19,9 @@ pub fn Bookmark(
     let edit_mode = use_edit_mode(cx).read();
     let no_edit_mode = Signal::derive(cx, move || !edit_mode());
 
+    let (form_open, set_form_open) = create_signal(cx, false);
+    let on_close = move || set_form_open(false);
+
     view! { cx,
         <div class="flex w-full gap-1">
             <FlexSpace />
@@ -32,7 +35,7 @@ pub fn Bookmark(
             <button
                 hidden=no_edit_mode
                 class="w-6 ml-2"
-                // TODO on:click=move |_| set_bookmark_form(bookmark())
+                on:click=move |_| set_form_open(true)
             >
                 <PencilSquareIcon />
             </button>
@@ -44,5 +47,10 @@ pub fn Bookmark(
                 <XMarkIcon />
             </button>
         </div>
+        <Show when=form_open fallback=|_| () >
+            <Dialog on_close >
+                <BookmarkForm on_close prev_bookmark=bookmark.get_untracked() />
+            </Dialog>
+        </Show>
     }
 }
