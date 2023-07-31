@@ -80,7 +80,7 @@ pub fn WidgetForm<F: Fn() + Copy + 'static>(
             </button>
             <button
                 class="bg-slate-600 w-fit rounded px-1 disabled:text-gray-400"
-                disabled=move || name.with(|n| n.is_empty())
+                disabled=move || name.with(|n| n.is_empty()) || page_id.with(|n| n.is_none())
                 on:click=move |_| {
                     submit_widget.dispatch(widget.get_untracked());
                     on_close();

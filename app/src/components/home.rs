@@ -44,6 +44,7 @@ pub fn Home(cx: Scope) -> impl IntoView {
 
     view! { cx,
         <div class="h-screen flex flex-col flex-wrap gap-2">
+
             <div class="flex gap-2 p-2 w-full">
                 <For
                     each=move || pages.read(cx).unwrap_or_default()
@@ -62,13 +63,17 @@ pub fn Home(cx: Scope) -> impl IntoView {
                         /> }
                     }
                 />
+
                 <FlexSpace />
+            
                 <IconButton on:click=move |_| set_edit_mode.update(|prev| *prev = !*prev) >
                     <PencilSquareIcon />
                 </IconButton>
+
                 <IconButton on:click=move |_| auth.logout() >
                     <ArrowRightOnRectangleIcon />
                 </IconButton>
+
                 <a
                     class="bg-slate-600 rounded-full p-2 w-min"
                     href=DOCS_HREF
@@ -77,12 +82,17 @@ pub fn Home(cx: Scope) -> impl IntoView {
                     <QuestionMarkCircleIcon />
                 </a>
             </div>
-            <Suspense fallback=move || "">{ move || {
-                let sp = selected_page()?;
-                let page = Signal::derive(cx, move || sp.clone());
-                Some(view! { cx, <Page page /> })
-            }}</Suspense>
+
+            <Suspense fallback=move || "">
+                { move || {
+                    let sp = selected_page()?;
+                    let page = Signal::derive(cx, move || sp.clone());
+                    Some(view! { cx, <Page page /> })
+                }}
+            </Suspense>
+
             <AddButton />
+
         </div>
     }
 }

@@ -42,12 +42,14 @@ pub fn PageTab(
             }>
                 <PencilSquareIcon />
             </button>
+
             <button hidden=no_edit_mode on:click=move |ev| {
                 delete_page.dispatch(id());
                 ev.stop_propagation();
             }>
                 <XMarkIcon />
             </button>
+            
         </button>
         <Show when=form_open fallback=|_| () >
             <Dialog on_close >
