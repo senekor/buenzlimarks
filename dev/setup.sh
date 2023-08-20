@@ -5,7 +5,9 @@ cd "$(git rev-parse --show-toplevel)"
 
 if ! which cargo-binstall &> /dev/null ; then
     echo "installing cargo-binstall to install other crates faster..."
-    cargo install --locked cargo-binstall
+    curl -L --proto '=https' --tlsv1.2 -sSf \
+        https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh \
+        | bash
 fi
 if ! which just &> /dev/null ; then
     echo "installing the just command runner..."
