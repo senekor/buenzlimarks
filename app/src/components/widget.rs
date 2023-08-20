@@ -23,7 +23,10 @@ pub fn Widget(cx: Scope, widget: WidgetType) -> impl IntoView {
     let edit_mode = use_edit_mode(cx).read();
 
     let (form_open, set_form_open) = create_signal(cx, false);
-    let on_close = move || set_form_open(false);
+    let on_form_close = move || set_form_open(false);
+
+    let (delete_open, set_delete_open) = create_signal(cx, true);
+    let on_delete_close = move || set_delete_open(false);
 
     view! { cx,
         <div class="bg-slate-700 flex flex-col p-4 rounded-lg">
@@ -39,7 +42,8 @@ pub fn Widget(cx: Scope, widget: WidgetType) -> impl IntoView {
                         <button on:click=move |_| set_form_open(true)>
                             <PencilSquareIcon />
                         </button>
-                        <button on:click=move |_| delete_widget.dispatch(id())>
+                        // <button on:click=move |_| delete_widget.dispatch(id())>
+                        <button on:click=move |_| set_delete_open(true)>
                             <XMarkIcon />
                         </button>
                     </div>
@@ -57,8 +61,30 @@ pub fn Widget(cx: Scope, widget: WidgetType) -> impl IntoView {
             />
         </div>
         <Show when=form_open fallback=|_| () >
-            <Dialog on_close >
-                <WidgetForm on_close prev_widget=widget.get_untracked() />
+            <Dialog on_close=on_form_close >
+                <WidgetForm on_close=on_form_close prev_widget=widget.get_untracked() />
+            </Dialog>
+        </Show>
+        <Show when=delete_open fallback=|_| () >
+            <Dialog on_close=on_delete_close >
+                "Are you sure you want to delete?"
+                <div class="flex flex-row self-center gap-4">
+                    <button
+                        class="bg-slate-600 w-fit rounded px-2 py-1 disabled:text-gray-400"
+                        on:click=move |_| {
+                            delete_widget.dispatch(id());
+                            on_delete_close();
+                        }
+                    >
+                        "Yes"
+                    </button>
+                    <button
+                        class="bg-slate-600 w-fit rounded px-2 py-1 disabled:text-gray-400"
+                        on:click=move |_| on_delete_close()
+                    >
+                        "No"
+                    </button>
+                </div>
             </Dialog>
         </Show>
     }
