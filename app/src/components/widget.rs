@@ -3,7 +3,7 @@ use models::{Bookmark as BookmarkType, Widget as WidgetType};
 
 use crate::{
     api::{create_delete_entity, use_entity, use_filtered_entities},
-    components::{Bookmark, Dialog, FlexSpace, WidgetForm, ConfirmationDialog},
+    components::{Bookmark, ConfirmationDialog, Dialog, FlexSpace, WidgetForm},
     edit_mode::use_edit_mode,
     icons::{PencilSquareIcon, XMarkIcon},
 };
@@ -42,7 +42,7 @@ pub fn Widget(cx: Scope, widget: WidgetType) -> impl IntoView {
                         <button on:click=move |_| set_form_open(true)>
                             <PencilSquareIcon />
                         </button>
-                        // <button on:click=move |_| delete_widget.dispatch(id())>
+
                         <button on:click=move |_| set_delete_open(true)>
                             <XMarkIcon />
                         </button>

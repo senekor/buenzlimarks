@@ -65,7 +65,7 @@ pub fn Home(cx: Scope) -> impl IntoView {
                 />
 
                 <FlexSpace />
-            
+
                 <IconButton on:click=move |_| set_edit_mode.update(|prev| *prev = !*prev) >
                     <PencilSquareIcon />
                 </IconButton>
