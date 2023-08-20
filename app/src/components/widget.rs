@@ -3,7 +3,7 @@ use models::{Bookmark as BookmarkType, Widget as WidgetType};
 
 use crate::{
     api::{create_delete_entity, use_entity, use_filtered_entities},
-    components::{Bookmark, Dialog, FlexSpace, WidgetForm},
+    components::{Bookmark, Dialog, FlexSpace, WidgetForm, ConfirmationDialog},
     edit_mode::use_edit_mode,
     icons::{PencilSquareIcon, XMarkIcon},
 };
@@ -25,7 +25,7 @@ pub fn Widget(cx: Scope, widget: WidgetType) -> impl IntoView {
     let (form_open, set_form_open) = create_signal(cx, false);
     let on_form_close = move || set_form_open(false);
 
-    let (delete_open, set_delete_open) = create_signal(cx, true);
+    let (delete_open, set_delete_open) = create_signal(cx, false);
     let on_delete_close = move || set_delete_open(false);
 
     view! { cx,
@@ -66,26 +66,10 @@ pub fn Widget(cx: Scope, widget: WidgetType) -> impl IntoView {
             </Dialog>
         </Show>
         <Show when=delete_open fallback=|_| () >
-            <Dialog on_close=on_delete_close >
-                "Are you sure you want to delete?"
-                <div class="flex flex-row self-center gap-4">
-                    <button
-                        class="bg-slate-600 w-fit rounded px-2 py-1 disabled:text-gray-400"
-                        on:click=move |_| {
-                            delete_widget.dispatch(id());
-                            on_delete_close();
-                        }
-                    >
-                        "Yes"
-                    </button>
-                    <button
-                        class="bg-slate-600 w-fit rounded px-2 py-1 disabled:text-gray-400"
-                        on:click=move |_| on_delete_close()
-                    >
-                        "No"
-                    </button>
-                </div>
-            </Dialog>
+            <ConfirmationDialog
+                on_confirm=move || delete_widget.dispatch(id())
+                on_close=on_delete_close
+            />
         </Show>
     }
 }
