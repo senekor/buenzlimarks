@@ -48,6 +48,7 @@ pub fn AddButton(cx: Scope) -> impl IntoView {
                 })>
                     <PlusIcon />
                 </IconButton>
+
                 <Show
                     when=move || state() == State::Picking
                     fallback=|_| ()
@@ -60,6 +61,7 @@ pub fn AddButton(cx: Scope) -> impl IntoView {
                         <button on:click=move |_| set_state(State::Bookmark) >Bookmark</button>
                     </div>
                 </Show>
+
                 <Show when=move || state().is_entity() fallback=|_| ()>
                     <Dialog on_close>
                         <Show when=move || state() == State::Page fallback=|_| ()>

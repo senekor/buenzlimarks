@@ -108,6 +108,11 @@ impl Database {
     }
 
     pub fn update_entity<T: Entity>(&self, user: &User, entity: T) -> DbResult<T> {
+        if let Some(p) = entity.get_parent_id() {
+            if !self.contains_entity(user, p) {
+                return Err(DbError::WhoopsieDoopsie);
+            }
+        }
         if !self.contains_entity(user, entity.get_id()) {
             return Err(DbError::NotFound);
         };

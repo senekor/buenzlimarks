@@ -3,7 +3,7 @@ use models::Page as PageType;
 
 use crate::{
     api::{use_entity, Delete},
-    components::{Dialog, PageForm},
+    components::{ConfirmationDialog, Dialog, PageForm},
     edit_mode::use_edit_mode,
     icons::{PencilSquareIcon, XMarkIcon},
 };
@@ -28,6 +28,9 @@ pub fn PageTab(
     let (form_open, set_form_open) = create_signal(cx, false);
     let on_close = move || set_form_open(false);
 
+    let (delete_open, set_delete_open) = create_signal(cx, false);
+    let on_delete_close = move || set_delete_open(false);
+
     view! { cx,
         <button
             class="rounded-lg px-3 flex flex-row place-items-center gap-1"
@@ -42,17 +45,26 @@ pub fn PageTab(
             }>
                 <PencilSquareIcon />
             </button>
+
             <button hidden=no_edit_mode on:click=move |ev| {
-                delete_page.dispatch(id());
+                set_delete_open(true);
                 ev.stop_propagation();
             }>
                 <XMarkIcon />
             </button>
         </button>
+
         <Show when=form_open fallback=|_| () >
             <Dialog on_close >
                 <PageForm on_close prev_page=page.get_untracked() />
             </Dialog>
+        </Show>
+
+        <Show when=delete_open fallback=|_| () >
+            <ConfirmationDialog
+                on_confirm=move || delete_page.dispatch(id())
+                on_close=on_delete_close
+            />
         </Show>
     }
 }
