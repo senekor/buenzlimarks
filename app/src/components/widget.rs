@@ -29,10 +29,10 @@ pub fn Widget(cx: Scope, widget: WidgetType) -> impl IntoView {
     let on_delete_close = move || set_delete_open(false);
 
     view! { cx,
-        <div class="bg-slate-700 flex flex-col p-4 rounded-lg">
-            <div class="flex flex-row gap-2 items-center pb-2">
+        <div class="bg-slate-700 flex flex-col p-2 rounded-lg">
+            <div class="flex flex-row gap-2 items-center pb-1">
                 <FlexSpace />
-                <h2 class="text-3xl">{ name }</h2>
+                <h2 class="text-xl">{ name }</h2>
                 <FlexSpace />
                 <Show
                     when=edit_mode

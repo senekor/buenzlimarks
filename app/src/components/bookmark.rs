@@ -27,7 +27,7 @@ pub fn Bookmark(
         <div class="flex w-full gap-1">
             <FlexSpace />
             <a
-                class="text-2xl text-orange-200 hover:text-orange-400 underline"
+                class="text-orange-200 hover:text-orange-400 underline"
                 href=move || bookmark().url
             >
                 { move || bookmark().name }
