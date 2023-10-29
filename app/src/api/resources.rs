@@ -104,7 +104,7 @@ pub fn use_entity<T: Entity>(entity: T) -> Memo<T> {
     let id = Signal::derive(move || orig_entity.with_value(|w| w.get_id().clone()));
 
     let entity_resource = use_entity_resource::<T>(id.get_untracked());
-    create_memo(move |_| match entity_resource.read().flatten() {
+    create_memo(move |_| match entity_resource().flatten() {
         Some(entity) => entity,
         None => orig_entity(),
     })

@@ -36,7 +36,7 @@ pub fn Widget(widget: WidgetType) -> impl IntoView {
                 <FlexSpace />
                 <Show
                     when=edit_mode
-                    fallback=|_| ()
+                    fallback=|| ()
                 >
                     <div class="flex flex-row gap-1 items-center">
                         <button on:click=move |_| set_form_open(true)>
@@ -50,22 +50,19 @@ pub fn Widget(widget: WidgetType) -> impl IntoView {
                 </Show>
             </div>
             <For
-                each=move || bookmarks.read().unwrap_or_default()
+                each=move || bookmarks().unwrap_or_default()
                 key=|bookmark| bookmark.id.clone()
-                view=move | bookmark| {
-                    let bookmark = store_value( bookmark);
-                    view! {
-                        <Bookmark bookmark=bookmark() delete_bookmark />
-                    }
-                }
-            />
+                let:bookmark
+            >
+                <Bookmark bookmark delete_bookmark />
+            </For>
         </div>
-        <Show when=form_open fallback=|_| () >
+        <Show when=form_open fallback=|| () >
             <Dialog on_close=on_form_close >
                 <WidgetForm on_close=on_form_close prev_widget=widget.get_untracked() />
             </Dialog>
         </Show>
-        <Show when=delete_open fallback=|_| () >
+        <Show when=delete_open fallback=|| () >
             <ConfirmationDialog
                 on_confirm=move || delete_widget.dispatch(id())
                 on_close=on_delete_close

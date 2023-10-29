@@ -38,7 +38,7 @@ pub fn AddButton() -> impl IntoView {
     view! {
         <Show
             when=edit_mode
-            fallback=|_| ()
+            fallback=|| ()
         >
             <div class="absolute bottom-3 right-3">
                 <IconButton on:click=move |_| set_state.update(|prev| *prev = if *prev == State::Picking {
@@ -51,7 +51,7 @@ pub fn AddButton() -> impl IntoView {
 
                 <Show
                     when=move || state() == State::Picking
-                    fallback=|_| ()
+                    fallback=|| ()
                 >
                     <div class="absolute bottom-8 right-8
                                 bg-slate-600 rounded p-4 border-2 border-white
@@ -62,15 +62,15 @@ pub fn AddButton() -> impl IntoView {
                     </div>
                 </Show>
 
-                <Show when=move || state().is_entity() fallback=|_| ()>
+                <Show when=move || state().is_entity() fallback=|| ()>
                     <Dialog on_close>
-                        <Show when=move || state() == State::Page fallback=|_| ()>
+                        <Show when=move || state() == State::Page fallback=|| ()>
                             <PageForm on_close />
                         </Show>
-                        <Show when=move || state() == State::Widget fallback=|_| ()>
+                        <Show when=move || state() == State::Widget fallback=|| ()>
                             <WidgetForm on_close />
                         </Show>
-                        <Show when=move || state() == State::Bookmark fallback=|_| ()>
+                        <Show when=move || state() == State::Bookmark fallback=|| ()>
                             <BookmarkForm on_close />
                         </Show>
                     </Dialog>

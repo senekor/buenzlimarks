@@ -47,7 +47,7 @@ pub fn Bookmark(
                 <XMarkIcon />
             </button>
         </div>
-        <Show when=form_open fallback=|_| () >
+        <Show when=form_open fallback=|| () >
             <Dialog on_close >
                 <BookmarkForm on_close prev_bookmark=bookmark.get_untracked() />
             </Dialog>

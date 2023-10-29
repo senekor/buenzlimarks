@@ -53,16 +53,14 @@ pub fn WidgetForm<F: Fn() + Copy + 'static>(
         >
             <option value="">"Select a page"</option>
             <For
-                each=move || pages.read().unwrap_or_default()
+                each=move || pages().unwrap_or_default()
                 key=|page| page.id.clone()
-                view=move | page| {
-                    view! {
-                        <option value=page.id.to_string() >
-                            { page.name }
-                        </option>
-                    }
-                }
-            />
+                let:page
+            >
+                <option value=page.id.to_string() >
+                    { page.name }
+                </option>
+            </For>
         </select>
         <input
             class="bg-slate-600 rounded px-2 py-1.5"

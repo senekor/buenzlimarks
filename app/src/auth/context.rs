@@ -54,10 +54,10 @@ impl Auth {
             #[cfg(not(debug_assertions))]
             LocalStorage::set(TOKEN_STORAGE_KEY, new_token.clone()).unwrap();
 
-            let navigate = use_navigate(self.cx);
-            self.cx.batch(|| {
+            let navigate = use_navigate();
+            batch(|| {
                 (self.set_token)(Token(Some(new_token)));
-                navigate("/", Default::default()).unwrap();
+                navigate("/", Default::default());
             });
         });
     }
@@ -66,10 +66,10 @@ impl Auth {
         #[cfg(not(debug_assertions))]
         LocalStorage::delete(TOKEN_STORAGE_KEY);
 
-        let navigate = use_navigate(self.cx);
-        self.cx.batch(|| {
+        let navigate = use_navigate();
+        batch(|| {
             (self.set_token)(Token(None));
-            navigate("/", Default::default()).unwrap();
+            navigate("/", Default::default());
         });
     }
 }

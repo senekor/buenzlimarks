@@ -17,25 +17,20 @@ pub fn BookmarkForm<F: Fn() + Copy + 'static>(
     if let Some(bookmark) = prev_bookmark() {
         let all_widgets = use_entities::<Widget>();
         create_effect(move |_| {
-            let p_id = all_widgets
-                .read()
+            let p_id = all_widgets()
                 .unwrap_or_default()
                 .into_iter()
                 .find(|w| w.id == bookmark.widget_id)
                 .map(|w| w.page_id);
             set_page_id(p_id);
-        })
+        });
     };
 
     let (widget_id, set_widget_id) =
         create_signal::<Option<Id<Widget>>>(prev_bookmark().map(|b| b.widget_id));
-    let widget_resource =
-        create_memo(move |_| page_id().map(|p_id| use_filtered_entities::<Widget>(p_id)));
-    let page_widgets = create_memo(move |_| {
-        widget_resource()
-            .and_then(|rsc| rsc.read())
-            .unwrap_or_default()
-    });
+    let widget_resource = create_memo(move |_| page_id().map(use_filtered_entities::<Widget>));
+    let page_widgets =
+        create_memo(move |_| widget_resource().and_then(|rsc| rsc()).unwrap_or_default());
 
     // So, this is a bit of a hack. When the page_widgets are updated
     // *after* widget_id has been updated, the DOM does not pick up on
@@ -72,14 +67,14 @@ pub fn BookmarkForm<F: Fn() + Copy + 'static>(
             on:input=move |ev| {
                 let val = event_target_value(&ev);
                 if val.is_empty() {
-                    cx.batch(|| {
+                    batch(|| {
                         set_page_id(None);
                         if widget_id.with(|w| w.is_some()) {
                             set_widget_id(None);
                         }
                     });
                 } else {
-                    cx.batch(|| {
+                    batch(|| {
                         set_page_id(Some(Id::from(val)));
                         if widget_id.with(|w| w.is_some()) {
                             set_widget_id(None);
@@ -90,16 +85,14 @@ pub fn BookmarkForm<F: Fn() + Copy + 'static>(
         >
             <option value="">"Select a page"</option>
             <For
-                each=move || pages.read().unwrap_or_default()
+                each=move || pages().unwrap_or_default()
                 key=|page| page.id.clone()
-                view=move | page| {
-                    view! {
-                        <option value=page.id.to_string() >
-                            { page.name }
-                        </option>
-                    }
-                }
-            />
+                let:page
+            >
+                <option value=page.id.to_string() >
+                    { page.name }
+                </option>
+            </For>
         </select>
         <select
             class="bg-slate-600 rounded p-2"
@@ -118,14 +111,12 @@ pub fn BookmarkForm<F: Fn() + Copy + 'static>(
             <For
                 each=page_widgets
                 key=|widget| widget.id.clone()
-                view=move | widget| {
-                    view! {
-                        <option value=widget.id.to_string() >
-                            { widget.name }
-                        </option>
-                    }
-                }
-            />
+                let:widget
+            >
+                <option value=widget.id.to_string() >
+                    { widget.name }
+                </option>
+            </For>
         </select>
         <input
             class="bg-slate-600 rounded px-2 py-1.5"

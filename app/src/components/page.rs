@@ -13,12 +13,12 @@ pub fn Page(page: Signal<PageType>) -> impl IntoView {
         <div class="flex flex-col gap-4 items-center">
             <div class="flex flex-col gap-2 items-stretch">
                 <For
-                    each=move || widgets.read().unwrap_or_default()
+                    each=move || widgets().unwrap_or_default()
                     key=|widget| widget.id.clone()
-                    view=move | widget| {
-                        view! { <Widget widget /> }
-                    }
-                />
+                    let:widget
+                >
+                    <Widget widget />
+                </For>
             </div>
         </div>
     }

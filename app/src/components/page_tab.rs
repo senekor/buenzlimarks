@@ -53,13 +53,13 @@ pub fn PageTab(
             </button>
         </button>
 
-        <Show when=form_open fallback=|_| () >
+        <Show when=form_open fallback=|| () >
             <Dialog on_close >
                 <PageForm on_close prev_page=page.get_untracked() />
             </Dialog>
         </Show>
 
-        <Show when=delete_open fallback=|_| () >
+        <Show when=delete_open fallback=|| () >
             <ConfirmationDialog
                 on_confirm=move || delete_page.dispatch(id())
                 on_close=on_delete_close
