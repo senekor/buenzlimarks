@@ -9,26 +9,26 @@ use crate::{
 };
 
 #[component]
-pub fn Widget(cx: Scope, widget: WidgetType) -> impl IntoView {
-    let id = store_value(cx, widget.id.clone());
-    let widget = use_entity(cx, widget);
+pub fn Widget(widget: WidgetType) -> impl IntoView {
+    let id = store_value(widget.id.clone());
+    let widget = use_entity(widget);
 
-    let name = Signal::derive(cx, move || widget().name);
+    let name = Signal::derive(move || widget().name);
 
-    let bookmarks = use_filtered_entities::<BookmarkType>(cx, id());
+    let bookmarks = use_filtered_entities::<BookmarkType>(id());
 
-    let delete_widget = create_delete_entity::<WidgetType>(cx);
-    let delete_bookmark = create_delete_entity::<BookmarkType>(cx);
+    let delete_widget = create_delete_entity::<WidgetType>();
+    let delete_bookmark = create_delete_entity::<BookmarkType>();
 
-    let edit_mode = use_edit_mode(cx).read();
+    let edit_mode = use_edit_mode().read();
 
-    let (form_open, set_form_open) = create_signal(cx, false);
+    let (form_open, set_form_open) = create_signal(false);
     let on_form_close = move || set_form_open(false);
 
-    let (delete_open, set_delete_open) = create_signal(cx, false);
+    let (delete_open, set_delete_open) = create_signal(false);
     let on_delete_close = move || set_delete_open(false);
 
-    view! { cx,
+    view! {
         <div class="bg-slate-700 flex flex-col p-2 rounded-lg">
             <div class="flex flex-row gap-2 items-center pb-1">
                 <FlexSpace />
@@ -50,11 +50,11 @@ pub fn Widget(cx: Scope, widget: WidgetType) -> impl IntoView {
                 </Show>
             </div>
             <For
-                each=move || bookmarks.read(cx).unwrap_or_default()
+                each=move || bookmarks.read().unwrap_or_default()
                 key=|bookmark| bookmark.id.clone()
-                view=move |cx, bookmark| {
-                    let bookmark = store_value(cx, bookmark);
-                    view! { cx,
+                view=move | bookmark| {
+                    let bookmark = store_value( bookmark);
+                    view! {
                         <Bookmark bookmark=bookmark() delete_bookmark />
                     }
                 }

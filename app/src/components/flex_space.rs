@@ -1,6 +1,6 @@
 use leptos::*;
 
 #[component]
-pub fn FlexSpace(cx: Scope) -> impl IntoView {
-    view! { cx, <div class="flex-grow" /> }
+pub fn FlexSpace() -> impl IntoView {
+    view! { <div class="flex-grow" /> }
 }

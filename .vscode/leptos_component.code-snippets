@@ -1,17 +1,17 @@
 {
-	"Create a leptos component": {
-		"scope": "rust",
-		"prefix": "leptoscomponent",
-		"body": [
-			"use leptos::*;",
-			"",
-			"#[component]",
-			"pub fn ${1:NAME}(cx: Scope) -> impl IntoView {",
-			"    view! { cx,",
-			"        ${0:BODY}",
-			"    }",
-			"}",
-			"",
-		],
-	}
+  "Create a leptos component": {
+    "scope": "rust",
+    "prefix": "leptoscomponent",
+    "body": [
+      "use leptos::*;",
+      "",
+      "#[component]",
+      "pub fn ${1:NAME}() -> impl IntoView {",
+      "    view! {",
+      "        ${0:BODY}",
+      "    }",
+      "}",
+      ""
+    ]
+  }
 }

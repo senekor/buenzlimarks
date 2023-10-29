@@ -3,8 +3,8 @@ use leptos::*;
 use crate::components::{FlexSpace, Spinner};
 
 #[component]
-pub fn LoadingScreen(cx: Scope) -> impl IntoView {
-    view! { cx,
+pub fn LoadingScreen() -> impl IntoView {
+    view! {
         <div class="flex flex-col h-screen text-white items-center justify-center">
             <FlexSpace />
             <Spinner />

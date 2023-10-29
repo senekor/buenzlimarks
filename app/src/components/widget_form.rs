@@ -5,21 +5,20 @@ use crate::api::{create_submit_entity, use_entities};
 
 #[component]
 pub fn WidgetForm<F: Fn() + Copy + 'static>(
-    cx: Scope,
     on_close: F,
     #[prop(optional)] prev_widget: Option<Widget>,
 ) -> impl IntoView {
     let is_add = prev_widget.is_none();
-    let prev_widget = store_value(cx, prev_widget);
+    let prev_widget = store_value(prev_widget);
 
     let (page_id, set_page_id) =
-        create_signal::<Option<Id<Page>>>(cx, prev_widget().map(|w| w.page_id));
-    let pages = use_entities::<Page>(cx);
+        create_signal::<Option<Id<Page>>>(prev_widget().map(|w| w.page_id));
+    let pages = use_entities::<Page>();
 
     // Force DOM update when pages are fetched such that page name is
     // displayed correctly.
-    create_effect(cx, move |prev| {
-        pages.with(cx, |_| ()); // track page updates
+    create_effect(move |prev| {
+        pages.with(|_| ()); // track page updates
         if prev.is_some() {
             request_animation_frame(move || {
                 set_page_id.update(|_| {});
@@ -28,17 +27,17 @@ pub fn WidgetForm<F: Fn() + Copy + 'static>(
     });
 
     let (name, set_name) =
-        create_signal::<String>(cx, prev_widget().map(|b| b.name).unwrap_or_default());
+        create_signal::<String>(prev_widget().map(|b| b.name).unwrap_or_default());
 
-    let widget = Signal::derive(cx, move || Widget {
+    let widget = Signal::derive(move || Widget {
         id: prev_widget().map(|b| b.id).unwrap_or_else(|| "".into()),
         name: name(),
         page_id: page_id().unwrap_or_else(|| "".into()),
     });
 
-    let submit_widget = create_submit_entity::<Widget>(cx);
+    let submit_widget = create_submit_entity::<Widget>();
 
-    view! { cx,
+    view! {
         <select
             class="bg-slate-600 rounded p-2"
             class=("text-gray-400", move || page_id().is_none())
@@ -54,10 +53,10 @@ pub fn WidgetForm<F: Fn() + Copy + 'static>(
         >
             <option value="">"Select a page"</option>
             <For
-                each=move || pages.read(cx).unwrap_or_default()
+                each=move || pages.read().unwrap_or_default()
                 key=|page| page.id.clone()
-                view=move |cx, page| {
-                    view! { cx,
+                view=move | page| {
+                    view! {
                         <option value=page.id.to_string() >
                             { page.name }
                         </option>

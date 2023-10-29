@@ -15,18 +15,18 @@ static DOCS_HREF: &str = "http://localhost:5000";
 static DOCS_HREF: &str = "/docs";
 
 #[component]
-pub fn Home(cx: Scope) -> impl IntoView {
-    create_auth_guard(cx);
+pub fn Home() -> impl IntoView {
+    create_auth_guard();
 
-    let auth = use_auth(cx);
+    let auth = use_auth();
 
-    let pages = use_entities::<PageType>(cx);
+    let pages = use_entities::<PageType>();
 
-    let delete_page = create_delete_entity::<PageType>(cx);
+    let delete_page = create_delete_entity::<PageType>();
 
-    let (selected_page, set_selected_page) = create_signal::<Option<PageType>>(cx, None);
-    create_effect(cx, move |_| {
-        pages.with(cx, move |pages| {
+    let (selected_page, set_selected_page) = create_signal::<Option<PageType>>(None);
+    create_effect(move |_| {
+        pages.with(move |pages| {
             if let Some(sel) = selected_page.get_untracked() {
                 if !pages.iter().any(|p| p.id == sel.id) {
                     // selected page doesn't exist anymore, was probably deleted.
@@ -40,22 +40,22 @@ pub fn Home(cx: Scope) -> impl IntoView {
         });
     });
 
-    let set_edit_mode = use_edit_mode(cx).write();
+    let set_edit_mode = use_edit_mode().write();
 
-    view! { cx,
+    view! {
         <div class="h-screen flex flex-col flex-wrap gap-2">
 
             <div class="flex gap-2 p-2 w-full">
                 <For
-                    each=move || pages.read(cx).unwrap_or_default()
+                    each=move || pages.read().unwrap_or_default()
                     key=|page| page.id.clone()
-                    view=move |cx, page| {
-                        let id = store_value(cx, page.id.clone());
-                        let is_selected = Signal::derive(cx, move || {
+                    view=move | page| {
+                        let id = store_value( page.id.clone());
+                        let is_selected = Signal::derive( move || {
                             selected_page().is_some_and(|sp| sp.id == id())
                         });
-                        let select = SignalSetter::map(cx, move |p| set_selected_page(Some(p)));
-                        view! { cx, <PageTab
+                        let select = SignalSetter::map( move |p| set_selected_page(Some(p)));
+                        view! { <PageTab
                             page
                             is_selected
                             select
@@ -86,8 +86,8 @@ pub fn Home(cx: Scope) -> impl IntoView {
             <Suspense fallback=move || "">
                 { move || {
                     let sp = selected_page()?;
-                    let page = Signal::derive(cx, move || sp.clone());
-                    Some(view! { cx, <Page page /> })
+                    let page = Signal::derive( move || sp.clone());
+                    Some(view! { <Page page /> })
                 }}
             </Suspense>
 

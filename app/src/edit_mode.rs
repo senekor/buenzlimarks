@@ -6,8 +6,8 @@ pub struct EditMode {
 }
 
 impl EditMode {
-    fn new(cx: Scope) -> Self {
-        let signal = create_rw_signal(cx, false);
+    fn new() -> Self {
+        let signal = create_rw_signal(false);
         Self { signal }
     }
 
@@ -20,10 +20,10 @@ impl EditMode {
     }
 }
 
-pub fn provide_edit_mode(cx: Scope) {
-    provide_context(cx, EditMode::new(cx))
+pub fn provide_edit_mode() {
+    provide_context(EditMode::new())
 }
 
-pub fn use_edit_mode(cx: Scope) -> EditMode {
-    use_context(cx).expect("should find edit mode context")
+pub fn use_edit_mode() -> EditMode {
+    use_context().expect("should find edit mode context")
 }

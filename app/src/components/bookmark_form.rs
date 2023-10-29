@@ -5,21 +5,20 @@ use crate::api::{create_submit_entity, use_entities, use_filtered_entities};
 
 #[component]
 pub fn BookmarkForm<F: Fn() + Copy + 'static>(
-    cx: Scope,
     on_close: F,
     #[prop(optional)] prev_bookmark: Option<Bookmark>,
 ) -> impl IntoView {
     let is_add = prev_bookmark.is_none();
-    let prev_bookmark = store_value(cx, prev_bookmark);
+    let prev_bookmark = store_value(prev_bookmark);
 
-    let (page_id, set_page_id) = create_signal::<Option<Id<Page>>>(cx, None);
-    let pages = use_entities::<Page>(cx);
+    let (page_id, set_page_id) = create_signal::<Option<Id<Page>>>(None);
+    let pages = use_entities::<Page>();
 
     if let Some(bookmark) = prev_bookmark() {
-        let all_widgets = use_entities::<Widget>(cx);
-        create_effect(cx, move |_| {
+        let all_widgets = use_entities::<Widget>();
+        create_effect(move |_| {
             let p_id = all_widgets
-                .read(cx)
+                .read()
                 .unwrap_or_default()
                 .into_iter()
                 .find(|w| w.id == bookmark.widget_id)
@@ -29,13 +28,12 @@ pub fn BookmarkForm<F: Fn() + Copy + 'static>(
     };
 
     let (widget_id, set_widget_id) =
-        create_signal::<Option<Id<Widget>>>(cx, prev_bookmark().map(|b| b.widget_id));
-    let widget_resource = create_memo(cx, move |_| {
-        page_id().map(|p_id| use_filtered_entities::<Widget>(cx, p_id))
-    });
-    let page_widgets = create_memo(cx, move |_| {
+        create_signal::<Option<Id<Widget>>>(prev_bookmark().map(|b| b.widget_id));
+    let widget_resource =
+        create_memo(move |_| page_id().map(|p_id| use_filtered_entities::<Widget>(p_id)));
+    let page_widgets = create_memo(move |_| {
         widget_resource()
-            .and_then(|rsc| rsc.read(cx))
+            .and_then(|rsc| rsc.read())
             .unwrap_or_default()
     });
 
@@ -45,7 +43,7 @@ pub fn BookmarkForm<F: Fn() + Copy + 'static>(
     // correctly. By forcing a pseudo-update on the widget_id signal,
     // the DOM is updated and shows the correct widget name, once
     // page_widgets are updated.
-    create_effect(cx, move |prev| {
+    create_effect(move |prev| {
         page_widgets.track();
         if prev.is_some() {
             set_widget_id.update(|_| {});
@@ -53,20 +51,20 @@ pub fn BookmarkForm<F: Fn() + Copy + 'static>(
     });
 
     let (name, set_name) =
-        create_signal::<String>(cx, prev_bookmark().map(|b| b.name).unwrap_or_default());
+        create_signal::<String>(prev_bookmark().map(|b| b.name).unwrap_or_default());
     let (url, set_url) =
-        create_signal::<String>(cx, prev_bookmark().map(|b| b.url).unwrap_or_default());
+        create_signal::<String>(prev_bookmark().map(|b| b.url).unwrap_or_default());
 
-    let bookmark = Signal::derive(cx, move || Bookmark {
+    let bookmark = Signal::derive(move || Bookmark {
         id: prev_bookmark().map(|b| b.id).unwrap_or_else(|| "".into()),
         name: name(),
         url: url(),
         widget_id: widget_id().unwrap_or_else(|| "".into()),
     });
 
-    let submit_bookmark = create_submit_entity::<Bookmark>(cx);
+    let submit_bookmark = create_submit_entity::<Bookmark>();
 
-    view! { cx,
+    view! {
         <select
             class="bg-slate-600 rounded p-2"
             class=("text-gray-400", move || page_id().is_none())
@@ -92,10 +90,10 @@ pub fn BookmarkForm<F: Fn() + Copy + 'static>(
         >
             <option value="">"Select a page"</option>
             <For
-                each=move || pages.read(cx).unwrap_or_default()
+                each=move || pages.read().unwrap_or_default()
                 key=|page| page.id.clone()
-                view=move |cx, page| {
-                    view! { cx,
+                view=move | page| {
+                    view! {
                         <option value=page.id.to_string() >
                             { page.name }
                         </option>
@@ -120,8 +118,8 @@ pub fn BookmarkForm<F: Fn() + Copy + 'static>(
             <For
                 each=page_widgets
                 key=|widget| widget.id.clone()
-                view=move |cx, widget| {
-                    view! { cx,
+                view=move | widget| {
+                    view! {
                         <option value=widget.id.to_string() >
                             { widget.name }
                         </option>

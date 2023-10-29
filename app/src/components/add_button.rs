@@ -23,11 +23,11 @@ impl State {
 }
 
 #[component]
-pub fn AddButton(cx: Scope) -> impl IntoView {
-    let edit_mode = use_edit_mode(cx).read();
+pub fn AddButton() -> impl IntoView {
+    let edit_mode = use_edit_mode().read();
 
-    let (state, set_state) = create_signal::<State>(cx, State::None);
-    create_effect(cx, move |prev| {
+    let (state, set_state) = create_signal::<State>(State::None);
+    create_effect(move |prev| {
         if !edit_mode() && prev.is_some() {
             set_state(State::None);
         }
@@ -35,7 +35,7 @@ pub fn AddButton(cx: Scope) -> impl IntoView {
 
     let on_close = move || set_state(State::None);
 
-    view! { cx,
+    view! {
         <Show
             when=edit_mode
             fallback=|_| ()

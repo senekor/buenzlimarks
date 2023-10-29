@@ -29,8 +29,8 @@ impl<T: Entity> Clone for ResourceCache<T> {
 }
 
 impl<T: Entity> ResourceCache<T> {
-    fn new(cx: Scope) -> Self {
-        let entities = create_entities_resource::<T>(cx);
+    fn new() -> Self {
+        let entities = create_entities_resource::<T>();
         Self(Rc::new(RefCell::new(InnerResourceCache {
             all: entities,
             by_parent: HashMap::new(),
@@ -55,49 +55,46 @@ impl<T: Entity> ResourceCache<T> {
     }
 }
 
-pub fn provide_cache_contexts(cx: Scope) {
-    provide_context(cx, create_settings_resource(cx));
-    provide_context(cx, ResourceCache::<Page>::new(cx));
-    provide_context(cx, ResourceCache::<Widget>::new(cx));
-    provide_context(cx, ResourceCache::<Bookmark>::new(cx));
+pub fn provide_cache_contexts() {
+    provide_context(create_settings_resource());
+    provide_context(ResourceCache::<Page>::new());
+    provide_context(ResourceCache::<Widget>::new());
+    provide_context(ResourceCache::<Bookmark>::new());
 }
 
-pub fn use_settings(cx: Scope) -> Resource<Option<Token>, Option<Settings>> {
-    use_context(cx).expect("should find settings context")
+pub fn use_settings() -> Resource<Option<Token>, Option<Settings>> {
+    use_context().expect("should find settings context")
 }
 
-pub fn use_entity_cache<T: Entity>(cx: Scope) -> ResourceCache<T> {
-    use_context(cx).expect("should find entity cache context")
+pub fn use_entity_cache<T: Entity>() -> ResourceCache<T> {
+    use_context().expect("should find entity cache context")
 }
 
-pub fn use_entities<T: Entity>(cx: Scope) -> Resource<Option<Token>, Vec<T>> {
-    use_entity_cache(cx).0.borrow().all
+pub fn use_entities<T: Entity>() -> Resource<Option<Token>, Vec<T>> {
+    use_entity_cache().0.borrow().all
 }
 
-pub fn use_filtered_entities<T: Entity>(
-    cx: Scope,
-    parent_id: Signal<Id<T::Parent>>,
-) -> Memo<Vec<T>> {
-    create_memo(cx, move |_| {
-        let rc = use_entity_cache::<T>(cx).0;
+pub fn use_filtered_entities<T: Entity>(parent_id: Signal<Id<T::Parent>>) -> Memo<Vec<T>> {
+    create_memo(move |_| {
+        let rc = use_entity_cache::<T>().0;
         let mut ref_cell = rc.borrow_mut();
         let resource = ref_cell
             .by_parent
             .entry(parent_id())
-            .or_insert_with(|| create_filtered_entities_resource(cx, parent_id.get_untracked()));
-        resource.read(cx).unwrap_or_default()
+            .or_insert_with(|| create_filtered_entities_resource(parent_id.get_untracked()));
+        resource.read().unwrap_or_default()
     })
 }
 
-pub fn use_entity<T: Entity>(cx: Scope, id: Signal<Id<T>>) -> Memo<Option<T>> {
-    create_memo(cx, move |_| {
-        let rc = use_entity_cache::<T>(cx).0;
+pub fn use_entity<T: Entity>(id: Signal<Id<T>>) -> Memo<Option<T>> {
+    create_memo(move |_| {
+        let rc = use_entity_cache::<T>().0;
         let mut ref_cell = rc.borrow_mut();
         let resource = ref_cell
             .individual
             .entry(id())
-            .or_insert_with(|| create_entity_resource(cx, id.get_untracked()));
-        resource.read(cx).flatten()
+            .or_insert_with(|| create_entity_resource(id.get_untracked()));
+        resource.read().flatten()
     })
 }
 
@@ -124,11 +121,11 @@ impl Caches {
     }
 }
 
-pub fn use_caches(cx: Scope) -> Caches {
+pub fn use_caches() -> Caches {
     Caches {
-        settings: use_settings(cx),
-        pages: use_entity_cache(cx),
-        widgets: use_entity_cache(cx),
-        bookmarks: use_entity_cache(cx),
+        settings: use_settings(),
+        pages: use_entity_cache(),
+        widgets: use_entity_cache(),
+        bookmarks: use_entity_cache(),
     }
 }
