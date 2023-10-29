@@ -42,7 +42,7 @@ fi
 
 if ! which d2 &> /dev/null ; then
     echo "installing d2 diagram renderer..."
-    curl -fsSL https://d2lang.com/install.sh | sh -s -- --version v0.6.0
+    curl -fsSL https://d2lang.com/install.sh | sh -s -- --version v0.6.1
 fi
 if ! which watchexec &> /dev/null ; then
     echo "installing watchexec to watch for diagram changes..."
