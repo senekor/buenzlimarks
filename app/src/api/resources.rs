@@ -45,12 +45,12 @@ async fn fetch<T: DeserializeOwned>(token: Token, url: &str) -> FetchResult<T> {
 }
 
 trait WithRefetchEffect {
-    fn with_refetch_effect<R: 'static>(self, cx: Scope) -> Self;
+    fn with_refetch_effect<R: 'static>(self) -> Self;
 }
 impl<S: Clone, T> WithRefetchEffect for Resource<S, T> {
-    fn with_refetch_effect<R: 'static>(self, cx: Scope) -> Self {
-        let refetch_listener = use_refetch_signal::<R>(cx).listen();
-        create_effect(cx, move |prev| {
+    fn with_refetch_effect<R: 'static>(self) -> Self {
+        let refetch_listener = use_refetch_signal::<R>().listen();
+        create_effect(move |prev| {
             refetch_listener.track();
             if prev.is_none() {
                 return;
@@ -61,37 +61,34 @@ impl<S: Clone, T> WithRefetchEffect for Resource<S, T> {
     }
 }
 
-pub fn create_settings_resource(cx: Scope) -> Resource<Token, FetchResult<Settings>> {
-    create_local_resource(cx, use_token(cx), move |token| async move {
+pub fn create_settings_resource() -> Resource<Token, FetchResult<Settings>> {
+    create_local_resource(use_token(), move |token| async move {
         fetch::<Settings>(token, "api/settings").await
     })
-    .with_refetch_effect::<Settings>(cx)
+    .with_refetch_effect::<Settings>()
 }
 
 async fn fetch_entities<T: Entity>(token: Token, url: &str) -> Vec<T> {
     fetch::<Vec<T>>(token, url).await.unwrap_or_default()
 }
 
-pub fn use_entities<T: Entity>(cx: Scope) -> Resource<Token, Vec<T>> {
-    create_local_resource(cx, use_token(cx), move |token| async move {
+pub fn use_entities<T: Entity>() -> Resource<Token, Vec<T>> {
+    create_local_resource(use_token(), move |token| async move {
         fetch_entities::<T>(token, get_url::<T>(None, None).as_str()).await
     })
-    .with_refetch_effect::<T>(cx)
+    .with_refetch_effect::<T>()
 }
 
-pub fn use_filtered_entities<T: Entity>(
-    cx: Scope,
-    parent_id: Id<T::Parent>,
-) -> Resource<Token, Vec<T>> {
-    create_local_resource(cx, use_token(cx), move |token| {
+pub fn use_filtered_entities<T: Entity>(parent_id: Id<T::Parent>) -> Resource<Token, Vec<T>> {
+    create_local_resource( use_token(), move |token| {
         let parent_id = parent_id.clone();
         async move { fetch_entities::<T>(token, get_url::<T>(None, Some(parent_id)).as_str()).await }
     })
-    .with_refetch_effect::<T>(cx)
+    .with_refetch_effect::<T>()
 }
 
-fn use_entity_resource<T: Entity>(cx: Scope, id: Id<T>) -> Resource<Token, Option<T>> {
-    create_local_resource(cx, use_token(cx), move |token| {
+fn use_entity_resource<T: Entity>(id: Id<T>) -> Resource<Token, Option<T>> {
+    create_local_resource(use_token(), move |token| {
         let id = id.clone();
         async move {
             fetch::<T>(token, get_url::<T>(Some(id), None).as_str())
@@ -99,15 +96,15 @@ fn use_entity_resource<T: Entity>(cx: Scope, id: Id<T>) -> Resource<Token, Optio
                 .ok()
         }
     })
-    .with_refetch_effect::<T>(cx)
+    .with_refetch_effect::<T>()
 }
 
-pub fn use_entity<T: Entity>(cx: Scope, entity: T) -> Memo<T> {
-    let orig_entity = store_value(cx, entity);
-    let id = Signal::derive(cx, move || orig_entity.with_value(|w| w.get_id().clone()));
+pub fn use_entity<T: Entity>(entity: T) -> Memo<T> {
+    let orig_entity = store_value(entity);
+    let id = Signal::derive(move || orig_entity.with_value(|w| w.get_id().clone()));
 
-    let entity_resource = use_entity_resource::<T>(cx, id.get_untracked());
-    create_memo(cx, move |_| match entity_resource.read(cx).flatten() {
+    let entity_resource = use_entity_resource::<T>(id.get_untracked());
+    create_memo(move |_| match entity_resource().flatten() {
         Some(entity) => entity,
         None => orig_entity(),
     })

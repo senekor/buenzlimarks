@@ -23,11 +23,11 @@ impl State {
 }
 
 #[component]
-pub fn AddButton(cx: Scope) -> impl IntoView {
-    let edit_mode = use_edit_mode(cx).read();
+pub fn AddButton() -> impl IntoView {
+    let edit_mode = use_edit_mode().read();
 
-    let (state, set_state) = create_signal::<State>(cx, State::None);
-    create_effect(cx, move |prev| {
+    let (state, set_state) = create_signal::<State>(State::None);
+    create_effect(move |prev| {
         if !edit_mode() && prev.is_some() {
             set_state(State::None);
         }
@@ -35,10 +35,10 @@ pub fn AddButton(cx: Scope) -> impl IntoView {
 
     let on_close = move || set_state(State::None);
 
-    view! { cx,
+    view! {
         <Show
             when=edit_mode
-            fallback=|_| ()
+            fallback=|| ()
         >
             <div class="absolute bottom-3 right-3">
                 <IconButton on:click=move |_| set_state.update(|prev| *prev = if *prev == State::Picking {
@@ -51,7 +51,7 @@ pub fn AddButton(cx: Scope) -> impl IntoView {
 
                 <Show
                     when=move || state() == State::Picking
-                    fallback=|_| ()
+                    fallback=|| ()
                 >
                     <div class="absolute bottom-8 right-8
                                 bg-slate-600 rounded p-4 border-2 border-white
@@ -62,15 +62,15 @@ pub fn AddButton(cx: Scope) -> impl IntoView {
                     </div>
                 </Show>
 
-                <Show when=move || state().is_entity() fallback=|_| ()>
+                <Show when=move || state().is_entity() fallback=|| ()>
                     <Dialog on_close>
-                        <Show when=move || state() == State::Page fallback=|_| ()>
+                        <Show when=move || state() == State::Page fallback=|| ()>
                             <PageForm on_close />
                         </Show>
-                        <Show when=move || state() == State::Widget fallback=|_| ()>
+                        <Show when=move || state() == State::Widget fallback=|| ()>
                             <WidgetForm on_close />
                         </Show>
-                        <Show when=move || state() == State::Bookmark fallback=|_| ()>
+                        <Show when=move || state() == State::Bookmark fallback=|| ()>
                             <BookmarkForm on_close />
                         </Show>
                     </Dialog>

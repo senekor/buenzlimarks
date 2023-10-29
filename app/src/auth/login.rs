@@ -3,15 +3,15 @@ use leptos::*;
 use crate::{auth::use_auth, components::FlexSpace};
 
 #[component]
-fn DevLogin(cx: Scope) -> impl IntoView {
-    let auth = use_auth(cx);
+fn DevLogin() -> impl IntoView {
+    let auth = use_auth();
 
-    let (user_id, set_user_id) = create_signal(cx, String::new());
+    let (user_id, set_user_id) = create_signal(String::new());
     let submit = move || {
         auth.login(format!("/api/auth/login/{}", user_id.get_untracked()));
     };
 
-    view! { cx,
+    view! {
         <input
             class="bg-slate-600 p-2 rounded text-white text-center text-3xl"
             placeholder="Enter a user name"
@@ -34,8 +34,8 @@ fn DevLogin(cx: Scope) -> impl IntoView {
 }
 
 #[component]
-fn GithubLogin(cx: Scope) -> impl IntoView {
-    view! { cx,
+fn GithubLogin() -> impl IntoView {
+    view! {
         <a
           class="bg-slate-600 w-fit rounded px-4 py-2 text-3xl"
           href="/api/auth/github/login"
@@ -47,20 +47,20 @@ fn GithubLogin(cx: Scope) -> impl IntoView {
 }
 
 #[component]
-fn ProfileDependentLogin(cx: Scope) -> impl IntoView {
+fn ProfileDependentLogin() -> impl IntoView {
     #[cfg(debug_assertions)]
     {
-        DevLogin(cx)
+        DevLogin()
     }
     #[cfg(not(debug_assertions))]
     {
-        GithubLogin(cx)
+        GithubLogin()
     }
 }
 
 #[component]
-pub fn Login(cx: Scope) -> impl IntoView {
-    view! { cx,
+pub fn Login() -> impl IntoView {
+    view! {
         <div class="flex flex-col gap-8 h-screen items-center">
           <FlexSpace />
           <img src="assets/logo.svg" height={256} width={256} />

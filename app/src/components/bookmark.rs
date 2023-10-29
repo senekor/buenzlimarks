@@ -10,20 +10,19 @@ use crate::{
 
 #[component]
 pub fn Bookmark(
-    cx: Scope,
     bookmark: BookmarkType,
     delete_bookmark: Action<Id<BookmarkType>, bool>,
 ) -> impl IntoView {
-    // let id = store_value(cx, bookmark.id.clone());
-    let bookmark = use_entity(cx, bookmark);
+    // let id = store_value( bookmark.id.clone());
+    let bookmark = use_entity(bookmark);
 
-    let edit_mode = use_edit_mode(cx).read();
-    let no_edit_mode = Signal::derive(cx, move || !edit_mode());
+    let edit_mode = use_edit_mode().read();
+    let no_edit_mode = Signal::derive(move || !edit_mode());
 
-    let (form_open, set_form_open) = create_signal(cx, false);
+    let (form_open, set_form_open) = create_signal(false);
     let on_close = move || set_form_open(false);
 
-    view! { cx,
+    view! {
         <div class="flex w-full gap-1">
             <FlexSpace />
             <a
@@ -48,7 +47,7 @@ pub fn Bookmark(
                 <XMarkIcon />
             </button>
         </div>
-        <Show when=form_open fallback=|_| () >
+        <Show when=form_open fallback=|| () >
             <Dialog on_close >
                 <BookmarkForm on_close prev_bookmark=bookmark.get_untracked() />
             </Dialog>

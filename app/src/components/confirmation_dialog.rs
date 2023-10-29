@@ -3,12 +3,12 @@ use leptos::*;
 use crate::components::Dialog;
 
 #[component]
-pub fn ConfirmationDialog<FYES, FNO>(cx: Scope, on_confirm: FYES, on_close: FNO) -> impl IntoView
+pub fn ConfirmationDialog<FYES, FNO>(on_confirm: FYES, on_close: FNO) -> impl IntoView
 where
     FYES: Fn() + Copy + 'static,
     FNO: Fn() + Copy + 'static,
 {
-    view! { cx,
+    view! {
         <Dialog on_close >
             "Are you sure you want to delete?"
             <div class="flex flex-row self-center gap-4">

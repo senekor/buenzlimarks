@@ -22,9 +22,9 @@ impl<T> Clone for RefetchSignal<T> {
 impl<T> Copy for RefetchSignal<T> {}
 
 impl<T> RefetchSignal<T> {
-    pub fn new(cx: Scope) -> Self {
+    pub fn new() -> Self {
         Self {
-            s: create_rw_signal(cx, ()),
+            s: create_rw_signal(()),
             t: PhantomData,
         }
     }
@@ -37,16 +37,16 @@ impl<T> RefetchSignal<T> {
     }
 }
 
-pub fn provide_refetch_context(cx: Scope) {
-    provide_context(cx, RefetchSignal::<Settings>::new(cx));
-    provide_context(cx, RefetchSignal::<Page>::new(cx));
-    provide_context(cx, RefetchSignal::<Widget>::new(cx));
-    provide_context(cx, RefetchSignal::<Bookmark>::new(cx));
-    // provide_context(cx, RefetchAllSignal::new(cx));
+pub fn provide_refetch_context() {
+    provide_context(RefetchSignal::<Settings>::new());
+    provide_context(RefetchSignal::<Page>::new());
+    provide_context(RefetchSignal::<Widget>::new());
+    provide_context(RefetchSignal::<Bookmark>::new());
+    // provide_context( RefetchAllSignal::new());
 }
 
 // 'static needed for type_name. if this ever causes trouble, remove the bound
 // and simplify the error message.
-pub fn use_refetch_signal<T: 'static>(cx: Scope) -> RefetchSignal<T> {
-    use_context(cx).unwrap_or_else(|| panic!("should find refetch {} context", type_name::<T>()))
+pub fn use_refetch_signal<T: 'static>() -> RefetchSignal<T> {
+    use_context().unwrap_or_else(|| panic!("should find refetch {} context", type_name::<T>()))
 }

@@ -1,8 +1,8 @@
 use leptos::*;
 
 #[component]
-pub fn Spinner(cx: Scope) -> impl IntoView {
-    view! { cx,
+pub fn Spinner() -> impl IntoView {
+    view! {
         // taken from
         // https://preline.co/docs/spinners.html
         <div

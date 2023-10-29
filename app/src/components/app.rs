@@ -9,8 +9,8 @@ use crate::{
 };
 
 #[component]
-pub fn App(cx: Scope) -> impl IntoView {
-    view! { cx,
+pub fn App() -> impl IntoView {
+    view! {
         <Router>
             <Providers>
                 <AppRoutes/>
@@ -20,21 +20,21 @@ pub fn App(cx: Scope) -> impl IntoView {
 }
 
 #[component]
-pub fn Providers(cx: Scope, children: Children) -> impl IntoView {
-    provide_auth_context(cx);
-    provide_api_context(cx);
-    provide_edit_mode(cx);
+pub fn Providers(children: Children) -> impl IntoView {
+    provide_auth_context();
+    provide_api_context();
+    provide_edit_mode();
 
-    children(cx)
+    children()
 }
 
 #[component]
-pub fn AppRoutes(cx: Scope) -> impl IntoView {
-    view! { cx,
+pub fn AppRoutes() -> impl IntoView {
+    view! {
         <Routes>
-            <Route path="/" view=|cx| view! { cx, <Home/> }/>
-            <Route path="/login" view=|cx| view! { cx, <Login/> }/>
-            <Route path="/auth/github/callback" view=|cx| view! { cx, <GithubCallback/> }/>
+            <Route path="/" view=|| view! { <Home/> }/>
+            <Route path="/login" view=|| view! { <Login/> }/>
+            <Route path="/auth/github/callback" view=|| view! { <GithubCallback/> }/>
         </Routes>
     }
 }

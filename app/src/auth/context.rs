@@ -30,7 +30,6 @@ pub fn initial_token() -> Token {
 
 #[derive(Debug, Clone, Copy)]
 pub struct Auth {
-    cx: Scope,
     set_token: WriteSignal<Token>,
 }
 
@@ -55,10 +54,10 @@ impl Auth {
             #[cfg(not(debug_assertions))]
             LocalStorage::set(TOKEN_STORAGE_KEY, new_token.clone()).unwrap();
 
-            let navigate = use_navigate(self.cx);
-            self.cx.batch(|| {
+            let navigate = use_navigate();
+            batch(|| {
                 (self.set_token)(Token(Some(new_token)));
-                navigate("/", Default::default()).unwrap();
+                navigate("/", Default::default());
             });
         });
     }
@@ -67,23 +66,23 @@ impl Auth {
         #[cfg(not(debug_assertions))]
         LocalStorage::delete(TOKEN_STORAGE_KEY);
 
-        let navigate = use_navigate(self.cx);
-        self.cx.batch(|| {
+        let navigate = use_navigate();
+        batch(|| {
             (self.set_token)(Token(None));
-            navigate("/", Default::default()).unwrap();
+            navigate("/", Default::default());
         });
     }
 }
 
-pub fn provide_auth_context(cx: Scope) {
-    let (token, set_token) = create_signal(cx, initial_token());
-    provide_context(cx, token);
-    provide_context(cx, Auth { cx, set_token });
+pub fn provide_auth_context() {
+    let (token, set_token) = create_signal(initial_token());
+    provide_context(token);
+    provide_context(Auth { set_token });
 }
 
-pub fn use_token(cx: Scope) -> ReadSignal<Token> {
-    use_context(cx).expect("should find token context")
+pub fn use_token() -> ReadSignal<Token> {
+    use_context().expect("should find token context")
 }
-pub fn use_auth(cx: Scope) -> Auth {
-    use_context(cx).expect("should find auth context")
+pub fn use_auth() -> Auth {
+    use_context().expect("should find auth context")
 }

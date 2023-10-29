@@ -10,28 +10,27 @@ use crate::{
 
 #[component]
 pub fn PageTab(
-    cx: Scope,
     page: PageType,
     is_selected: Signal<bool>,
     select: SignalSetter<PageType>,
     delete_page: Delete<PageType>,
 ) -> impl IntoView {
-    let id = store_value(cx, page.id.clone());
-    let page = use_entity(cx, page);
+    let id = store_value(page.id.clone());
+    let page = use_entity(page);
 
     let name = move || page().name;
     let not_selected = move || !is_selected();
 
-    let edit_mode = use_edit_mode(cx).read();
-    let no_edit_mode = Signal::derive(cx, move || !edit_mode());
+    let edit_mode = use_edit_mode().read();
+    let no_edit_mode = Signal::derive(move || !edit_mode());
 
-    let (form_open, set_form_open) = create_signal(cx, false);
+    let (form_open, set_form_open) = create_signal(false);
     let on_close = move || set_form_open(false);
 
-    let (delete_open, set_delete_open) = create_signal(cx, false);
+    let (delete_open, set_delete_open) = create_signal(false);
     let on_delete_close = move || set_delete_open(false);
 
-    view! { cx,
+    view! {
         <button
             class="rounded-lg px-3 flex flex-row place-items-center gap-1"
             class=("bg-orange-800", is_selected)
@@ -54,13 +53,13 @@ pub fn PageTab(
             </button>
         </button>
 
-        <Show when=form_open fallback=|_| () >
+        <Show when=form_open fallback=|| () >
             <Dialog on_close >
                 <PageForm on_close prev_page=page.get_untracked() />
             </Dialog>
         </Show>
 
-        <Show when=delete_open fallback=|_| () >
+        <Show when=delete_open fallback=|| () >
             <ConfirmationDialog
                 on_confirm=move || delete_page.dispatch(id())
                 on_close=on_delete_close

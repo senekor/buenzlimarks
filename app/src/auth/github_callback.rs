@@ -4,9 +4,9 @@ use leptos_router::use_query_map;
 use crate::{auth::use_auth, components::LoadingScreen};
 
 #[component]
-pub fn GithubCallback(cx: Scope) -> impl IntoView {
-    let query_params = use_query_map(cx);
-    let auth = use_auth(cx);
+pub fn GithubCallback() -> impl IntoView {
+    let query_params = use_query_map();
+    let auth = use_auth();
 
     // TODO this login request is sent twice. The second time fails
     // obviously, since the auth flow artifacts are only valid once.
@@ -19,5 +19,5 @@ pub fn GithubCallback(cx: Scope) -> impl IntoView {
         query_params.get_untracked().to_query_string(),
     ));
 
-    view! { cx, <LoadingScreen/> }
+    view! { <LoadingScreen/> }
 }
