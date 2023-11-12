@@ -1,13 +1,15 @@
 use leptos::*;
 use models::Page;
 
-use crate::api::create_submit_entity;
+use crate::state::{use_store, Action};
 
 #[component]
 pub fn PageForm<F: Fn() + Copy + 'static>(
     on_close: F,
     #[prop(optional)] prev_page: Option<Page>,
 ) -> impl IntoView {
+    let store = use_store();
+
     let is_add = prev_page.is_none();
     let prev_page = store_value(prev_page);
 
@@ -17,8 +19,6 @@ pub fn PageForm<F: Fn() + Copy + 'static>(
         id: prev_page().map(|b| b.id).unwrap_or_else(|| "".into()),
         name: name(),
     });
-
-    let submit_page = create_submit_entity::<Page>();
 
     view! {
         <input
@@ -38,7 +38,7 @@ pub fn PageForm<F: Fn() + Copy + 'static>(
                 class="bg-slate-600 w-fit rounded px-1 disabled:text-gray-400"
                 disabled=move || name.with(|n| n.is_empty())
                 on:click=move |_| {
-                    submit_page.dispatch(page.get_untracked());
+                    store.dispatch(Action::SubmitPage(page.get_untracked()));
                     on_close();
                 }
             >{

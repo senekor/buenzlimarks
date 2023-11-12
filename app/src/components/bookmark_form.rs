@@ -1,24 +1,25 @@
 use leptos::*;
 use models::{Bookmark, Id, Page, Widget};
 
-use crate::api::{create_submit_entity, use_entities, use_filtered_entities};
+use crate::state::{use_store, Action};
 
 #[component]
 pub fn BookmarkForm<F: Fn() + Copy + 'static>(
     on_close: F,
     #[prop(optional)] prev_bookmark: Option<Bookmark>,
 ) -> impl IntoView {
+    let store = use_store();
+
     let is_add = prev_bookmark.is_none();
     let prev_bookmark = store_value(prev_bookmark);
 
     let (page_id, set_page_id) = create_signal::<Option<Id<Page>>>(None);
-    let pages = use_entities::<Page>();
+    let pages = store.pages();
 
     if let Some(bookmark) = prev_bookmark() {
-        let all_widgets = use_entities::<Widget>();
+        let all_widgets = store.widgets();
         create_effect(move |_| {
             let p_id = all_widgets()
-                .unwrap_or_default()
                 .into_iter()
                 .find(|w| w.id == bookmark.widget_id)
                 .map(|w| w.page_id);
@@ -28,9 +29,11 @@ pub fn BookmarkForm<F: Fn() + Copy + 'static>(
 
     let (widget_id, set_widget_id) =
         create_signal::<Option<Id<Widget>>>(prev_bookmark().map(|b| b.widget_id));
-    let widget_resource = create_memo(move |_| page_id().map(use_filtered_entities::<Widget>));
-    let page_widgets =
-        create_memo(move |_| widget_resource().and_then(|rsc| rsc()).unwrap_or_default());
+    let page_widgets = create_memo(move |_| {
+        page_id()
+            .map(|id| store.widgets_by(id)())
+            .unwrap_or_default()
+    });
 
     // So, this is a bit of a hack. When the page_widgets are updated
     // *after* widget_id has been updated, the DOM does not pick up on
@@ -56,8 +59,6 @@ pub fn BookmarkForm<F: Fn() + Copy + 'static>(
         url: url(),
         widget_id: widget_id().unwrap_or_else(|| "".into()),
     });
-
-    let submit_bookmark = create_submit_entity::<Bookmark>();
 
     view! {
         <select
@@ -85,7 +86,7 @@ pub fn BookmarkForm<F: Fn() + Copy + 'static>(
         >
             <option value="">"Select a page"</option>
             <For
-                each=move || pages().unwrap_or_default()
+                each=pages
                 key=|page| page.id.clone()
                 let:page
             >
@@ -141,7 +142,7 @@ pub fn BookmarkForm<F: Fn() + Copy + 'static>(
                 class="bg-slate-600 w-fit rounded px-1 disabled:text-gray-400"
                 disabled=move || name.with(|n| n.is_empty()) || url.with(|u| u.is_empty())
                 on:click=move |_| {
-                    submit_bookmark.dispatch(bookmark.get_untracked());
+                    store.dispatch(Action::SubmitBookmark(bookmark.get_untracked()));
                     on_close();
                 }
             >{

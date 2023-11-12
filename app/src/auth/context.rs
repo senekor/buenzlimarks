@@ -12,6 +12,9 @@ impl Token {
     pub fn into_inner(self) -> Option<String> {
         self.0
     }
+    pub fn as_ref(&self) -> Option<&String> {
+        self.0.as_ref()
+    }
 }
 
 #[cfg(not(debug_assertions))]
