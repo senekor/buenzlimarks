@@ -2,10 +2,10 @@ use leptos::*;
 use leptos_router::*;
 
 use crate::{
-    api::provide_api_context,
     auth::{provide_auth_context, GithubCallback, Login},
     components::Home,
     edit_mode::provide_edit_mode,
+    state::provide_store,
 };
 
 #[component]
@@ -22,8 +22,8 @@ pub fn App() -> impl IntoView {
 #[component]
 pub fn Providers(children: Children) -> impl IntoView {
     provide_auth_context();
-    provide_api_context();
     provide_edit_mode();
+    provide_store();
 
     children()
 }

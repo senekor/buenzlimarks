@@ -1,19 +1,21 @@
 use leptos::*;
 use models::{Id, Page, Widget};
 
-use crate::api::{create_submit_entity, use_entities};
+use crate::state::{use_store, Action};
 
 #[component]
 pub fn WidgetForm<F: Fn() + Copy + 'static>(
     on_close: F,
     #[prop(optional)] prev_widget: Option<Widget>,
 ) -> impl IntoView {
+    let store = use_store();
+
     let is_add = prev_widget.is_none();
     let prev_widget = store_value(prev_widget);
 
     let (page_id, set_page_id) =
         create_signal::<Option<Id<Page>>>(prev_widget().map(|w| w.page_id));
-    let pages = use_entities::<Page>();
+    let pages = store.pages();
 
     // Force DOM update when pages are fetched such that page name is
     // displayed correctly.
@@ -35,8 +37,6 @@ pub fn WidgetForm<F: Fn() + Copy + 'static>(
         page_id: page_id().unwrap_or_else(|| "".into()),
     });
 
-    let submit_widget = create_submit_entity::<Widget>();
-
     view! {
         <select
             class="bg-slate-600 rounded p-2"
@@ -53,7 +53,7 @@ pub fn WidgetForm<F: Fn() + Copy + 'static>(
         >
             <option value="">"Select a page"</option>
             <For
-                each=move || pages().unwrap_or_default()
+                each=pages
                 key=|page| page.id.clone()
                 let:page
             >
@@ -79,7 +79,7 @@ pub fn WidgetForm<F: Fn() + Copy + 'static>(
                 class="bg-slate-600 w-fit rounded px-1 disabled:text-gray-400"
                 disabled=move || name.with(|n| n.is_empty()) || page_id.with(|n| n.is_none())
                 on:click=move |_| {
-                    submit_widget.dispatch(widget.get_untracked());
+                    store.dispatch(Action::SubmitWidget(widget.get_untracked()));
                     on_close();
                 }
             >{

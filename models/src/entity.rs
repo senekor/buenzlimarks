@@ -1,4 +1,4 @@
-use std::fmt::Debug;
+use std::{fmt::Debug, hash::Hash};
 
 use serde::{Deserialize, Serialize};
 
@@ -7,7 +7,7 @@ use super::{Bookmark, Id, Page, Widget};
 type EqChild<T> = fn(&Id<T>, &<T as Entity>::Child) -> bool;
 
 pub trait Entity:
-    Debug + Clone + PartialEq + 'static + Serialize + for<'a> Deserialize<'a>
+    Debug + Clone + PartialEq + Hash + 'static + Serialize + for<'a> Deserialize<'a>
 {
     type Parent: Debug + Entity;
     type Child: Debug + Entity;

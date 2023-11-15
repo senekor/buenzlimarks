@@ -2,10 +2,11 @@ use leptos::*;
 use models::Page as PageType;
 
 use crate::{
-    api::{use_entity, Delete},
     components::{ConfirmationDialog, Dialog, PageForm},
     edit_mode::use_edit_mode,
     icons::{PencilSquareIcon, XMarkIcon},
+    state::use_store,
+    state::Action,
 };
 
 #[component]
@@ -13,12 +14,11 @@ pub fn PageTab(
     page: PageType,
     is_selected: Signal<bool>,
     select: SignalSetter<PageType>,
-    delete_page: Delete<PageType>,
 ) -> impl IntoView {
-    let id = store_value(page.id.clone());
-    let page = use_entity(page);
+    let store = use_store();
 
-    let name = move || page().name;
+    let page = store_value(page);
+
     let not_selected = move || !is_selected();
 
     let edit_mode = use_edit_mode().read();
@@ -37,7 +37,7 @@ pub fn PageTab(
             class=("bg-slate-600", not_selected)
             on:click=move |_| select(page())
         >
-            { name }
+            { page().name }
             <button class="pl-2" hidden=no_edit_mode on:click=move |ev| {
                 set_form_open(true);
                 ev.stop_propagation();
@@ -55,13 +55,13 @@ pub fn PageTab(
 
         <Show when=form_open fallback=|| () >
             <Dialog on_close >
-                <PageForm on_close prev_page=page.get_untracked() />
+                <PageForm on_close prev_page=page() />
             </Dialog>
         </Show>
 
         <Show when=delete_open fallback=|| () >
             <ConfirmationDialog
-                on_confirm=move || delete_page.dispatch(id())
+                on_confirm=move || store.dispatch(Action::DeletePage(page()))
                 on_close=on_delete_close
             />
         </Show>

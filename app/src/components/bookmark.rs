@@ -1,20 +1,19 @@
 use leptos::*;
-use models::{Bookmark as BookmarkType, Id};
+use models::Bookmark as BookmarkType;
 
 use crate::{
-    api::use_entity,
     components::{BookmarkForm, Dialog, FlexSpace},
     edit_mode::use_edit_mode,
     icons::{PencilSquareIcon, XMarkIcon},
+    state::use_store,
+    state::Action,
 };
 
 #[component]
-pub fn Bookmark(
-    bookmark: BookmarkType,
-    delete_bookmark: Action<Id<BookmarkType>, bool>,
-) -> impl IntoView {
-    // let id = store_value( bookmark.id.clone());
-    let bookmark = use_entity(bookmark);
+pub fn Bookmark(bookmark: BookmarkType) -> impl IntoView {
+    let store = use_store();
+
+    let bookmark = store_value(bookmark);
 
     let edit_mode = use_edit_mode().read();
     let no_edit_mode = Signal::derive(move || !edit_mode());
@@ -27,9 +26,9 @@ pub fn Bookmark(
             <FlexSpace />
             <a
                 class="text-orange-200 hover:text-orange-400 underline"
-                href=move || bookmark().url
+                href=bookmark().url
             >
-                { move || bookmark().name }
+                { bookmark().name }
             </a>
             <FlexSpace />
             <button
@@ -42,14 +41,14 @@ pub fn Bookmark(
             <button
                 hidden=no_edit_mode
                 class="w-6"
-                on:click=move |_| delete_bookmark.dispatch(bookmark().id)
+                on:click=move |_| store.dispatch(Action::DeleteBookmark(bookmark()))
             >
                 <XMarkIcon />
             </button>
         </div>
         <Show when=form_open fallback=|| () >
             <Dialog on_close >
-                <BookmarkForm on_close prev_bookmark=bookmark.get_untracked() />
+                <BookmarkForm on_close prev_bookmark=bookmark() />
             </Dialog>
         </Show>
 

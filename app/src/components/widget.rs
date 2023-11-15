@@ -1,24 +1,20 @@
 use leptos::*;
-use models::{Bookmark as BookmarkType, Widget as WidgetType};
+use models::Widget as WidgetType;
 
 use crate::{
-    api::{create_delete_entity, use_entity, use_filtered_entities},
     components::{Bookmark, ConfirmationDialog, Dialog, FlexSpace, WidgetForm},
     edit_mode::use_edit_mode,
     icons::{PencilSquareIcon, XMarkIcon},
+    state::use_store,
+    state::Action,
 };
 
 #[component]
 pub fn Widget(widget: WidgetType) -> impl IntoView {
-    let id = store_value(widget.id.clone());
-    let widget = use_entity(widget);
+    let store = use_store();
+    let bookmarks = store.bookmarks_by(widget.id.clone());
 
-    let name = Signal::derive(move || widget().name);
-
-    let bookmarks = use_filtered_entities::<BookmarkType>(id());
-
-    let delete_widget = create_delete_entity::<WidgetType>();
-    let delete_bookmark = create_delete_entity::<BookmarkType>();
+    let widget = store_value(widget);
 
     let edit_mode = use_edit_mode().read();
 
@@ -32,7 +28,7 @@ pub fn Widget(widget: WidgetType) -> impl IntoView {
         <div class="bg-slate-700 flex flex-col p-2 rounded-lg">
             <div class="flex flex-row gap-2 items-center pb-1">
                 <FlexSpace />
-                <h2 class="text-xl">{ name }</h2>
+                <h2 class="text-xl">{ widget().name }</h2>
                 <FlexSpace />
                 <Show
                     when=edit_mode
@@ -50,21 +46,21 @@ pub fn Widget(widget: WidgetType) -> impl IntoView {
                 </Show>
             </div>
             <For
-                each=move || bookmarks().unwrap_or_default()
-                key=|bookmark| bookmark.id.clone()
+                each=bookmarks
+                key=|bookmark| bookmark.clone()
                 let:bookmark
             >
-                <Bookmark bookmark delete_bookmark />
+                <Bookmark bookmark />
             </For>
         </div>
         <Show when=form_open fallback=|| () >
             <Dialog on_close=on_form_close >
-                <WidgetForm on_close=on_form_close prev_widget=widget.get_untracked() />
+                <WidgetForm on_close=on_form_close prev_widget=widget() />
             </Dialog>
         </Show>
         <Show when=delete_open fallback=|| () >
             <ConfirmationDialog
-                on_confirm=move || delete_widget.dispatch(id())
+                on_confirm=move || store.dispatch(Action::DeleteWidget(widget()))
                 on_close=on_delete_close
             />
         </Show>

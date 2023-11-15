@@ -2,11 +2,11 @@ use leptos::*;
 use models::Page as PageType;
 
 use crate::{
-    api::{create_delete_entity, use_entities},
     auth::{create_auth_guard, use_auth},
     components::{AddButton, FlexSpace, IconButton, Page, PageTab},
     edit_mode::use_edit_mode,
     icons::{ArrowRightOnRectangleIcon, PencilSquareIcon, QuestionMarkCircleIcon},
+    state::use_store,
 };
 
 #[cfg(debug_assertions)]
@@ -20,24 +20,20 @@ pub fn Home() -> impl IntoView {
 
     let auth = use_auth();
 
-    let pages = use_entities::<PageType>();
-
-    let delete_page = create_delete_entity::<PageType>();
+    let pages = use_store().pages();
 
     let (selected_page, set_selected_page) = create_signal::<Option<PageType>>(None);
     create_effect(move |_| {
         pages.with(move |pages| {
-            if let Some(pages) = pages {
-                if let Some(sel) = selected_page.get_untracked() {
-                    if !pages.iter().any(|p| p.id == sel.id) {
-                        // selected page doesn't exist anymore, was probably deleted.
-                        // set it to the first page (or none).
-                        set_selected_page(pages.iter().next().cloned());
-                    };
-                } else if let Some(first_page) = pages.iter().next() {
-                    // no page was selected, but a page exists. select it.
-                    set_selected_page(Some(first_page.clone()));
-                }
+            if let Some(sel) = selected_page.get_untracked() {
+                if !pages.iter().any(|p| p.id == sel.id) {
+                    // selected page doesn't exist anymore, was probably deleted.
+                    // set it to the first page (or none).
+                    set_selected_page(pages.iter().next().cloned());
+                };
+            } else if let Some(first_page) = pages.iter().next() {
+                // no page was selected, but a page exists. select it.
+                set_selected_page(Some(first_page.clone()));
             }
         });
     });
@@ -49,8 +45,8 @@ pub fn Home() -> impl IntoView {
 
             <div class="flex gap-2 p-2 w-full">
                 <For
-                    each=move || pages().unwrap_or_default()
-                    key=|page| page.id.clone()
+                    each=pages
+                    key=|page| page.clone()
                     let:page
                 >
                 {
@@ -59,12 +55,13 @@ pub fn Home() -> impl IntoView {
                         selected_page().is_some_and(|sp| sp.id == id())
                     });
                     let select = SignalSetter::map( move |p| set_selected_page(Some(p)));
-                    view! { <PageTab
-                        page
-                        is_selected
-                        select
-                        delete_page
-                    /> }
+                    view! {
+                        <PageTab
+                            page
+                            is_selected
+                            select
+                        />
+                    }
                 }
                 </For>
 
