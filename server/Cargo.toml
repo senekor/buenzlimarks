@@ -23,7 +23,6 @@ path = "cmd/db_reset.rs"
 axum = { version = "0.6", features = ["macros", "headers"] }
 clap = { version = "4.3.4", features = ["derive", "env"] }
 hmac = { version = "0.12.1", features = ["std"] }
-hyper-tls = { version = "0.5.0", features = ["vendored"] }
 jwt = "0.16.0"
 mime_guess = "2.0.4"
 models = { workspace = true }
