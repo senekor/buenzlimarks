@@ -12,8 +12,8 @@ pub fn Page(page: Signal<PageType>) -> impl IntoView {
     });
 
     view! {
-        <div class="flex flex-col gap-4 items-center">
-            <div class="flex flex-col gap-2 items-stretch">
+        <div class="flex flex-col items-center">
+            <div class="flex flex-col gap-2">
                 <For
                     each=widgets
                     key=|widget| widget.clone()

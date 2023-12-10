@@ -21,7 +21,7 @@ fn insert_seeds(db: &Database) {
         },
         vec![
             (
-                "Seed page",
+                "First page",
                 vec![
                     // 1. widget
                     (
@@ -40,6 +40,70 @@ fn insert_seeds(db: &Database) {
                                 "Tasks",
                                 "https://github.com/users/senekor/projects/1/views/2",
                             ),
+                        ],
+                    ),
+                    // 2. widget
+                    (
+                        "Sozialversicherungen",
+                        vec![
+                            ("YouTube", "https://youtube.com"),
+                            ("Rust std docs", "https://std.rs"),
+                        ],
+                    ),
+                    // 2. widget
+                    (
+                        "Sozialversicherungen",
+                        vec![
+                            ("YouTube", "https://youtube.com"),
+                            ("Rust std docs", "https://std.rs"),
+                        ],
+                    ),
+                    // 2. widget
+                    (
+                        "Sozialversicherungen",
+                        vec![
+                            ("YouTube", "https://youtube.com"),
+                            ("Rust std docs", "https://std.rs"),
+                        ],
+                    ),
+                    // 2. widget
+                    (
+                        "Sozialversicherungen",
+                        vec![
+                            ("YouTube", "https://youtube.com"),
+                            ("Rust std docs", "https://std.rs"),
+                        ],
+                    ),
+                    // 2. widget
+                    (
+                        "Sozialversicherungen",
+                        vec![
+                            ("YouTube", "https://youtube.com"),
+                            ("Rust std docs", "https://std.rs"),
+                        ],
+                    ),
+                    // 2. widget
+                    (
+                        "Sozialversicherungen",
+                        vec![
+                            ("YouTube", "https://youtube.com"),
+                            ("Rust std docs", "https://std.rs"),
+                        ],
+                    ),
+                    // 2. widget
+                    (
+                        "Sozialversicherungen",
+                        vec![
+                            ("YouTube", "https://youtube.com"),
+                            ("Rust std docs", "https://std.rs"),
+                        ],
+                    ),
+                    // 2. widget
+                    (
+                        "Sozialversicherungen",
+                        vec![
+                            ("YouTube", "https://youtube.com"),
+                            ("Rust std docs", "https://std.rs"),
                         ],
                     ),
                     // 2. widget

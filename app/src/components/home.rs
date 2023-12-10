@@ -41,7 +41,7 @@ pub fn Home() -> impl IntoView {
     let set_edit_mode = use_edit_mode().write();
 
     view! {
-        <div class="h-screen flex flex-col flex-wrap gap-2">
+        <div class="h-screen flex flex-col gap-2">
 
             <div class="flex gap-2 p-2 w-full">
                 <For
