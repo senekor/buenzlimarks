@@ -165,7 +165,9 @@ impl<'a, T: Entity> Url<'a, T> {
     fn build(self) -> String {
         let mut path = format!("api/{}", T::DATA.plural());
         if let Some(id) = self.id {
-            write!(path, "/{id}", id = id).unwrap();
+            if !id.is_empty() {
+                write!(path, "/{id}", id = id).unwrap();
+            }
         }
         if let Some(parent_id) = self.parent_id {
             write!(
