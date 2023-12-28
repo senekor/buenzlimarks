@@ -94,7 +94,7 @@ pub async fn process(action: PreMiddlewareAction) -> Action {
 }
 
 async fn submit<T: Entity>(entity: T, token: &Token) -> T {
-    RequestBuilder::new(&Url::new().id(entity.get_id()).build())
+    RequestBuilder::new(&Url::<T>::new().build())
         .with_token(token)
         .post_or_put_by(entity.get_id())
         .json(&entity)
