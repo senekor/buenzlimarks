@@ -17,3 +17,7 @@ leptos_router = { version = "0.5.0", features = ["csr", "nightly"] }
 models = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
+
+[lints.clippy]
+# leptos' #[component] macros generate empty doc comments which trigger this
+empty_docs = "allow"
