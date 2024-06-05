@@ -20,20 +20,21 @@ name = "db_reset"
 path = "cmd/db_reset.rs"
 
 [dependencies]
-axum = { version = "0.6", features = ["macros", "headers"] }
+axum = { version = "0.7", features = ["macros"] }
+axum-extra = { version = "0.9.3", features = ["typed-header"] }
 clap = { version = "4.3.4", features = ["derive", "env"] }
 hmac = { version = "0.12.1", features = ["std"] }
 jwt = "0.16.0"
 mime_guess = "2.0.4"
 models = { workspace = true }
-oauth2 = "4.2.3"
-reqwest = { version = "0.11.18", features = ["json", "rustls-tls"], default-features = false }
-rust-embed = { version = "6.6.0", features = ["axum"] }
+oauth2 = "5.0.0-alpha.4"
+reqwest = { version = "0.12.0", features = ["json", "rustls-tls"], default-features = false }
+rust-embed = { version = "8.4.0", features = ["axum"] }
 serde = { workspace = true }
 serde_json = { workspace = true }
 sha2 = "0.10.2"
 tokio = { version = "1.26", features = ["full"] }
-tower-http = { version = "0.4.0", features = [
+tower-http = { version = "0.5.0", features = [
     "fs",
     "trace",
     "compression-gzip",

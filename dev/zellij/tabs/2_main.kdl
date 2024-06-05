@@ -1,0 +1,20 @@
+layout {
+	tab name="main" {
+        pane size=1 borderless=true {
+            plugin location="compact-bar"
+        }
+		pane name="app" {
+			command "just"
+			args "app-watch"
+		}
+		pane name="server" {
+			command "just"
+			args "watch"
+		}
+		pane name="db-reset" {
+			command "just"
+			args "db-reset"
+			size "10%"
+		}
+	}
+}

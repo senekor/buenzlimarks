@@ -3,7 +3,7 @@ use buenzlimarks_server::{
     config::Config, docs::docs_handler, frontend::frontend_handler, router::api_router,
 };
 use clap::Parser;
-use std::net::SocketAddr;
+use tokio::net::TcpListener;
 use tower_http::{compression::CompressionLayer, trace::TraceLayer};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
@@ -26,10 +26,7 @@ async fn main() {
         .layer(CompressionLayer::new());
 
     // run it
-    let addr = SocketAddr::from(([127, 0, 0, 1], config.port));
-    tracing::info!("listening on http://{addr}");
-    axum::Server::bind(&addr)
-        .serve(router.into_make_service())
-        .await
-        .unwrap();
+    let listener = TcpListener::bind("0.0.0.0:4000").await.unwrap();
+    tracing::info!("listening on http://localhost:4000");
+    axum::serve(listener, router).await.unwrap();
 }

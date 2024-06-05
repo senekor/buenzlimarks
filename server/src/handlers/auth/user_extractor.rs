@@ -1,7 +1,9 @@
 use axum::{
     extract::FromRequestParts,
-    headers::{self, authorization::Bearer},
     http::{request::Parts, StatusCode},
+};
+use axum_extra::{
+    headers::{self, authorization::Bearer},
     TypedHeader,
 };
 use models::User;

@@ -8,12 +8,12 @@ repository.workspace = true
 
 [dependencies]
 console_error_panic_hook = "0.1.7"
-gloo = { version = "0.8.1", default-features = false, features = [
+gloo = { version = "0.11.0", default-features = false, features = [
     "net",
     "storage",
 ] }
-leptos = { version = "0.5.0", features = ["csr", "nightly"] }
-leptos_router = { version = "0.5.0", features = ["csr", "nightly"] }
+leptos = { version = "0.6.0", features = ["csr", "nightly"] }
+leptos_router = { version = "0.6.0", features = ["csr", "nightly"] }
 models = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
