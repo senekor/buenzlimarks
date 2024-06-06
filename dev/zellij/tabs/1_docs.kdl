@@ -1,0 +1,15 @@
+layout {
+	tab name="docs" {
+        pane size=1 borderless=true {
+            plugin location="compact-bar"
+        }
+		pane name="book" {
+			command "just"
+			args "book-watch"
+		}
+		pane name="diagrams" {
+			command "just"
+			args "diagrams-watch"
+		}
+	}
+}

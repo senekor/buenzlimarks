@@ -1,11 +1,11 @@
 use axum::{
     extract::{Query, State},
-    http::{header, StatusCode},
+    http::StatusCode,
     response::Redirect,
 };
 use jwt::SignWithKey;
 use models::{AuthProvider, Id, Settings, User};
-use oauth2::{reqwest::async_http_client, AuthorizationCode, CsrfToken, TokenResponse};
+use oauth2::{reqwest::Client, AuthorizationCode, CsrfToken, TokenResponse};
 use serde::Deserialize;
 
 use crate::db::Database;
@@ -67,7 +67,7 @@ pub async fn github_callback(
     let token = auth
         .github_client
         .exchange_code(AuthorizationCode::new(query.code.clone()))
-        .request_async(async_http_client)
+        .request_async(&Client::new())
         .await
         .map_err(|e| {
             tracing::warn!("{AUTH_REQ_ERROR} error: {e}");
@@ -80,7 +80,7 @@ pub async fn github_callback(
         .get("https://api.github.com/user")
         .bearer_auth(token.access_token().secret())
         .header(
-            header::USER_AGENT,
+            reqwest::header::USER_AGENT,
             concat!("buenzlimarks/", env!("CARGO_PKG_VERSION")),
         )
         .send()

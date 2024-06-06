@@ -27,7 +27,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: nightly-2023-06-30 # duplicated in rust-toolchain.toml
+          toolchain: nightly-2024-06-04 # duplicated in rust-toolchain.toml
           targets: "${{ matrix.target }},wasm32-unknown-unknown"
       - uses: Swatinem/rust-cache@v2
         with:
