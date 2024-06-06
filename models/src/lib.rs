@@ -13,3 +13,5 @@ pub use page::*;
 pub use settings::*;
 pub use user::*;
 pub use widget::*;
+
+pub mod rpc;

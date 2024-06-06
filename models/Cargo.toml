@@ -10,4 +10,5 @@ repository.workspace = true
 serde = { workspace = true }
 strum = { version = "0.26", features = ["strum_macros"] }
 strum_macros = "0.26"
+tarpc = { workspace = true }
 uuid = { version = "1.1.2", features = ["v4", "js"] }
