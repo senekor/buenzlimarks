@@ -3,7 +3,7 @@ use leptos::*;
 use crate::{auth::use_auth, components::FlexSpace};
 
 #[component]
-fn DevLogin() -> impl IntoView {
+fn DevelLogin() -> impl IntoView {
     let auth = use_auth();
 
     let (user_id, set_user_id) = create_signal(String::new());
@@ -50,7 +50,7 @@ fn GithubLogin() -> impl IntoView {
 fn ProfileDependentLogin() -> impl IntoView {
     #[cfg(debug_assertions)]
     {
-        DevLogin()
+        DevelLogin()
     }
     #[cfg(not(debug_assertions))]
     {

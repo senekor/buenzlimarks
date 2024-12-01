@@ -8,7 +8,7 @@
 - [Self-Hosting]()
 
 - [Contributing](./contributing/index.md)
-    - [Server development tips](./contributing/server_dev_tips.md)
+    - [Server development tips](./contributing/server_devel_tips.md)
     - [Testing Policy](./contributing/testing.md)
 
 - [Architecture](./arc42/index.md)

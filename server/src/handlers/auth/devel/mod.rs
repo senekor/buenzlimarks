@@ -17,7 +17,7 @@ pub use state::AuthState;
 pub fn user_from(token: &str, _state: &AppState) -> Option<User> {
     Some(User {
         id: token.into(),
-        provider: AuthProvider::Dev,
+        provider: AuthProvider::Devel,
     })
 }
 
@@ -29,7 +29,7 @@ pub async fn login(
 ) -> Result<String, StatusCode> {
     let user = User {
         id: user_id,
-        provider: AuthProvider::Dev,
+        provider: AuthProvider::Devel,
     };
     if !db.contains_user(&user) {
         tracing::debug!("login of new user {}, inserting...", user.id);

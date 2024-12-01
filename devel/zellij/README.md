@@ -21,12 +21,12 @@ To load all project tabs dynamically, that script can be a simple loop over the 
 ```kdl
 pane {
 	command "bash"
-	args "-c" "for tab in $(ls dev/zellij/tabs) ; do zellij action new-tab --layout dev/zellij/tabs/$tab ; done"
+	args "-c" "for tab in $(ls devel/zellij/tabs) ; do zellij action new-tab --layout devel/zellij/tabs/$tab ; done"
 	close_on_exit true
 }
 ```
 
 Now, that might seem a little hacky, and it is.
 But it works!
-It does rely on the convention that every project stores its tabs under `dev/zellij/tabs/`.
+It does rely on the convention that every project stores its tabs under `devel/zellij/tabs/`.
 If different projects handle it differently, the script would have to become more sophisticated.

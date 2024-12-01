@@ -12,8 +12,8 @@ docs/book
 .DS_Store
 
 # development database
-dev/db
+devel/db
 
 # thunder client vscode extension
-dev/thunder-tests/thunderActivity.json
-dev/thunder-tests/thunderEnvironment.json
+devel/thunder-tests/thunderActivity.json
+devel/thunder-tests/thunderEnvironment.json

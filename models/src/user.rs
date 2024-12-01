@@ -5,9 +5,9 @@ use super::Id;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Display)]
 pub enum AuthProvider {
-    #[serde(rename = "dev")]
-    #[strum(serialize = "dev")]
-    Dev,
+    #[serde(rename = "devel")]
+    #[strum(serialize = "devel")]
+    Devel,
     #[serde(rename = "github")]
     #[strum(serialize = "github")]
     GitHub,

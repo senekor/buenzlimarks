@@ -10,7 +10,7 @@ watch:
 run *args:
     @cd server && cargo run -q -- {{ args }}
 
-# run the web app dev server, watching for changes
+# run the web app devel server, watching for changes
 app-watch:
     @killall trunk &> /dev/null || true
     cd app && trunk serve --open
@@ -29,11 +29,11 @@ diagrams-watch:
     watchexec --debounce 1000 \
         --emit-events-to file \
         --watch docs/diagrams \
-        --restart ./dev/render_diagrams.sh
+        --restart ./devel/render_diagrams.sh
 
 # start a terminal workspace for development
 zellij:
-    zellij --layout dev/zellij.kdl
+    zellij --layout devel/zellij.kdl
     @killall buenzlimarks &> /dev/null || true
     @killall trunk &> /dev/null || true
     @killall mdbook &> /dev/null || true

@@ -39,9 +39,9 @@
 mod user_extractor;
 
 #[cfg(debug_assertions)]
-mod dev;
+mod devel;
 #[cfg(debug_assertions)]
-pub use dev::*;
+pub use devel::*;
 
 #[cfg(not(debug_assertions))]
 mod prod;

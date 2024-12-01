@@ -14,7 +14,7 @@ fn insert_seeds(db: &Database) {
     let seed_data: Vec<UserSeed> = vec![(
         User {
             id: "buenzli".into(),
-            provider: AuthProvider::Dev,
+            provider: AuthProvider::Devel,
         },
         Settings {
             name: "Bünzli".into(),

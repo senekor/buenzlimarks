@@ -7,7 +7,7 @@ This is a list of helpful tips and pointers to more resources related to develop
 First of all, run `just` in the terminal to get a list of the available recipes.
 There should be one to run the server and one to fill your development database with seed data.
 
-Note that the development database is in the directory `dev/db`.
+Note that the development database is in the directory `devel/db`.
 You can use the file system directly to check the contents of the database when needed.
 
 If you encounter any terms you don't understand, check the [glossary](./arc42/12_glossary.md).
