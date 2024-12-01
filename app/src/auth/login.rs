@@ -16,7 +16,7 @@ fn DevelLogin() -> impl IntoView {
             class="bg-slate-600 p-2 rounded text-white text-center text-3xl"
             placeholder="Enter a user name"
             prop:value=user_id
-            on:input=move |ev| set_user_id(event_target_value(&ev))
+            on:input=move |ev| set_user_id.set(event_target_value(&ev))
             on:keydown=move |ev| {
                 if &ev.key() == "Enter" {
                     submit()

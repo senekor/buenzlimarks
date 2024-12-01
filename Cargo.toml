@@ -14,3 +14,9 @@ repository = "https://github.com/senekor/buenzlimarks"
 models = { path = "./models", package = "buenzlimarks_models" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1"
+
+[workspace.metadata.bin]
+cargo-watch = { version = "8.5.3" }
+mdbook = { version = "0.4.40" }
+trunk = { version = "0.21.4" }
+watchexec-cli = { version = "2.2.0", bins = ["watchexec"] }

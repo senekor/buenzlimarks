@@ -2,11 +2,8 @@
 target
 **/*.rs.bk
 
-# leptos
-app/dist
-
-# mdbook
-docs/book
+# cargo-run-bin
+.bin
 
 # Mac OS shenanigans
 .DS_Store

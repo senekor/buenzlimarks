@@ -19,49 +19,49 @@ pub fn PageTab(
 
     let page = store_value(page);
 
-    let not_selected = move || !is_selected();
+    let not_selected = move || !is_selected.get();
 
     let edit_mode = use_edit_mode().read();
-    let no_edit_mode = Signal::derive(move || !edit_mode());
+    let no_edit_mode = Signal::derive(move || !edit_mode.get());
 
     let (form_open, set_form_open) = create_signal(false);
-    let on_close = move || set_form_open(false);
+    let on_close = move || set_form_open.set(false);
 
     let (delete_open, set_delete_open) = create_signal(false);
-    let on_delete_close = move || set_delete_open(false);
+    let on_delete_close = move || set_delete_open.set(false);
 
     view! {
         <button
             class="rounded-lg px-3 flex flex-row place-items-center gap-1"
             class=("bg-orange-800", is_selected)
             class=("bg-slate-600", not_selected)
-            on:click=move |_| select(page())
+            on:click=move |_| select.set(page.get_value())
         >
-            { page().name }
+            { page.get_value().name }
             <button class="pl-2" hidden=no_edit_mode on:click=move |ev| {
-                set_form_open(true);
+                set_form_open.set(true);
                 ev.stop_propagation();
             }>
                 <PencilSquareIcon />
             </button>
 
             <button hidden=no_edit_mode on:click=move |ev| {
-                set_delete_open(true);
+                set_delete_open.set(true);
                 ev.stop_propagation();
             }>
                 <XMarkIcon />
             </button>
         </button>
 
-        <Show when=form_open fallback=|| () >
+        <Show when=move || form_open.get() fallback=|| () >
             <Dialog on_close >
-                <PageForm on_close prev_page=page() />
+                <PageForm on_close prev_page=page.get_value() />
             </Dialog>
         </Show>
 
-        <Show when=delete_open fallback=|| () >
+        <Show when=move || delete_open.get() fallback=|| () >
             <ConfirmationDialog
-                on_confirm=move || store.dispatch(Action::DeletePage(page()))
+                on_confirm=move || store.dispatch(Action::DeletePage(page.get_value()))
                 on_close=on_delete_close
             />
         </Show>

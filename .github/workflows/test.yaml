@@ -9,20 +9,13 @@ jobs:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: nightly-2024-03-03 # duplicated in rust-toolchain.toml
+          toolchain: stable
           targets: wasm32-unknown-unknown
           components: clippy, rustfmt
       - uses: Swatinem/rust-cache@v2
-        with:
-          # Additional non workspace directories to be cached, separated by newlines.
-          cache-directories: ""
       - name: rustfmt
         run: cargo fmt --check
       - name: clippy
-        # empty directories for rust-embed
-        run: |
-          mkdir app/dist
-          mkdir docs/book
-          cargo clippy -- -D warnings
+        run: cargo clippy -- -D warnings
       - name: tests
         run: cargo test

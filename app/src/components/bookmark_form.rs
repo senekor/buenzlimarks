@@ -16,22 +16,24 @@ pub fn BookmarkForm<F: Fn() + Copy + 'static>(
     let (page_id, set_page_id) = create_signal::<Option<Id<Page>>>(None);
     let pages = store.pages();
 
-    if let Some(bookmark) = prev_bookmark() {
+    if let Some(bookmark) = prev_bookmark.get_value() {
         let all_widgets = store.widgets();
         create_effect(move |_| {
-            let p_id = all_widgets()
+            let p_id = all_widgets
+                .get()
                 .into_iter()
                 .find(|w| w.id == bookmark.widget_id)
                 .map(|w| w.page_id);
-            set_page_id(p_id);
+            set_page_id.set(p_id);
         });
     };
 
     let (widget_id, set_widget_id) =
-        create_signal::<Option<Id<Widget>>>(prev_bookmark().map(|b| b.widget_id));
+        create_signal::<Option<Id<Widget>>>(prev_bookmark.get_value().map(|b| b.widget_id));
     let page_widgets = create_memo(move |_| {
-        page_id()
-            .map(|id| store.widgets_by(id)())
+        page_id
+            .get()
+            .map(|id| store.widgets_by(id).get())
             .unwrap_or_default()
     });
 
@@ -48,37 +50,44 @@ pub fn BookmarkForm<F: Fn() + Copy + 'static>(
         }
     });
 
-    let (name, set_name) =
-        create_signal::<String>(prev_bookmark().map(|b| b.name).unwrap_or_default());
+    let (name, set_name) = create_signal::<String>(
+        prev_bookmark
+            .get_value()
+            .map(|b| b.name)
+            .unwrap_or_default(),
+    );
     let (url, set_url) =
-        create_signal::<String>(prev_bookmark().map(|b| b.url).unwrap_or_default());
+        create_signal::<String>(prev_bookmark.get_value().map(|b| b.url).unwrap_or_default());
 
     let bookmark = Signal::derive(move || Bookmark {
-        id: prev_bookmark().map(|b| b.id).unwrap_or_else(|| "".into()),
-        name: name(),
-        url: url(),
-        widget_id: widget_id().unwrap_or_else(|| "".into()),
+        id: prev_bookmark
+            .get_value()
+            .map(|b| b.id)
+            .unwrap_or_else(|| "".into()),
+        name: name.get(),
+        url: url.get(),
+        widget_id: widget_id.get().unwrap_or_else(|| "".into()),
     });
 
     view! {
         <select
             class="bg-slate-600 rounded p-2"
-            class=("text-gray-400", move || page_id().is_none())
-            prop:value=move || page_id().map(String::from).unwrap_or_default()
+            class=("text-gray-400", move || page_id.get().is_none())
+            prop:value=move || page_id.get().map(String::from).unwrap_or_default()
             on:input=move |ev| {
                 let val = event_target_value(&ev);
                 if val.is_empty() {
                     batch(|| {
-                        set_page_id(None);
+                        set_page_id.set(None);
                         if widget_id.with(|w| w.is_some()) {
-                            set_widget_id(None);
+                            set_widget_id.set(None);
                         }
                     });
                 } else {
                     batch(|| {
-                        set_page_id(Some(Id::from(val)));
+                        set_page_id.set(Some(Id::from(val)));
                         if widget_id.with(|w| w.is_some()) {
-                            set_widget_id(None);
+                            set_widget_id.set(None);
                         }
                     });
                 }
@@ -86,7 +95,7 @@ pub fn BookmarkForm<F: Fn() + Copy + 'static>(
         >
             <option value="">"Select a page"</option>
             <For
-                each=pages
+                each=move || pages.get()
                 key=|page| page.id.clone()
                 let:page
             >
@@ -98,19 +107,19 @@ pub fn BookmarkForm<F: Fn() + Copy + 'static>(
         <select
             class="bg-slate-600 rounded p-2"
             class=("text-gray-400", move || widget_id.with(|w| w.is_none()))
-            prop:value=move || widget_id().map(String::from).unwrap_or_default()
+            prop:value=move || widget_id.get().map(String::from).unwrap_or_default()
             on:input=move |ev| {
                 let val = event_target_value(&ev);
                 if val.is_empty() {
-                    set_widget_id(None);
+                    set_widget_id.set(None);
                 } else {
-                    set_widget_id(Some(Id::from(val)));
+                    set_widget_id.set(Some(Id::from(val)));
                 }
             }
         >
             <option value="">"Select a widget"</option>
             <For
-                each=page_widgets
+                each=move || page_widgets.get()
                 key=|widget| widget.id.clone()
                 let:widget
             >
@@ -123,13 +132,13 @@ pub fn BookmarkForm<F: Fn() + Copy + 'static>(
             class="bg-slate-600 rounded px-2 py-1.5"
             placeholder="Name"
             prop:value=name
-            on:input=move |ev| set_name(event_target_value(&ev))
+            on:input=move |ev| set_name.set(event_target_value(&ev))
         />
         <input
             class="bg-slate-600 rounded px-2 py-1.5"
             placeholder="URL"
             prop:value=url
-            on:input=move |ev| set_url(event_target_value(&ev))
+            on:input=move |ev| set_url.set(event_target_value(&ev))
         />
         <div class="self-center flex gap-2">
             <button

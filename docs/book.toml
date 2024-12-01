@@ -5,6 +5,9 @@ multilingual = false
 src = "src"
 title = "buenzlimarks documentation"
 
+[build]
+build-dir = "../target/docs"
+
 [output.html]
 git-repository-url = "https://github.com/senekor/buenzlimarks"
 edit-url-template = "https://github.com/senekor/buenzlimarks/edit/main/{path}"

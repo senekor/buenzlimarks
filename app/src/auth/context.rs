@@ -59,7 +59,7 @@ impl Auth {
 
             let navigate = use_navigate();
             batch(|| {
-                (self.set_token)(Token(Some(new_token)));
+                self.set_token.set(Token(Some(new_token)));
                 navigate("/", Default::default());
             });
         });
@@ -71,7 +71,7 @@ impl Auth {
 
         let navigate = use_navigate();
         batch(|| {
-            (self.set_token)(Token(None));
+            self.set_token.set(Token(None));
             navigate("/", Default::default());
         });
     }

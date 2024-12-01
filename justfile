@@ -1,10 +1,13 @@
 _default:
     @just --list
 
+domain := "github.com"
+img_name := domain / "senekor/buenzlimarks"
+
 # run the server, watching for changes
 watch:
     @killall buenzlimarks &> /dev/null || true
-    cd server && cargo watch -x run
+    cd server && cargo bin cargo-watch -x run
 
 # run the server
 run *args:
@@ -13,7 +16,7 @@ run *args:
 # run the web app devel server, watching for changes
 app-watch:
     @killall trunk &> /dev/null || true
-    cd app && trunk serve --open
+    cd app && cargo bin trunk serve --open
 
 # initialize a new development database
 db-reset:
@@ -22,11 +25,11 @@ db-reset:
 # render the documentation book, watching for changes
 book-watch:
     @killall mdbook &> /dev/null || true
-    cd docs && mdbook serve --port 5000
+    cd docs && cargo bin mdbook serve --port 5000
 
 # render d2 diagrams, watching for changes
 diagrams-watch:
-    watchexec --debounce 1000 \
+    cargo bin watchexec --debounce 1000 \
         --emit-events-to file \
         --watch docs/diagrams \
         --restart ./devel/render_diagrams.sh
@@ -37,3 +40,9 @@ zellij:
     @killall buenzlimarks &> /dev/null || true
     @killall trunk &> /dev/null || true
     @killall mdbook &> /dev/null || true
+
+podman-build:
+    podman build --platform linux/amd64,linux/arm64 --manifest {{ img_name }} .
+
+podman-run:
+    podman run -it {{ img_name }}

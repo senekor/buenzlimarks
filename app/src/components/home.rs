@@ -29,11 +29,11 @@ pub fn Home() -> impl IntoView {
                 if !pages.iter().any(|p| p.id == sel.id) {
                     // selected page doesn't exist anymore, was probably deleted.
                     // set it to the first page (or none).
-                    set_selected_page(pages.iter().next().cloned());
+                    set_selected_page.set(pages.iter().next().cloned());
                 };
             } else if let Some(first_page) = pages.iter().next() {
                 // no page was selected, but a page exists. select it.
-                set_selected_page(Some(first_page.clone()));
+                set_selected_page.set(Some(first_page.clone()));
             }
         });
     });
@@ -45,16 +45,16 @@ pub fn Home() -> impl IntoView {
 
             <div class="flex gap-2 p-2 w-full">
                 <For
-                    each=pages
+                    each=move || pages.get()
                     key=|page| page.clone()
                     let:page
                 >
                 {
                     let id = store_value( page.id.clone());
                     let is_selected = Signal::derive( move || {
-                        selected_page().is_some_and(|sp| sp.id == id())
+                        selected_page.get().is_some_and(|sp| sp.id == id.get_value())
                     });
-                    let select = SignalSetter::map( move |p| set_selected_page(Some(p)));
+                    let select = SignalSetter::map( move |p| set_selected_page.set(Some(p)));
                     view! {
                         <PageTab
                             page
@@ -86,7 +86,7 @@ pub fn Home() -> impl IntoView {
 
             <Suspense fallback=move || "">
                 { move || {
-                    let sp = selected_page()?;
+                    let sp = selected_page.get()?;
                     let page = Signal::derive( move || sp.clone());
                     Some(view! { <Page page /> })
                 }}
