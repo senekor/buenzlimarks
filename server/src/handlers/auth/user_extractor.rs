@@ -12,7 +12,6 @@ use crate::state::AppState;
 
 type BearerAuth = TypedHeader<headers::Authorization<Bearer>>;
 
-#[axum::async_trait]
 impl FromRequestParts<AppState> for User {
     type Rejection = StatusCode;
 

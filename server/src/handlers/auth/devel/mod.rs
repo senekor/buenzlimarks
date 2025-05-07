@@ -47,5 +47,5 @@ pub async fn login(
 }
 
 pub fn routes() -> Router<AppState> {
-    Router::new().route("/login/:user_id", get(login))
+    Router::new().route("/login/{user_id}", get(login))
 }

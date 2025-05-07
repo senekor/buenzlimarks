@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::prelude::*;
 
 #[derive(Debug, Clone, Copy)]
 pub struct EditMode {
@@ -7,7 +7,7 @@ pub struct EditMode {
 
 impl EditMode {
     fn new() -> Self {
-        let signal = create_rw_signal(false);
+        let signal = RwSignal::new(false);
         Self { signal }
     }
 

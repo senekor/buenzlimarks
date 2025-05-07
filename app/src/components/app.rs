@@ -1,5 +1,6 @@
-use leptos::*;
-use leptos_router::*;
+use leptos::prelude::*;
+use leptos_router::components::*;
+use leptos_router::path;
 
 use crate::{
     auth::{provide_auth_context, GithubCallback, Login},
@@ -31,10 +32,10 @@ pub fn Providers(children: Children) -> impl IntoView {
 #[component]
 pub fn AppRoutes() -> impl IntoView {
     view! {
-        <Routes>
-            <Route path="/" view=|| view! { <Home/> }/>
-            <Route path="/login" view=|| view! { <Login/> }/>
-            <Route path="/auth/github/callback" view=|| view! { <GithubCallback/> }/>
-        </Routes>
+        <FlatRoutes fallback=|| "Not found.">
+            <Route path=path!("/") view=|| view! { <Home/> }/>
+            <Route path=path!("/login") view=|| view! { <Login/> }/>
+            <Route path=path!("/auth/github/callback") view=|| view! { <GithubCallback/> }/>
+        </FlatRoutes>
     }
 }

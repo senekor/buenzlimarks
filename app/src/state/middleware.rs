@@ -10,7 +10,7 @@
 use std::{collections::HashMap, fmt::Write, marker::PhantomData};
 
 use gloo::net::http::{Method, Request, RequestBuilder};
-use leptos::SignalGetUntracked;
+use leptos::prelude::*;
 use models::{Bookmark, Entity, Id, Page, Settings, Widget};
 
 use crate::auth::{use_token, Token};
@@ -166,7 +166,7 @@ impl<'a, T: Entity> Url<'a, T> {
         let mut path = format!("api/{}", T::DATA.plural());
         if let Some(id) = self.id {
             if !id.is_empty() {
-                write!(path, "/{id}", id = id).unwrap();
+                write!(path, "/{id}").unwrap();
             }
         }
         if let Some(parent_id) = self.parent_id {

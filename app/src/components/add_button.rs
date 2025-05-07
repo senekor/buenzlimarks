@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::prelude::*;
 
 use crate::{
     components::{BookmarkForm, Dialog, IconButton, PageForm, WidgetForm},
@@ -26,8 +26,8 @@ impl State {
 pub fn AddButton() -> impl IntoView {
     let edit_mode = use_edit_mode().read();
 
-    let (state, set_state) = create_signal::<State>(State::None);
-    create_effect(move |prev| {
+    let (state, set_state) = signal::<State>(State::None);
+    Effect::new(move |prev: Option<()>| {
         if !edit_mode() && prev.is_some() {
             set_state(State::None);
         }

@@ -1,11 +1,11 @@
-use leptos::*;
-use leptos_router::use_navigate;
+use leptos::prelude::*;
+use leptos_router::hooks::use_navigate;
 
 use crate::auth::use_token;
 
 pub fn create_auth_guard() {
     let token = use_token();
-    create_effect(move |_| {
+    Effect::new(move |_| {
         if token().into_inner().is_none() {
             let navigate = use_navigate();
             // workaround for navigating during initial routing

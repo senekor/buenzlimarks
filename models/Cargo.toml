@@ -8,6 +8,6 @@ repository.workspace = true
 
 [dependencies]
 serde = { workspace = true }
-strum = { version = "0.26", features = ["strum_macros"] }
-strum_macros = "0.26"
+strum = { version = "0.27", features = ["strum_macros"] }
+strum_macros = "0.27"
 uuid = { version = "1.1.2", features = ["v4", "js"] }
