@@ -1,6 +1,5 @@
 use gloo::net::http::Request;
 use leptos::{prelude::*, task::spawn_local};
-use leptos_router::hooks::use_navigate;
 
 #[cfg(not(debug_assertions))]
 use gloo::storage::{LocalStorage, Storage};
@@ -57,9 +56,7 @@ impl Auth {
             #[cfg(not(debug_assertions))]
             LocalStorage::set(TOKEN_STORAGE_KEY, new_token.clone()).unwrap();
 
-            let navigate = use_navigate();
             (self.set_token)(Token(Some(new_token)));
-            navigate("/", Default::default());
         });
     }
 
@@ -67,9 +64,7 @@ impl Auth {
         #[cfg(not(debug_assertions))]
         LocalStorage::delete(TOKEN_STORAGE_KEY);
 
-        let navigate = use_navigate();
         (self.set_token)(Token(None));
-        navigate("/", Default::default());
     }
 }
 

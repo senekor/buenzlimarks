@@ -3,7 +3,7 @@ use leptos_router::components::*;
 use leptos_router::path;
 
 use crate::{
-    auth::{provide_auth_context, GithubCallback, Login},
+    auth::{create_auth_guard, provide_auth_context, GithubCallback, Login},
     components::Home,
     edit_mode::provide_edit_mode,
     state::provide_store,
@@ -31,6 +31,8 @@ pub fn Providers(children: Children) -> impl IntoView {
 
 #[component]
 pub fn AppRoutes() -> impl IntoView {
+    create_auth_guard();
+
     view! {
         <FlatRoutes fallback=|| "Not found.">
             <Route path=path!("/") view=|| view! { <Home/> }/>

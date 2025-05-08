@@ -2,7 +2,7 @@ use leptos::prelude::*;
 use models::Page as PageType;
 
 use crate::{
-    auth::{create_auth_guard, use_auth},
+    auth::use_auth,
     components::{AddButton, FlexSpace, IconButton, Page, PageTab},
     edit_mode::use_edit_mode,
     icons::{ArrowRightOnRectangleIcon, PencilSquareIcon, QuestionMarkCircleIcon},
@@ -16,8 +16,6 @@ static DOCS_HREF: &str = "/docs";
 
 #[component]
 pub fn Home() -> impl IntoView {
-    create_auth_guard();
-
     let auth = use_auth();
 
     let pages = use_store().pages();
