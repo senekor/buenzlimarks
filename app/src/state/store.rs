@@ -1,6 +1,8 @@
 use leptos::{prelude::*, task::spawn_local};
 use models::{Bookmark, Id, Page, Settings, Widget};
 
+use crate::auth::{use_token, Token};
+
 use super::{
     action::Action,
     middleware::{self, PreMiddlewareAction},
@@ -11,6 +13,7 @@ use super::{
 #[derive(Debug, Clone, Copy)]
 pub struct Store {
     state: RwSignal<State>,
+    token: ReadSignal<Token>,
 }
 
 /// Basically a wrapper around [leptos::RwSignal]. The only difference is that
@@ -19,6 +22,7 @@ impl Store {
     fn new() -> Self {
         let store = Self {
             state: RwSignal::new(Default::default()),
+            token: use_token(),
         };
         // Load initial state
         store.dispatch(PreMiddlewareAction::Reload);
@@ -27,8 +31,9 @@ impl Store {
     }
 
     pub fn dispatch(self, action: PreMiddlewareAction) {
+        let token = self.token.get_untracked();
         spawn_local(async move {
-            let action = middleware::process(action).await;
+            let action = middleware::process(action, &token).await;
             self.dispatch_without_middleware(action);
         });
     }

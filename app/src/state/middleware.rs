@@ -10,10 +10,9 @@
 use std::{collections::HashMap, fmt::Write, marker::PhantomData};
 
 use gloo::net::http::{Method, Request, RequestBuilder};
-use leptos::prelude::*;
 use models::{Bookmark, Entity, Id, Page, Settings, Widget};
 
-use crate::auth::{use_token, Token};
+use crate::auth::Token;
 
 use super::{action::Action, State};
 
@@ -27,10 +26,7 @@ pub enum PreMiddlewareAction {
     DeleteBookmark(Bookmark),
 }
 
-pub async fn process(action: PreMiddlewareAction) -> Action {
-    let token = use_token().get_untracked();
-    let token = &token;
-
+pub async fn process(action: PreMiddlewareAction, token: &Token) -> Action {
     match action {
         PreMiddlewareAction::Reload => {
             let settings = fetch_settings(token).await;
