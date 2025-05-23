@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::prelude::*;
 use models::{Bookmark, Id, Page, Widget};
 
 use crate::state::{use_store, Action};
@@ -11,14 +11,14 @@ pub fn BookmarkForm<F: Fn() + Copy + 'static>(
     let store = use_store();
 
     let is_add = prev_bookmark.is_none();
-    let prev_bookmark = store_value(prev_bookmark);
+    let prev_bookmark = StoredValue::new(prev_bookmark);
 
-    let (page_id, set_page_id) = create_signal::<Option<Id<Page>>>(None);
+    let (page_id, set_page_id) = signal::<Option<Id<Page>>>(None);
     let pages = store.pages();
 
-    if let Some(bookmark) = prev_bookmark() {
+    if let Some(bookmark) = prev_bookmark.get_value() {
         let all_widgets = store.widgets();
-        create_effect(move |_| {
+        Effect::new(move |_| {
             let p_id = all_widgets()
                 .into_iter()
                 .find(|w| w.id == bookmark.widget_id)
@@ -28,8 +28,8 @@ pub fn BookmarkForm<F: Fn() + Copy + 'static>(
     };
 
     let (widget_id, set_widget_id) =
-        create_signal::<Option<Id<Widget>>>(prev_bookmark().map(|b| b.widget_id));
-    let page_widgets = create_memo(move |_| {
+        signal::<Option<Id<Widget>>>(prev_bookmark.get_value().map(|b| b.widget_id));
+    let page_widgets = Memo::new(move |_| {
         page_id()
             .map(|id| store.widgets_by(id)())
             .unwrap_or_default()
@@ -41,20 +41,27 @@ pub fn BookmarkForm<F: Fn() + Copy + 'static>(
     // correctly. By forcing a pseudo-update on the widget_id signal,
     // the DOM is updated and shows the correct widget name, once
     // page_widgets are updated.
-    create_effect(move |prev| {
+    Effect::new(move |prev: Option<()>| {
         page_widgets.track();
         if prev.is_some() {
             set_widget_id.update(|_| {});
         }
     });
 
-    let (name, set_name) =
-        create_signal::<String>(prev_bookmark().map(|b| b.name).unwrap_or_default());
+    let (name, set_name) = signal::<String>(
+        prev_bookmark
+            .get_value()
+            .map(|b| b.name)
+            .unwrap_or_default(),
+    );
     let (url, set_url) =
-        create_signal::<String>(prev_bookmark().map(|b| b.url).unwrap_or_default());
+        signal::<String>(prev_bookmark.get_value().map(|b| b.url).unwrap_or_default());
 
     let bookmark = Signal::derive(move || Bookmark {
-        id: prev_bookmark().map(|b| b.id).unwrap_or_else(|| "".into()),
+        id: prev_bookmark
+            .get_value()
+            .map(|b| b.id)
+            .unwrap_or_else(|| "".into()),
         name: name(),
         url: url(),
         widget_id: widget_id().unwrap_or_else(|| "".into()),
@@ -68,19 +75,15 @@ pub fn BookmarkForm<F: Fn() + Copy + 'static>(
             on:input=move |ev| {
                 let val = event_target_value(&ev);
                 if val.is_empty() {
-                    batch(|| {
-                        set_page_id(None);
-                        if widget_id.with(|w| w.is_some()) {
-                            set_widget_id(None);
-                        }
-                    });
+                    set_page_id(None);
+                    if widget_id.with(|w| w.is_some()) {
+                        set_widget_id(None);
+                    }
                 } else {
-                    batch(|| {
-                        set_page_id(Some(Id::from(val)));
-                        if widget_id.with(|w| w.is_some()) {
-                            set_widget_id(None);
-                        }
-                    });
+                    set_page_id(Some(Id::from(val)));
+                    if widget_id.with(|w| w.is_some()) {
+                        set_widget_id(None);
+                    }
                 }
             }
         >

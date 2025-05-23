@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::prelude::*;
 
 #[component]
 pub fn Dialog<F>(children: Children, on_close: F) -> impl IntoView

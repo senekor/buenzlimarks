@@ -25,11 +25,11 @@ pub fn api_router(config: &Config) -> Router {
         .route("/bookmarks", post(create_bookmark))
         //
         // GET - read
-        .route("/pages/:page_id", get(get_page))
+        .route("/pages/{page_id}", get(get_page))
         .route("/pages", get(get_pages))
-        .route("/widgets/:widget_id", get(get_widget))
+        .route("/widgets/{widget_id}", get(get_widget))
         .route("/widgets", get(get_widgets))
-        .route("/bookmarks/:bookmark_id", get(get_bookmark))
+        .route("/bookmarks/{bookmark_id}", get(get_bookmark))
         .route("/bookmarks", get(get_bookmarks))
         //
         // PUT - update
@@ -38,9 +38,9 @@ pub fn api_router(config: &Config) -> Router {
         .route("/bookmarks", put(update_bookmark))
         //
         // DELETE - delete
-        .route("/pages/:page_id", delete(delete_page))
-        .route("/widgets/:widget_id", delete(delete_widget))
-        .route("/bookmarks/:bookmark_id", delete(delete_bookmark))
+        .route("/pages/{page_id}", delete(delete_page))
+        .route("/widgets/{widget_id}", delete(delete_widget))
+        .route("/bookmarks/{bookmark_id}", delete(delete_bookmark))
         //
         // authentication
         .nest("/auth", auth::routes())

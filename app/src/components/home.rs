@@ -1,8 +1,8 @@
-use leptos::*;
+use leptos::prelude::*;
 use models::Page as PageType;
 
 use crate::{
-    auth::{create_auth_guard, use_auth},
+    auth::use_auth,
     components::{AddButton, FlexSpace, IconButton, Page, PageTab},
     edit_mode::use_edit_mode,
     icons::{ArrowRightOnRectangleIcon, PencilSquareIcon, QuestionMarkCircleIcon},
@@ -16,14 +16,12 @@ static DOCS_HREF: &str = "/docs";
 
 #[component]
 pub fn Home() -> impl IntoView {
-    create_auth_guard();
-
     let auth = use_auth();
 
     let pages = use_store().pages();
 
-    let (selected_page, set_selected_page) = create_signal::<Option<PageType>>(None);
-    create_effect(move |_| {
+    let (selected_page, set_selected_page) = signal::<Option<PageType>>(None);
+    Effect::new(move |_| {
         pages.with(move |pages| {
             if let Some(sel) = selected_page.get_untracked() {
                 if !pages.iter().any(|p| p.id == sel.id) {
@@ -50,9 +48,9 @@ pub fn Home() -> impl IntoView {
                     let:page
                 >
                 {
-                    let id = store_value( page.id.clone());
+                    let id = StoredValue::new( page.id.clone());
                     let is_selected = Signal::derive( move || {
-                        selected_page().is_some_and(|sp| sp.id == id())
+                        selected_page().is_some_and(|sp| sp.id == id.get_value())
                     });
                     let select = SignalSetter::map( move |p| set_selected_page(Some(p)));
                     view! {

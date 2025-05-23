@@ -1,12 +1,12 @@
-use leptos::*;
+use leptos::prelude::*;
 
 use crate::components::Dialog;
 
 #[component]
 pub fn ConfirmationDialog<FYES, FNO>(on_confirm: FYES, on_close: FNO) -> impl IntoView
 where
-    FYES: Fn() + Copy + 'static,
-    FNO: Fn() + Copy + 'static,
+    FYES: Fn() + Copy + Send + 'static,
+    FNO: Fn() + Copy + Send + 'static,
 {
     view! {
         <Dialog on_close >

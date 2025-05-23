@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::prelude::*;
 use models::Bookmark as BookmarkType;
 
 use crate::{
@@ -13,12 +13,12 @@ use crate::{
 pub fn Bookmark(bookmark: BookmarkType) -> impl IntoView {
     let store = use_store();
 
-    let bookmark = store_value(bookmark);
+    let bookmark = StoredValue::new(bookmark);
 
     let edit_mode = use_edit_mode().read();
     let no_edit_mode = Signal::derive(move || !edit_mode());
 
-    let (form_open, set_form_open) = create_signal(false);
+    let (form_open, set_form_open) = signal(false);
     let on_close = move || set_form_open(false);
 
     view! {
@@ -26,9 +26,9 @@ pub fn Bookmark(bookmark: BookmarkType) -> impl IntoView {
             <FlexSpace />
             <a
                 class="text-orange-200 hover:text-orange-400 underline"
-                href=bookmark().url
+                href=bookmark.get_value().url
             >
-                { bookmark().name }
+                { bookmark.get_value().name }
             </a>
             <FlexSpace />
             <button
@@ -41,14 +41,14 @@ pub fn Bookmark(bookmark: BookmarkType) -> impl IntoView {
             <button
                 hidden=no_edit_mode
                 class="w-6"
-                on:click=move |_| store.dispatch(Action::DeleteBookmark(bookmark()))
+                on:click=move |_| store.dispatch(Action::DeleteBookmark(bookmark.get_value()))
             >
                 <XMarkIcon />
             </button>
         </div>
         <Show when=form_open fallback=|| () >
             <Dialog on_close >
-                <BookmarkForm on_close prev_bookmark=bookmark() />
+                <BookmarkForm on_close prev_bookmark=bookmark.get_value() />
             </Dialog>
         </Show>
 

@@ -1,6 +1,5 @@
 use gloo::net::http::Request;
-use leptos::*;
-use leptos_router::use_navigate;
+use leptos::{prelude::*, task::spawn_local};
 
 #[cfg(not(debug_assertions))]
 use gloo::storage::{LocalStorage, Storage};
@@ -57,11 +56,7 @@ impl Auth {
             #[cfg(not(debug_assertions))]
             LocalStorage::set(TOKEN_STORAGE_KEY, new_token.clone()).unwrap();
 
-            let navigate = use_navigate();
-            batch(|| {
-                (self.set_token)(Token(Some(new_token)));
-                navigate("/", Default::default());
-            });
+            (self.set_token)(Token(Some(new_token)));
         });
     }
 
@@ -69,23 +64,21 @@ impl Auth {
         #[cfg(not(debug_assertions))]
         LocalStorage::delete(TOKEN_STORAGE_KEY);
 
-        let navigate = use_navigate();
-        batch(|| {
-            (self.set_token)(Token(None));
-            navigate("/", Default::default());
-        });
+        (self.set_token)(Token(None));
     }
 }
 
 pub fn provide_auth_context() {
-    let (token, set_token) = create_signal(initial_token());
+    let (token, set_token) = signal(initial_token());
     provide_context(token);
     provide_context(Auth { set_token });
 }
 
+#[track_caller]
 pub fn use_token() -> ReadSignal<Token> {
     use_context().expect("should find token context")
 }
+#[track_caller]
 pub fn use_auth() -> Auth {
     use_context().expect("should find auth context")
 }

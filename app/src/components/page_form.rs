@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::prelude::*;
 use models::Page;
 
 use crate::state::{use_store, Action};
@@ -11,12 +11,16 @@ pub fn PageForm<F: Fn() + Copy + 'static>(
     let store = use_store();
 
     let is_add = prev_page.is_none();
-    let prev_page = store_value(prev_page);
+    let prev_page = StoredValue::new(prev_page);
 
-    let (name, set_name) = create_signal::<String>(prev_page().map(|b| b.name).unwrap_or_default());
+    let (name, set_name) =
+        signal::<String>(prev_page.get_value().map(|b| b.name).unwrap_or_default());
 
     let page = Signal::derive(move || Page {
-        id: prev_page().map(|b| b.id).unwrap_or_else(|| "".into()),
+        id: prev_page
+            .get_value()
+            .map(|b| b.id)
+            .unwrap_or_else(|| "".into()),
         name: name(),
     });
 

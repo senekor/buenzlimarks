@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::prelude::*;
 use models::Page as PageType;
 
 use crate::{components::Widget, state::use_store};

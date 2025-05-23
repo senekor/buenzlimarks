@@ -10,10 +10,9 @@
 use std::{collections::HashMap, fmt::Write, marker::PhantomData};
 
 use gloo::net::http::{Method, Request, RequestBuilder};
-use leptos::SignalGetUntracked;
 use models::{Bookmark, Entity, Id, Page, Settings, Widget};
 
-use crate::auth::{use_token, Token};
+use crate::auth::Token;
 
 use super::{action::Action, State};
 
@@ -27,10 +26,7 @@ pub enum PreMiddlewareAction {
     DeleteBookmark(Bookmark),
 }
 
-pub async fn process(action: PreMiddlewareAction) -> Action {
-    let token = use_token().get_untracked();
-    let token = &token;
-
+pub async fn process(action: PreMiddlewareAction, token: &Token) -> Action {
     match action {
         PreMiddlewareAction::Reload => {
             let settings = fetch_settings(token).await;
@@ -166,7 +162,7 @@ impl<'a, T: Entity> Url<'a, T> {
         let mut path = format!("api/{}", T::DATA.plural());
         if let Some(id) = self.id {
             if !id.is_empty() {
-                write!(path, "/{id}", id = id).unwrap();
+                write!(path, "/{id}").unwrap();
             }
         }
         if let Some(parent_id) = self.parent_id {

@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::prelude::*;
 use models::{Id, Page, Widget};
 
 use crate::state::{use_store, Action};
@@ -11,15 +11,15 @@ pub fn WidgetForm<F: Fn() + Copy + 'static>(
     let store = use_store();
 
     let is_add = prev_widget.is_none();
-    let prev_widget = store_value(prev_widget);
+    let prev_widget = StoredValue::new(prev_widget);
 
     let (page_id, set_page_id) =
-        create_signal::<Option<Id<Page>>>(prev_widget().map(|w| w.page_id));
+        signal::<Option<Id<Page>>>(prev_widget.get_value().map(|w| w.page_id));
     let pages = store.pages();
 
     // Force DOM update when pages are fetched such that page name is
     // displayed correctly.
-    create_effect(move |prev| {
+    Effect::new(move |prev: Option<()>| {
         pages.with(|_| ()); // track page updates
         if prev.is_some() {
             request_animation_frame(move || {
@@ -29,10 +29,13 @@ pub fn WidgetForm<F: Fn() + Copy + 'static>(
     });
 
     let (name, set_name) =
-        create_signal::<String>(prev_widget().map(|b| b.name).unwrap_or_default());
+        signal::<String>(prev_widget.get_value().map(|b| b.name).unwrap_or_default());
 
     let widget = Signal::derive(move || Widget {
-        id: prev_widget().map(|b| b.id).unwrap_or_else(|| "".into()),
+        id: prev_widget
+            .get_value()
+            .map(|b| b.id)
+            .unwrap_or_else(|| "".into()),
         name: name(),
         page_id: page_id().unwrap_or_else(|| "".into()),
     });

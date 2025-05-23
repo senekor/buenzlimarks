@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::prelude::*;
 
 use crate::{auth::use_auth, components::FlexSpace};
 
@@ -6,7 +6,7 @@ use crate::{auth::use_auth, components::FlexSpace};
 fn DevelLogin() -> impl IntoView {
     let auth = use_auth();
 
-    let (user_id, set_user_id) = create_signal(String::new());
+    let (user_id, set_user_id) = signal(String::new());
     let submit = move || {
         auth.login(format!("/api/auth/login/{}", user_id.get_untracked()));
     };

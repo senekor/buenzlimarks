@@ -12,8 +12,8 @@ gloo = { version = "0.11.0", default-features = false, features = [
     "net",
     "storage",
 ] }
-leptos = { version = "0.6.0", features = ["csr", "nightly"] }
-leptos_router = { version = "0.6.0", features = ["csr", "nightly"] }
+leptos = { version = "0.8.0", features = ["csr", "nightly"] }
+leptos_router = { version = "0.8.0", features = ["nightly"] }
 models = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }

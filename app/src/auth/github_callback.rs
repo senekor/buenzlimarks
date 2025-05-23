@@ -1,5 +1,5 @@
-use leptos::*;
-use leptos_router::use_query_map;
+use leptos::prelude::*;
+use leptos_router::hooks::use_query_map;
 
 use crate::{auth::use_auth, components::LoadingScreen};
 
