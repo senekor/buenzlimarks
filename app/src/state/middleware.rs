@@ -17,6 +17,7 @@ use crate::auth::Token;
 use super::{action::Action, State};
 
 pub enum PreMiddlewareAction {
+    Reset,
     Reload,
     SubmitPage(Page),
     SubmitWidget(Widget),
@@ -28,6 +29,7 @@ pub enum PreMiddlewareAction {
 
 pub async fn process(action: PreMiddlewareAction, token: &Token) -> Action {
     match action {
+        PreMiddlewareAction::Reset => Action::Overwrite(State::default()),
         PreMiddlewareAction::Reload => {
             let settings = fetch_settings(token).await;
             let pages = fetch_all::<Page>(token).await;
