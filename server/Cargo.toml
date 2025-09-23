@@ -34,7 +34,7 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 sha2 = "0.10.2"
 tokio = { version = "1.26", features = ["full"] }
-tower-http = { version = "0.5.0", features = [
+tower-http = { version = "0.6.0", features = [
     "fs",
     "trace",
     "compression-gzip",
