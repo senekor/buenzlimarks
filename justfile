@@ -4,7 +4,7 @@ _default:
 # run the server, watching for changes
 watch:
     @killall buenzlimarks &> /dev/null || true
-    cd server && cargo watch -x run
+    cd server && watchexec cargo run
 
 # run the server
 run *args:

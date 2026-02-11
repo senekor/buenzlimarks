@@ -1,0 +1,91 @@
+[tasks.watch]
+description = "run the server, watching for changes"
+dir = "server"
+run = [
+  "killall buenzlimarks &> /dev/null || true",
+  "watchexec cargo run",
+]
+
+[tasks.default]
+description = "run the server"
+dir = "server"
+run = "cargo run -q --"
+
+[tasks.app-watch]
+description = "run the web app devel server, watching for changes"
+dir = "app"
+run = [
+  "killall trunk &> /dev/null || true",
+  "trunk serve --open",
+]
+
+[tasks.db-reset]
+description = "initialize a new development database"
+dir = "server"
+run = "cargo run --bin db_reset"
+
+[tasks.book-watch]
+description = "render the documentation book, watching for changes"
+dir = "docs"
+run = [
+  "killall mdbook &> /dev/null || true",
+  "mdbook serve --port 5000",
+]
+
+[tasks.diagrams-watch]
+description = "render d2 diagrams, watching for changes"
+run = """
+watchexec --debounce 1000 \
+  --emit-events-to file \
+  --watch docs/diagrams \
+  --restart ./devel/render_diagrams.sh
+"""
+
+[tasks."zellij:bg-tasks"]
+hide = true
+run = """
+zellij action new-tab --layout <(echo '
+layout {
+  tab name="docs" {
+    pane size=1 borderless=true {
+      plugin location="compact-bar"
+    }
+    pane name="book" {
+      command "mise"
+      args "run" "book-watch"
+    }
+    pane name="diagrams" {
+      command "mise"
+      args "run" "diagrams-watch"
+    }
+  }
+}
+')
+zellij action new-tab --layout <(echo '
+layout {
+  tab name="main" {
+    pane size=1 borderless=true {
+      plugin location="compact-bar"
+    }
+    pane name="app" {
+      command "mise"
+      args "run" "app-watch"
+    }
+    pane name="server" {
+      command "mise"
+      args "run" "watch"
+    }
+    pane name="db-reset" {
+      command "mise"
+      args "run" "db-reset"
+      size "10%"
+    }
+  }
+}
+')
+"""
+
+[tools]
+"cargo:trunk" = "latest"
+d2 = "0.7.1"
+mdbook = "latest"
