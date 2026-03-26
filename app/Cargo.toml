@@ -8,7 +8,7 @@ repository.workspace = true
 
 [dependencies]
 console_error_panic_hook = "0.1.7"
-gloo = { version = "0.11.0", default-features = false, features = [
+gloo = { version = "0.12.0", default-features = false, features = [
     "net",
     "storage",
 ] }
