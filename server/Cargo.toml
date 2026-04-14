@@ -23,7 +23,7 @@ path = "cmd/db_reset.rs"
 axum = { version = "0.8", features = ["macros"] }
 axum-extra = { version = "0.12.5", features = ["typed-header"] }
 clap = { version = "4.3.4", features = ["derive", "env"] }
-hmac = { version = "0.12.1", features = ["std"] }
+hmac = { version = "0.13.0" }
 jwt = "0.16.0"
 mime_guess = "2.0.4"
 models = { workspace = true }
