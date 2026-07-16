@@ -28,13 +28,13 @@ jwt = "0.16.0"
 mime_guess = "2.0.4"
 models = { workspace = true }
 oauth2 = "5.0.0-alpha.4"
-reqwest = { version = "0.12.0", features = ["json", "rustls-tls"], default-features = false }
+reqwest = { version = "0.13.0", features = ["json"] }
 rust-embed = { version = "8.4.0", features = ["axum"] }
 serde = { workspace = true }
 serde_json = { workspace = true }
-sha2 = "0.10.2"
+sha2 = "0.11.0"
 tokio = { version = "1.26", features = ["full"] }
-tower-http = { version = "0.6.0", features = [
+tower-http = { version = "0.7.0", features = [
     "fs",
     "trace",
     "compression-gzip",
