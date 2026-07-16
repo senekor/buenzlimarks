@@ -1,0 +1,17 @@
+#:schema https://pitchfork.jdx.dev/schema.json
+
+[daemons.book]
+run = "mise run book-watch"
+auto = ["start", "stop"]
+
+[daemons.diagrams]
+run = "mise run diagrams-watch"
+auto = ["start", "stop"]
+
+[daemons.app]
+run = "mise run app-watch"
+auto = ["start", "stop"]
+
+[daemons.server]
+run = "mise run server-watch"
+auto = ["start", "stop"]

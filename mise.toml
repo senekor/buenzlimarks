@@ -1,4 +1,4 @@
-[tasks.watch]
+[tasks.server-watch]
 description = "run the server, watching for changes"
 dir = "server"
 run = [
@@ -39,50 +39,6 @@ watchexec --debounce 1000 \
   --emit-events-to file \
   --watch docs/diagrams \
   --restart ./devel/render_diagrams.sh
-"""
-
-[tasks."zellij:bg-tasks"]
-hide = true
-run = """
-zellij action new-tab --layout <(echo '
-layout {
-  tab name="docs" {
-    pane size=1 borderless=true {
-      plugin location="compact-bar"
-    }
-    pane name="book" {
-      command "mise"
-      args "run" "book-watch"
-    }
-    pane name="diagrams" {
-      command "mise"
-      args "run" "diagrams-watch"
-    }
-  }
-}
-')
-zellij action new-tab --layout <(echo '
-layout {
-  tab name="main" {
-    pane size=1 borderless=true {
-      plugin location="compact-bar"
-    }
-    pane name="app" {
-      command "mise"
-      args "run" "app-watch"
-    }
-    pane name="server" {
-      command "mise"
-      args "run" "watch"
-    }
-    pane name="db-reset" {
-      command "mise"
-      args "run" "db-reset"
-      size "10%"
-    }
-  }
-}
-')
 """
 
 [tools]
