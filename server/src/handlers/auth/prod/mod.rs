@@ -1,5 +1,5 @@
 use axum::{routing::get, Router};
-use jwt::VerifyWithKey;
+use jsonwebtoken::{DecodingKey, Validation};
 use models::User;
 
 use crate::state::AppState;
@@ -14,7 +14,13 @@ pub use state::AuthState;
 use self::handlers::{github_callback, github_login};
 
 pub fn user_from(token: &str, state: &AppState) -> Option<User> {
-    token.verify_with_key(&state.auth.jwt_key).ok()
+    jsonwebtoken::decode(
+        token,
+        &DecodingKey::from_secret(state.auth.jwt_secret.as_bytes()),
+        &Validation::default(),
+    )
+    .ok()
+    .map(|data| data.claims)
 }
 
 pub fn routes() -> Router<AppState> {

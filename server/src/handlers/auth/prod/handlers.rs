@@ -3,7 +3,7 @@ use axum::{
     http::StatusCode,
     response::Redirect,
 };
-use jwt::SignWithKey;
+use jsonwebtoken::EncodingKey;
 use models::{AuthProvider, Id, Settings, User};
 use oauth2::{reqwest::Client, AuthorizationCode, CsrfToken, TokenResponse};
 use serde::Deserialize;
@@ -120,7 +120,12 @@ pub async fn github_callback(
     };
     tracing::debug!("login succeeded for user {user:?}");
 
-    user.sign_with_key(&auth.jwt_key).map_err(|e| {
+    jsonwebtoken::encode(
+        &jsonwebtoken::Header::default(),
+        &user,
+        &EncodingKey::from_secret(auth.jwt_secret.as_bytes()),
+    )
+    .map_err(|e| {
         tracing::error!("failed to sign user with jwt key: {e:?}");
         StatusCode::INTERNAL_SERVER_ERROR
     })

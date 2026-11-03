@@ -1,6 +1,4 @@
-use hmac::{Hmac, Mac};
 use oauth2::{basic::BasicClient, AuthUrl, ClientId, ClientSecret, RedirectUrl, TokenUrl};
-use sha2::Sha256;
 
 use super::AuthConfig;
 
@@ -23,21 +21,17 @@ type MyBasicClient = oauth2::Client<
 
 #[derive(Debug, Clone)]
 pub struct AuthState {
-    pub jwt_key: Hmac<Sha256>,
+    pub jwt_secret: String,
     pub github_client: MyBasicClient,
 }
 
 impl AuthState {
     pub fn new(config: &AuthConfig) -> Self {
         Self {
-            jwt_key: jwt_key(&config.jwt_secret),
+            jwt_secret: config.jwt_secret.clone(),
             github_client: github_client(config),
         }
     }
-}
-
-fn jwt_key(secret: &str) -> Hmac<Sha256> {
-    Hmac::new_from_slice(secret.as_bytes()).expect("failed to generate jwt key")
 }
 
 fn github_client(config: &AuthConfig) -> MyBasicClient {
